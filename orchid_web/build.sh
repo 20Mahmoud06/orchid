@@ -16,6 +16,7 @@ if [ ! -x "$FLUTTER_DIR/bin/flutter" ]; then
   tar -xf "$ARCHIVE" -C "$HOME"
 fi
 
+git config --global --add safe.directory "$FLUTTER_DIR"
 export PATH="$FLUTTER_DIR/bin:$PATH"
 
 flutter config --enable-web
