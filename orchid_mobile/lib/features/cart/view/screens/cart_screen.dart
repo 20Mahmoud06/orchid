@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../shared/widgets/bouquet_options_dialog.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_button.dart' show CustomButton;
 import '../../../../shared/widgets/custom_text.dart';
@@ -67,7 +68,12 @@ class CartScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   Expanded(
                     child: items.isEmpty
-                        ? const _CartEmptyState()
+                        ? _CartEmptyState(
+                            onChooseItems: () => _showChooseBouquetDialog(
+                              context,
+                              title: 'Choose Bouquet',
+                            ),
+                          )
                         : ListView.separated(
                       padding: EdgeInsets.only(bottom: 16.h),
                       itemCount: items.length,
@@ -100,9 +106,9 @@ class CartScreen extends StatelessWidget {
                         width: 1.w,
                       ),
                       boxShadow: const [],
-                      onPressed: () => Navigator.pushNamed(
+                      onPressed: () => _showChooseBouquetDialog(
                         context,
-                        AppRoutes.chooseFlowers,
+                        title: 'Add More Items',
                       ),
                     ),
                     SizedBox(height: 12.h),
@@ -117,6 +123,23 @@ class CartScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  /// Opens the shared bouquet chooser so the user can buy an existing bouquet
+  /// or create their own — used by both the empty cart and "add more items".
+  void _showChooseBouquetDialog(
+    BuildContext context, {
+    required String title,
+  }) {
+    showBouquetOptionsDialog(
+      context,
+      title: title,
+      description: 'Buy an existing bouquet or create your own.',
+      onBuyExisting: () =>
+          Navigator.pushNamed(context, AppRoutes.chooseBouquets),
+      onCreateCustom: () =>
+          Navigator.pushNamed(context, AppRoutes.chooseFlowers),
     );
   }
 
@@ -201,7 +224,9 @@ class CartScreen extends StatelessWidget {
 }
 
 class _CartEmptyState extends StatelessWidget {
-  const _CartEmptyState();
+  final VoidCallback onChooseItems;
+
+  const _CartEmptyState({required this.onChooseItems});
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +264,7 @@ class _CartEmptyState extends StatelessWidget {
           ),
           SizedBox(height: 24.h),
           CustomButton(
-            label: 'CHOOSE FLOWERS',
+            label: 'CHOOSE BOUQUET',
             fontFamily: AppFonts.goudyOldStyle,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
@@ -248,8 +273,7 @@ class _CartEmptyState extends StatelessWidget {
             height: 52.h,
             borderRadius: BorderRadius.circular(10.r),
             boxShadow: const [],
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.chooseFlowers),
+            onPressed: onChooseItems,
           ),
         ],
       ),

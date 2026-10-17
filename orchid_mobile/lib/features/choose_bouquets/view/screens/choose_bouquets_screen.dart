@@ -3,8 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../features/bouquet/cubit/bouquet_cubit.dart';
 import '../../../../features/bouquet/cubit/bouquet_state.dart';
+import '../../../../features/cart/cubit/cart_cubit.dart';
+import '../../../../features/cart/models/cart_item.dart';
 import '../../../../features/catalog/cubit/catalog_cubit.dart';
 import '../../../../features/catalog/cubit/catalog_state.dart';
+import '../../../../features/checkout/cubit/checkout_cubit.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../features/favorites/cubit/favorites_cubit.dart';
 import '../../../../features/favorites/cubit/favorites_state.dart';
@@ -49,6 +52,46 @@ class _ChooseBouquetScreenState extends State<ChooseBouquetScreen> {
 
   void _toggleFavorite(String bouquetId) {
     _favoritesController.toggleBouquetFavorite(bouquetId);
+  }
+
+  /// The message typed in the home celebration section, or null when the
+  /// user is not shopping for an occasion.
+  String? _pendingOccasionMessage() {
+    final checkout = CheckoutCubit.instance;
+    if (!checkout.hasMessage) return null;
+    final message = checkout.messageText.trim();
+    return message.isEmpty ? null : message;
+  }
+
+  /// Bottom bar action. When ready bouquets are selected they are added to the
+  /// cart (and the cart is opened) instead of opening the View Bouquet preview,
+  /// which only makes sense for a custom flower arrangement. A selection that
+  /// holds only custom flowers keeps the existing preview flow.
+  void _openSelection(BuildContext context) {
+    final readyBouquets = _bouquetController.selectedReadyBouquets;
+    if (readyBouquets.isEmpty) {
+      Navigator.pushNamed(context, AppRoutes.viewBouquet);
+      return;
+    }
+
+    // A message typed in the home "what are you celebrating?" flow rides
+    // along with the bouquet it was written for: the cart shows it under the
+    // line and the message screen pre-fills with it.
+    final occasionMessage = _pendingOccasionMessage();
+
+    CartCubit.instance.addItems([
+      for (final bouquet in readyBouquets)
+        CartItem(
+          id: bouquet.id,
+          name: bouquet.name,
+          price: bouquet.price,
+          imagePath: bouquet.imagePath,
+          quantity: _bouquetController.getQuantity(bouquet.id),
+          message: occasionMessage,
+        ),
+    ]);
+    _bouquetController.clearReadyBouquets();
+    Navigator.pushNamed(context, AppRoutes.cart);
   }
 
   @override
@@ -214,7 +257,20 @@ class _ChooseBouquetScreenState extends State<ChooseBouquetScreen> {
             BlocBuilder<BouquetCubit, BouquetState>(
               bloc: _bouquetController,
               builder: (context, bouquetState) {
-                final hasItems = _bouquetController.totalCount > 0;
+                // Ready bouquets live in the same quantity map as the flowers
+                // but are not part of [totalCount] (which only folds the
+                // selected flowers), so count them here too so the view-bouquet
+                // bar appears as soon as a bouquet is added.
+                final readyBouquetCount = _bouquetController
+                    .selectedReadyBouquets
+                    .fold<int>(
+                      0,
+                      (sum, bouquet) =>
+                          sum + _bouquetController.getQuantity(bouquet.id),
+                    );
+                final totalItems =
+                    _bouquetController.totalCount + readyBouquetCount;
+                final hasItems = totalItems > 0;
                 return AnimatedPositioned(
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
@@ -222,16 +278,9 @@ class _ChooseBouquetScreenState extends State<ChooseBouquetScreen> {
                   right: 12.w,
                   bottom: hasItems ? 16.h : -100.h,
                   child: ViewBouquetBar(
-                    totalCount: _bouquetController.totalCount,
+                    totalCount: totalItems,
                     totalPrice: _bouquetController.totalPrice,
-                    onTap: hasItems
-                        ? () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.viewBouquet,
-                            );
-                          }
-                        : null,
+                    onTap: hasItems ? () => _openSelection(context) : null,
                   ),
                 );
               },

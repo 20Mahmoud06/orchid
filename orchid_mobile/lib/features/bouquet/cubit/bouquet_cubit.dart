@@ -145,6 +145,18 @@ class BouquetCubit extends Cubit<BouquetState> {
     emit(const BouquetState());
   }
 
+  /// Drops the selected ready bouquets from the selection, leaving the custom
+  /// flowers untouched. Used once the ready bouquets have been moved to the
+  /// cart.
+  void clearReadyBouquets() {
+    final readyIds = selectedReadyBouquets.map((bouquet) => bouquet.id).toSet();
+    if (readyIds.isEmpty) return;
+    final quantities = Map<String, int>.of(state.quantities)
+      ..removeWhere((id, _) => readyIds.contains(id));
+    _persist(quantities);
+    emit(BouquetState(quantities: quantities));
+  }
+
   void _showMessage(String message) {
     final messenger = scaffoldMessengerKey.currentState;
     if (messenger == null) return;

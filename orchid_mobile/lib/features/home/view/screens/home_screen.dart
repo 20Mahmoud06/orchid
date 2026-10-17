@@ -23,6 +23,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  /// Storefront fallback shown when the catalog has not loaded yet / offline.
+  static const _defaultPopularFlowers = [
+    (
+      id: 'popular_flower_pink_lily',
+      name: 'Pink Lily',
+      price: '350 EGP',
+      image: AppAssets.circleFlower,
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -71,8 +81,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   return BlocBuilder<FavoritesCubit, FavoritesState>(
                     bloc: FavoritesCubit.instance,
                     builder: (context, favoritesState) {
-                      final bouquets = CatalogCubit.instance.popularBouquets;
-                      if (bouquets.isEmpty) return const SizedBox.shrink();
+                      final catalogBouquets =
+                          CatalogCubit.instance.popularBouquets.isNotEmpty
+                              ? CatalogCubit.instance.popularBouquets
+                              : CatalogCubit.instance.bouquets;
+                      if (catalogBouquets.isEmpty) {
+                        return const SizedBox.shrink();
+                      }
+                      final bouquets = catalogBouquets.take(5).toList();
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -121,8 +137,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   return BlocBuilder<FavoritesCubit, FavoritesState>(
                     bloc: FavoritesCubit.instance,
                     builder: (context, favoritesState) {
-                      final flowers = CatalogCubit.instance.popularFlowers;
-                      if (flowers.isEmpty) return const SizedBox.shrink();
+                      final catalogFlowers =
+                          CatalogCubit.instance.popularFlowers.isNotEmpty
+                              ? CatalogCubit.instance.popularFlowers
+                              : CatalogCubit.instance.flowers;
+                      final items =
+                          <({
+                            String id,
+                            String name,
+                            String price,
+                            String image,
+                          })>[];
+
+                      if (catalogFlowers.isNotEmpty) {
+                        for (final flower in catalogFlowers.take(5)) {
+                          items.add((
+                            id: flower.id,
+                            name: flower.name,
+                            price: '${flower.price} EGP',
+                            image: flower.imagePath,
+                          ));
+                        }
+                      } else {
+                        // Fallback to only Pink Lily if the catalog has not
+                        // loaded yet / offline.
+                        items.addAll(_defaultPopularFlowers);
+                      }
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -139,11 +180,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: [
-                                for (final flower in flowers)
+                                for (final flower in items)
                                   PopularItemCard(
-                                    imageUrl: flower.imagePath,
+                                    imageUrl: flower.image,
                                     title: flower.name,
-                                    price: '${flower.price} EGP',
+                                    price: flower.price,
                                     isFavorite: FavoritesCubit.instance
                                         .isFlowerFavorite(flower.id),
                                     onToggle: () => FavoritesCubit.instance

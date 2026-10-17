@@ -11,6 +11,7 @@ class WalletCard extends StatefulWidget {
     super.key,
     this.walletLogo,
     this.initialBalanceVisible = true,
+    this.selectedProvider,
     this.onProviderChanged,
     this.onBalanceVisibilityChanged,
     required this.ownerNameController,
@@ -20,6 +21,7 @@ class WalletCard extends StatefulWidget {
 
   final Widget? walletLogo;
   final bool initialBalanceVisible;
+  final WalletProvider? selectedProvider;
   final ValueChanged<WalletProvider>? onProviderChanged;
   final ValueChanged<bool>? onBalanceVisibilityChanged;
   final TextEditingController ownerNameController;
@@ -39,12 +41,22 @@ class _WalletCardState extends State<WalletCard> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _balanceVisible = widget.initialBalanceVisible;
-    _selectedProvider = null;
+    _selectedProvider = widget.selectedProvider;
 
     _eyeAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     );
+  }
+
+  @override
+  void didUpdateWidget(covariant WalletCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The screen may restore the wallet picked last (app cache) after this
+    // card is already mounted, so keep the card in sync with it.
+    if (oldWidget.selectedProvider != widget.selectedProvider) {
+      _selectedProvider = widget.selectedProvider;
+    }
   }
 
   @override

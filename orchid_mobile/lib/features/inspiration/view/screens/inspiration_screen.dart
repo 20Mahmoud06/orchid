@@ -142,6 +142,7 @@ class _InspirationScreenState extends State<InspirationScreen>
                           username: item.username,
                           imagePath: item.imagePath,
                           ingredients: item.ingredients,
+                          avatarUrl: item.avatarUrl,
                           onChoose: () {
                             Navigator.pushNamed(
                               context,

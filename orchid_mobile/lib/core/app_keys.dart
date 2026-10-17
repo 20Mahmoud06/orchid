@@ -24,5 +24,21 @@ abstract class AppPrefKeys {
   static const String favoriteBouquetIds = 'favorite_bouquet_ids';
   static const String bouquetQuantities = 'bouquet_quantities';
   static const String cartItems = 'cart_items';
-  static const String walletBalance = 'wallet_balance';
+
+  /// Wallet balance for a single provider (e.g. `wallet_balance_vodafone_cash`),
+  /// so every digital wallet keeps its own money.
+  static String walletBalanceKey(String providerName) =>
+      'wallet_balance_${_slug(providerName)}';
+
+  /// Wallet ID (number) for a single provider, so every digital wallet keeps
+  /// its own number.
+  static String walletIdKey(String providerName) =>
+      'wallet_id_${_slug(providerName)}';
+
+  /// Name of the wallet provider picked last, so reopening the app restores
+  /// the same wallet and its saved balance.
+  static const String walletProvider = 'wallet_provider';
+
+  static String _slug(String value) =>
+      value.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
 }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -238,7 +239,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       throw CheckoutException('Please sign in to place an order');
     }
 
-    final items = _buildItems();
+    final items = buildItems();
     if (items.isEmpty) {
       throw CheckoutException(
         state.source == CheckoutSource.cart
@@ -259,6 +260,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     final code = _generateOrderCode();
     final source = state.source;
 
+    String? orderId;
     try {
       final orderRow = await client
           .from('orders')
@@ -282,11 +284,21 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           })
           .select('id')
           .single();
+      orderId = orderRow['id'] as String?;
 
       await client.from('order_items').insert([
-        for (final item in items) {...item, 'order_id': orderRow['id']},
+        for (final item in items) {...item, 'order_id': orderId},
       ]);
     } catch (error) {
+      // A half-written order (row created, items failed) must not linger in
+      // the admin dashboard, so remove it before reporting the failure.
+      if (orderId != null) {
+        try {
+          await client.from('orders').delete().eq('id', orderId);
+        } catch (_) {
+          // Cleanup is best-effort; the checkout error below is what matters.
+        }
+      }
       throw CheckoutException(
         'Could not place your order. Check your connection and try again. '
         '($error)',
@@ -296,7 +308,14 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     _resetDraft(lastOrderCode: code, clearCart: source == CheckoutSource.cart);
   }
 
-  List<Map<String, dynamic>> _buildItems() {
+  /// Builds the `order_items` rows for the current draft. Exposed for tests;
+  /// production code goes through [submitOrder].
+  ///
+  /// `image_snapshot` is NOT NULL in the orders schema, so the raw path is
+  /// always stored: a public URL, a bundled asset path, or '' — the admin and
+  /// the app both render a floral placeholder for the latter two.
+  @visibleForTesting
+  List<Map<String, dynamic>> buildItems() {
     if (state.source == CheckoutSource.cart) {
       final items = <Map<String, dynamic>>[];
       for (final item in CartCubit.instance.items) {
@@ -321,8 +340,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           'item_type': item.isCustomBouquet ? _bouquetType : _productType(item.id),
           'product_id': _uuidOrNull(item.id),
           'name_snapshot': item.name,
-          'image_snapshot':
-              item.imagePath.startsWith('http') ? item.imagePath : null,
+          'image_snapshot': item.imagePath,
           'price_snapshot': item.price,
           'quantity': item.quantity,
           'custom_components': components.isEmpty ? null : components,
@@ -344,9 +362,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         'item_type': _bouquetType,
         'product_id': null,
         'name_snapshot': 'Custom Bouquet',
-        'image_snapshot': flowers.first.imagePath.isEmpty
-            ? null
-            : flowers.first.imagePath,
+        'image_snapshot': flowers.first.imagePath,
         'price_snapshot': flowerSubtotal,
         'quantity': 1,
         'custom_components': {
@@ -369,8 +385,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         'item_type': _bouquetType,
         'product_id': ready.id,
         'name_snapshot': ready.name,
-        'image_snapshot':
-            ready.imagePath.startsWith('http') ? ready.imagePath : null,
+        'image_snapshot': ready.imagePath,
         'price_snapshot': ready.price,
         'quantity': bouquet.getQuantity(ready.id),
         'custom_components': null,

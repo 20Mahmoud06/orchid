@@ -43,13 +43,14 @@ class InspirationCubit extends Cubit<InspirationState> {
     try {
       final client = Supabase.instance.client;
       final ownSourceIds = await _ownOrderItemIds();
-      final rows = await client
-          .from('inspiration_items')
-          .select(
-            'id, display_name, image_snapshot, description, ingredients, source_order_item_id, created_at',
-          )
-          .order('created_at', ascending: false)
-          .limit(50);
+      List<Map<String, dynamic>> rows;
+      try {
+        rows = await _fetchRows(client, includeProfileImage: true);
+      } catch (_) {
+        // The `profile_image` column may not exist until the matching
+        // migration is applied; fall back so the tab keeps working.
+        rows = await _fetchRows(client, includeProfileImage: false);
+      }
 
       // "what others are creating" — never feature the signed-in user's own
       // bouquets back to them.
@@ -64,6 +65,27 @@ class InspirationCubit extends Cubit<InspirationState> {
     } catch (e) {
       emit(InspirationFailure(e));
     }
+  }
+
+  /// Fetches the newest featured bouquets. [includeProfileImage] controls
+  /// whether the creator-avatar column is requested (it may not exist yet on
+  /// a database where the migration has not been applied).
+  Future<List<Map<String, dynamic>>> _fetchRows(
+    SupabaseClient client, {
+    required bool includeProfileImage,
+  }) {
+    final columns = StringBuffer(
+      'id, display_name, image_snapshot, description, ingredients, '
+      'source_order_item_id, created_at',
+    );
+    if (includeProfileImage) {
+      columns.write(', profile_image');
+    }
+    return client
+        .from('inspiration_items')
+        .select(columns.toString())
+        .order('created_at', ascending: false)
+        .limit(50);
   }
 
   /// Ids of `order_items` belonging to the current user, so their own orders
@@ -117,12 +139,14 @@ class InspirationCubit extends Cubit<InspirationState> {
     }
 
     final displayName = (row['display_name'] as String? ?? '').trim();
+    final profileImage = (row['profile_image'] as String? ?? '').trim();
     return InspirationItem(
       id: row['id'] as String? ?? '',
       username: displayName.isEmpty ? 'orchid' : displayName,
       imagePath: _imageUrl(row['image_snapshot'] as String? ?? ''),
       ingredients: lines,
       description: row['description'] as String? ?? '',
+      avatarUrl: profileImage.isEmpty ? null : _profileImageUrl(profileImage),
       flowers: flowers,
     );
   }
@@ -131,5 +155,12 @@ class InspirationCubit extends Cubit<InspirationState> {
     if (path.isEmpty) return '';
     if (path.startsWith('http') || path.startsWith('assets/')) return path;
     return Supabase.instance.client.storage.from(_bucket).getPublicUrl(path);
+  }
+
+  String _profileImageUrl(String path) {
+    if (path.startsWith('http') || path.startsWith('assets/')) return path;
+    return Supabase.instance.client.storage
+        .from('profile-images')
+        .getPublicUrl(path);
   }
 }

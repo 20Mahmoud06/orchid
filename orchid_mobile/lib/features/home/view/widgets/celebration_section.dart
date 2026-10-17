@@ -173,6 +173,7 @@ class _CelebrationSectionState extends State<CelebrationSection> {
                 setState(() {
                   if (isSelected) {
                     _selectedCategory = null; // toggle off
+                    _messageController.clear();
                   } else {
                     _selectedCategory = cat['name'];
                     _messageController.text = _getPlaceholderForCategory(cat['name']!);

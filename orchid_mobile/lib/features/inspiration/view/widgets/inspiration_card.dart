@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
+import '../../../../features/profile/view/widgets/profile_avatar.dart';
 import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/skeleton_image.dart';
 
@@ -13,12 +13,17 @@ class InspirationCard extends StatelessWidget {
   final List<String> ingredients;
   final VoidCallback onChoose;
 
+  /// Public URL of the creator's profile picture; falls back to the bundled
+  /// placeholder when null/empty or when the image fails to load.
+  final String? avatarUrl;
+
   const InspirationCard({
     super.key,
     required this.username,
     required this.imagePath,
     required this.ingredients,
     required this.onChoose,
+    this.avatarUrl,
   });
 
   @override
@@ -83,10 +88,16 @@ class InspirationCard extends StatelessWidget {
                   // 1. Username Row
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 10.r,
-                        backgroundImage: const AssetImage(AppAssets.placeholderProfile),
-                        backgroundColor: AppColors.fieldPink,
+                      Container(
+                        width: 20.r,
+                        height: 20.r,
+                        decoration: const BoxDecoration(
+                          color: AppColors.fieldPink,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipOval(
+                          child: ProfileAvatarImage(imageUrl: avatarUrl),
+                        ),
                       ),
                       SizedBox(width: 8.w),
                       Expanded(

@@ -56,16 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    // Validate email.
+    // Validate every field, then show all the errors at once.
     final emailErr = Validators.validateEmail(email);
-    if (emailErr != null) {
-      setState(() => _emailError = emailErr);
-      return;
-    }
+    final passwordErr =
+        password.isEmpty ? 'please enter your password' : null;
 
-    // Validate password.
-    if (password.isEmpty) {
-      setState(() => _passwordError = 'please enter your password');
+    if (emailErr != null || passwordErr != null) {
+      setState(() {
+        _emailError = emailErr;
+        _passwordError = passwordErr;
+      });
       return;
     }
 
@@ -174,6 +174,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                 size: 22.r,
                               ),
                               keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              onChanged: (_) {
+                                if (_emailError != null ||
+                                    _generalError != null) {
+                                  setState(() {
+                                    _emailError = null;
+                                    _generalError = null;
+                                  });
+                                }
+                              },
                             ),
                             if (_emailError != null) ...[
                               SizedBox(height: 4.h),
@@ -197,6 +207,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 size: 22.r,
                               ),
                               isPassword: true,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted:
+                                  _isLoading ? null : _validateAndLogin,
+                              onChanged: (_) {
+                                if (_passwordError != null ||
+                                    _generalError != null) {
+                                  setState(() {
+                                    _passwordError = null;
+                                    _generalError = null;
+                                  });
+                                }
+                              },
                             ),
                             if (_passwordError != null) ...[
                               SizedBox(height: 4.h),

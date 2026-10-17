@@ -56,31 +56,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
-    // Validate email.
+    // Validate every field, then show all the errors at once.
     final emailErr = Validators.validateEmail(email);
-    if (emailErr != null) {
-      setState(() => _emailError = emailErr);
-      return;
-    }
 
-    // Validate password.
+    String? passwordErr;
     if (password.isEmpty) {
-      setState(() => _passwordError = 'please enter a password');
-      return;
-    }
-    if (password.length < 6) {
-      setState(
-          () => _passwordError = 'password must be at least 6 characters');
-      return;
+      passwordErr = 'please enter a password';
+    } else if (password.length < 6) {
+      passwordErr = 'password must be at least 6 characters';
     }
 
-    // Validate confirm password.
+    String? confirmErr;
     if (confirmPassword.isEmpty) {
-      setState(() => _confirmPasswordError = 'please confirm your password');
-      return;
+      confirmErr = 'please confirm your password';
+    } else if (password != confirmPassword) {
+      confirmErr = 'passwords do not match';
     }
-    if (password != confirmPassword) {
-      setState(() => _confirmPasswordError = 'passwords do not match');
+
+    if (emailErr != null || passwordErr != null || confirmErr != null) {
+      setState(() {
+        _emailError = emailErr;
+        _passwordError = passwordErr;
+        _confirmPasswordError = confirmErr;
+      });
       return;
     }
 
@@ -215,6 +213,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               size: 22.r,
                             ),
                             keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (_) {
+                              if (_emailError != null ||
+                                  _generalError != null) {
+                                setState(() {
+                                  _emailError = null;
+                                  _generalError = null;
+                                });
+                              }
+                            },
                           ),
                           if (_emailError != null) ...[
                             SizedBox(height: 4.h),
@@ -238,6 +246,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               size: 22.r,
                             ),
                             isPassword: true,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (_) {
+                              if (_passwordError != null ||
+                                  _generalError != null) {
+                                setState(() {
+                                  _passwordError = null;
+                                  _generalError = null;
+                                });
+                              }
+                            },
                           ),
                           if (_passwordError != null) ...[
                             SizedBox(height: 4.h),
@@ -261,6 +279,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               size: 22.r,
                             ),
                             isPassword: true,
+                            textInputAction: TextInputAction.done,
+                            onFieldSubmitted:
+                                _isLoading ? null : _validateAndSignUp,
+                            onChanged: (_) {
+                              if (_confirmPasswordError != null ||
+                                  _generalError != null) {
+                                setState(() {
+                                  _confirmPasswordError = null;
+                                  _generalError = null;
+                                });
+                              }
+                            },
                           ),
                           if (_confirmPasswordError != null) ...[
                             SizedBox(height: 4.h),

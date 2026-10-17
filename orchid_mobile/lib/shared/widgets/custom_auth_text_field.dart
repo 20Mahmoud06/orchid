@@ -19,6 +19,9 @@ class CustomAuthTextField extends StatefulWidget {
   final double? borderRadius;
   final EdgeInsetsGeometry? contentPadding;
   final List<TextInputFormatter>? inputFormatters;
+  final ValueChanged<String>? onChanged;
+  final VoidCallback? onFieldSubmitted;
+  final TextInputAction? textInputAction;
 
   const CustomAuthTextField({
     super.key,
@@ -36,6 +39,9 @@ class CustomAuthTextField extends StatefulWidget {
     this.borderRadius,
     this.contentPadding,
     this.inputFormatters,
+    this.onChanged,
+    this.onFieldSubmitted,
+    this.textInputAction,
   });
 
   @override
@@ -148,6 +154,11 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField>
             obscureText: widget.isPassword ? _obscureText : false,
             keyboardType: widget.keyboardType,
             validator: widget.validator,
+            onChanged: widget.onChanged,
+            textInputAction: widget.textInputAction,
+            onFieldSubmitted: widget.onFieldSubmitted == null
+                ? null
+                : (_) => widget.onFieldSubmitted!(),
             style: TextStyle(
               fontSize: 15.sp,
               color: widget.textColor ?? AppColors.textSecondary,

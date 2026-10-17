@@ -164,6 +164,12 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
                   size: 22.r,
                 ),
                 isPassword: true,
+                textInputAction: TextInputAction.next,
+                onChanged: (_) {
+                  if (_errorMessage != null) {
+                    setState(() => _errorMessage = null);
+                  }
+                },
               ),
               SizedBox(height: 16.h),
               CustomAuthTextField(
@@ -176,6 +182,13 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
                   size: 22.r,
                 ),
                 isPassword: true,
+                textInputAction: TextInputAction.done,
+                onFieldSubmitted: _isSubmitting ? null : _submit,
+                onChanged: (_) {
+                  if (_errorMessage != null) {
+                    setState(() => _errorMessage = null);
+                  }
+                },
               ),
               if (_errorMessage != null) ...[
                 SizedBox(height: 12.h),

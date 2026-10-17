@@ -14,6 +14,7 @@ import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text.dart';
 import '../widgets/wallet_card.dart';
+import '../widgets/wallet_provider.dart';
 
 class MyWalletScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
@@ -32,45 +33,98 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
   final TextEditingController _walletIdController = TextEditingController(text: '4821');
   final TextEditingController _balanceController = TextEditingController(text: '0');
 
+  // The wallet the user picked. Its balance and ID are stored per provider, so
+  // switching wallets shows that wallet's own number and money.
+  WalletProvider? _selectedProvider;
+  String _defaultWalletId = '4821';
+  bool _isSwitchingProvider = false;
+
   @override
   void initState() {
     super.initState();
     _restoreWallet();
-    _balanceController.addListener(_persistBalance);
+    _balanceController.addListener(_persistProviderData);
+    _walletIdController.addListener(_persistProviderData);
   }
 
   @override
   void dispose() {
-    _balanceController.removeListener(_persistBalance);
+    _balanceController.removeListener(_persistProviderData);
+    _walletIdController.removeListener(_persistProviderData);
     _ownerNameController.dispose();
     _walletIdController.dispose();
     _balanceController.dispose();
     super.dispose();
   }
 
-  /// Loads the saved balance and uses the signed-in user's phone number as the
-  /// wallet ID (only its last four digits are ever shown).
+  /// Uses the signed-in user's phone number as the default wallet ID (only its
+  /// last four digits are ever shown). Each provider keeps its own saved ID.
+  /// Also restores the wallet picked last (kept in the app cache) so reopening
+  /// the screen brings back the same provider together with its balance.
   Future<void> _restoreWallet() async {
-    final savedBalance =
-        await AppPrefs.instance.getString(AppPrefKeys.walletBalance);
     final phone = AuthCubit.instance.userProfile?.phone ?? '';
     final digits = phone.replaceAll(RegExp(r'[^0-9]'), '');
+    final savedProvider = await AppPrefs.instance.getString(
+      AppPrefKeys.walletProvider,
+    );
     if (!mounted) return;
     setState(() {
-      if (savedBalance != null && savedBalance.isNotEmpty) {
-        _balanceController.text = savedBalance;
-      }
       if (digits.length >= 4) {
+        _defaultWalletId = digits;
         _walletIdController.text = digits;
       }
     });
+    if (savedProvider == null || savedProvider.isEmpty) return;
+    if (!WalletProvider.providers.any((p) => p.name == savedProvider)) return;
+    await _handleProviderChanged(WalletProvider.fromName(savedProvider));
   }
 
-  void _persistBalance() {
+  /// Persists the current balance and ID for the selected provider.
+  void _persistProviderData() {
+    final provider = _selectedProvider;
+    if (provider == null || _isSwitchingProvider) return;
+    _saveProvider(provider);
+  }
+
+  void _saveProvider(WalletProvider provider) {
     AppPrefs.instance.saveString(
-      AppPrefKeys.walletBalance,
+      AppPrefKeys.walletBalanceKey(provider.name),
       _balanceController.text,
     );
+    AppPrefs.instance.saveString(
+      AppPrefKeys.walletIdKey(provider.name),
+      _walletIdController.text,
+    );
+    AppPrefs.instance.saveString(AppPrefKeys.walletProvider, provider.name);
+  }
+
+  /// Saves the outgoing wallet and loads the newly picked wallet's own balance
+  /// and ID.
+  Future<void> _handleProviderChanged(WalletProvider provider) async {
+    final previous = _selectedProvider;
+    if (previous != null && previous.name != provider.name) {
+      _saveProvider(previous);
+    }
+
+    final savedBalance = await AppPrefs.instance.getString(
+      AppPrefKeys.walletBalanceKey(provider.name),
+    );
+    final savedWalletId = await AppPrefs.instance.getString(
+      AppPrefKeys.walletIdKey(provider.name),
+    );
+    if (!mounted) return;
+
+    _isSwitchingProvider = true;
+    setState(() {
+      _selectedProvider = provider;
+      _balanceController.text = savedBalance == null || savedBalance.isEmpty
+          ? '0'
+          : savedBalance;
+      _walletIdController.text = savedWalletId == null || savedWalletId.isEmpty
+          ? _defaultWalletId
+          : savedWalletId;
+    });
+    _isSwitchingProvider = false;
   }
 
   double get _walletBalance {
@@ -249,12 +303,11 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
                   size: 22,
                 ),
                 initialBalanceVisible: false,
+                selectedProvider: _selectedProvider,
                 ownerNameController: _ownerNameController,
                 walletIdController: _walletIdController,
                 balanceController: _balanceController,
-                onProviderChanged: (provider) {
-                  // provider changed callback
-                },
+                onProviderChanged: _handleProviderChanged,
                 onBalanceVisibilityChanged: (isVisible) {
                   // balance visibility toggled
                 },

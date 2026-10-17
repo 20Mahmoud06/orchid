@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../features/bouquet/cubit/bouquet_cubit.dart';
 import '../../../../core/app_keys.dart';
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
@@ -12,6 +13,7 @@ import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/skeleton_image.dart';
 import '../../../cart/cubit/cart_cubit.dart';
 import '../../../cart/models/cart_item.dart';
+import '../../../checkout/cubit/checkout_cubit.dart';
 import '../../../inspiration/models/inspiration_item.dart';
 
 class ViewBouquetScreen extends StatelessWidget {
@@ -38,7 +40,7 @@ class ViewBouquetScreen extends StatelessWidget {
         ? (bouquet!.imagePath)
         : (selectedFlowers.length == 1
             ? selectedFlowers.first.imagePath
-            : 'assets/images/bouquet_test.png');
+            : AppAssets.bouquetTest);
 
     final description = isFromInspiration
         ? bouquet!.ingredients
@@ -149,6 +151,11 @@ class ViewBouquetScreen extends StatelessWidget {
       return;
     }
 
+    // A message typed in the home "what are you celebrating?" flow rides
+    // along with the bouquet it was written for: the cart shows it under the
+    // line and the message screen pre-fills with it.
+    final occasionMessage = _pendingOccasionMessage();
+
     final items = <CartItem>[];
 
     if (flowers.isNotEmpty) {
@@ -162,8 +169,14 @@ class ViewBouquetScreen extends StatelessWidget {
           id: 'custom-${DateTime.now().microsecondsSinceEpoch}',
           name: 'Custom Bouquet',
           price: flowerTotal,
-          imagePath: flowers.first.imagePath,
+          // The cart shows the same picture as the view bouquet screen: a
+          // single flower keeps its own photo, a mixed arrangement uses the
+          // bouquet preview.
+          imagePath: flowers.length == 1
+              ? flowers.first.imagePath
+              : AppAssets.bouquetTest,
           quantity: 1,
+          message: occasionMessage,
           components: [
             for (final flower in flowers)
               CartItemComponent(
@@ -185,6 +198,7 @@ class ViewBouquetScreen extends StatelessWidget {
           price: bouquet.price,
           imagePath: bouquet.imagePath,
           quantity: bouquetController.getQuantity(bouquet.id),
+          message: occasionMessage,
         ),
       );
     }
@@ -216,6 +230,7 @@ class ViewBouquetScreen extends StatelessWidget {
         price: total,
         imagePath: inspiration.imagePath,
         quantity: 1,
+        message: _pendingOccasionMessage(),
         components: [
           for (final flower in inspiration.flowers)
             CartItemComponent(
@@ -228,6 +243,15 @@ class ViewBouquetScreen extends StatelessWidget {
       ),
     ]);
     Navigator.pushReplacementNamed(context, AppRoutes.cart);
+  }
+
+  /// The message typed in the home celebration section, or null when the
+  /// user is not shopping for an occasion.
+  String? _pendingOccasionMessage() {
+    final checkout = CheckoutCubit.instance;
+    if (!checkout.hasMessage) return null;
+    final message = checkout.messageText.trim();
+    return message.isEmpty ? null : message;
   }
 
   void _showMessage(String message) {    final messenger = scaffoldMessengerKey.currentState;
