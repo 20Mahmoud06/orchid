@@ -1,0 +1,4 @@
+enum MessageChoice {
+  yes,
+  no,
+}
