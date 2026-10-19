@@ -73,4 +73,22 @@ void main() {
     expect(find.text('inspiration'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('WebInspirationCard displays profile avatar with avatarUrl',
+      (tester) async {
+    await pumpAt(
+      tester,
+      const Size(1440, 900),
+      WebInspirationCard(
+        username: 'sarah',
+        imagePath: 'bouquet.png',
+        ingredients: const ['3 roses'],
+        avatarUrl: 'https://example.com/avatar.jpg',
+        onChoose: () {},
+      ),
+    );
+    expect(find.byType(WebInspirationCard), findsOneWidget);
+    expect(find.text('created by @sarah'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }

@@ -20,6 +20,9 @@ class InspirationItem {
   final List<String> ingredients;
   final String description;
 
+  /// Public URL of the creator's profile picture, when featured with one.
+  final String? avatarUrl;
+
   /// Flowers + quantities, so "Looks Good" can rebuild this exact bouquet in
   /// the cart. Empty for the legacy/mock items.
   final List<InspirationFlower> flowers;
@@ -30,6 +33,7 @@ class InspirationItem {
     required this.imagePath,
     required this.ingredients,
     required this.description,
+    this.avatarUrl,
     this.flowers = const <InspirationFlower>[],
   });
 }

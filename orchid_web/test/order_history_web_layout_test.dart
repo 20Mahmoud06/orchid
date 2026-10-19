@@ -7,6 +7,7 @@ import 'package:ORCHID/features/order/view/widgets/web/web_order_history_widgets
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ionicons/ionicons.dart';
 
 import 'helpers/test_harness.dart';
 
@@ -165,4 +166,76 @@ void main() {
     expect(find.text('no orders yet'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Completed order delete button shows remove from history on web desktop',
+    (tester) async {
+      await pumpAt(tester, const Size(1440, 900));
+      await seedOrders(tester, [
+        order(id: 'c1', status: 'COMPLETED', name: 'Lily Bouquet'),
+      ]);
+
+      final cardTrash = find.descendant(
+        of: find.byType(WebOrderHistoryCard),
+        matching: find.byIcon(Ionicons.trash),
+      );
+      expect(cardTrash, findsOneWidget);
+      await tester.tap(cardTrash);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Remove from history?'), findsOneWidget);
+      expect(find.text('REMOVE FROM HISTORY'), findsOneWidget);
+      expect(find.text('CANCEL ORDER'), findsNothing);
+      expect(find.text('Cancel this order?'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Preparing order delete button shows cancel on web desktop',
+    (tester) async {
+      await pumpAt(tester, const Size(1440, 900));
+      await seedOrders(tester, [
+        order(id: 'p1', status: 'PREPARING', name: 'Rose Bouquet'),
+      ]);
+
+      final cardTrash = find.descendant(
+        of: find.byType(WebOrderHistoryCard),
+        matching: find.byIcon(Ionicons.trash),
+      );
+      expect(cardTrash, findsOneWidget);
+      await tester.tap(cardTrash);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Cancel this order?'), findsOneWidget);
+      expect(find.text('CANCEL ORDER'), findsOneWidget);
+      expect(find.text('REMOVE FROM HISTORY'), findsNothing);
+      expect(find.text('Remove from history?'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'Completed order delete button shows remove from history on mobile viewport',
+    (tester) async {
+      await pumpAt(tester, const Size(375, 812));
+      await seedOrders(tester, [
+        order(id: 'c2', status: 'COMPLETED', name: 'Lily Bouquet'),
+      ]);
+
+      final cardTrash = find.descendant(
+        of: find.byType(OrderHistoryCard),
+        matching: find.byIcon(Ionicons.trash),
+      );
+      expect(cardTrash, findsOneWidget);
+      await tester.tap(cardTrash);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 200));
+
+      expect(find.text('Remove from history?'), findsOneWidget);
+      expect(find.text('REMOVE FROM HISTORY'), findsOneWidget);
+      expect(find.text('CANCEL ORDER'), findsNothing);
+      expect(find.text('Cancel this order?'), findsNothing);
+    },
+  );
 }

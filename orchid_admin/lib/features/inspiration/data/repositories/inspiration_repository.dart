@@ -26,7 +26,7 @@ class InspirationRepository {
         .order('created_at', ascending: false)
         .limit(60);
 
-    final names = await _fetchNames(orders);
+    final profiles = await _fetchProfiles(orders);
     final candidates = <InspirationCandidate>[];
 
     for (final order in orders) {
@@ -34,7 +34,9 @@ class InspirationRepository {
       if (items is! List) continue;
       final createdAt =
           DateTime.tryParse(order['created_at'] as String? ?? '');
-      final customerName = names[order['user_id'] as String?];
+      final profile = profiles[order['user_id'] as String?];
+      final customerName = profile?['username'] as String?;
+      final profileImage = profile?['profile_image'] as String?;
 
       for (final item in items) {
         if (item is! Map) continue;
@@ -54,6 +56,7 @@ class InspirationRepository {
             imageUrl: item['image_snapshot'] as String?,
             description: description,
             orderCreatedAt: createdAt,
+            profileImage: profileImage,
             ingredients: rawFlowers is List
                 ? rawFlowers
                     .whereType<Map>()
@@ -81,6 +84,8 @@ class InspirationRepository {
         for (final ingredient in candidate.ingredients) ingredient.toJson(),
       ],
       'source_order_item_id': candidate.orderItemId,
+      if (candidate.profileImage != null && candidate.profileImage!.isNotEmpty)
+        'profile_image': candidate.profileImage,
     });
   }
 
@@ -88,7 +93,7 @@ class InspirationRepository {
     await supabase.from('inspiration_items').delete().eq('id', id);
   }
 
-  Future<Map<String, String>> _fetchNames(
+  Future<Map<String, Map<String, dynamic>>> _fetchProfiles(
     List<Map<String, dynamic>> orders,
   ) async {
     final userIds = orders
@@ -100,13 +105,12 @@ class InspirationRepository {
 
     final profiles = await supabase
         .from('profiles')
-        .select('id, username')
+        .select('id, username, profile_image')
         .inFilter('id', userIds);
 
     return {
       for (final profile in profiles)
-        if (profile['id'] is String)
-          profile['id'] as String: (profile['username'] as String? ?? ''),
+        if (profile['id'] is String) profile['id'] as String: profile,
     };
   }
 }

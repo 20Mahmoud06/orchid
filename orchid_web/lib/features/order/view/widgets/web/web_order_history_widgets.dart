@@ -380,7 +380,7 @@ class WebCancelOrderDialog extends StatelessWidget {
                     child: CustomButton(
                       label: confirmLabel,
                       fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 16,
+                      fontSize: confirmLabel.length > 14 ? 13 : 16,
                       fontWeight: FontWeight.bold,
                       textColor: AppColors.white,
                       backgroundColor: AppColors.canceledText,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../features/profile/view/widgets/profile_avatar.dart';
 import '../../../../../shared/widgets/custom_text.dart';
 import '../../../../../shared/widgets/skeleton_image.dart';
 
@@ -21,12 +21,17 @@ class WebInspirationCard extends StatefulWidget {
   final List<String> ingredients;
   final VoidCallback onChoose;
 
+  /// Public URL of the creator's profile picture; falls back to the bundled
+  /// placeholder when null/empty or when the image fails to load.
+  final String? avatarUrl;
+
   const WebInspirationCard({
     super.key,
     required this.username,
     required this.imagePath,
     required this.ingredients,
     required this.onChoose,
+    this.avatarUrl,
   });
 
   @override
@@ -88,11 +93,18 @@ class _WebInspirationCardState extends State<WebInspirationCard> {
                   children: [
                     Row(
                       children: [
-                        const CircleAvatar(
-                          radius: 12,
-                          backgroundImage:
-                              AssetImage(AppAssets.placeholderProfile),
-                          backgroundColor: AppColors.fieldPink,
+                        Container(
+                          width: 24,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            color: AppColors.fieldPink,
+                            shape: BoxShape.circle,
+                          ),
+                          child: ClipOval(
+                            child: ProfileAvatarImage(
+                              imageUrl: widget.avatarUrl,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(

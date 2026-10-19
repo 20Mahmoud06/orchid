@@ -98,9 +98,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     );
   }
 
-  /// Asks for confirmation, then cancels the order (status CANCELED). The order
-  /// is never deleted, so the admin dashboard keeps it.
+  /// Asks for confirmation, then cancels the order (status CANCELED) if active,
+  /// or removes it from history if completed.
   Future<void> _confirmCancelOrder(CustomerOrder order) async {
+    final isCompleted = order.status.toUpperCase() == 'COMPLETED';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) {
@@ -122,14 +123,18 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    Ionicons.close_circle_outline,
+                    isCompleted
+                        ? Ionicons.trash
+                        : Ionicons.close_circle_outline,
                     size: 32.r,
                     color: AppColors.redText,
                   ),
                 ),
                 SizedBox(height: 16.h),
                 CustomText(
-                  text: 'Cancel this order?',
+                  text: isCompleted
+                      ? 'Remove from history?'
+                      : 'Cancel this order?',
                   fontFamily: AppFonts.goudyOldStyle,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w700,
@@ -137,8 +142,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 ),
                 SizedBox(height: 12.h),
                 CustomText(
-                  text:
-                      'Are you sure you want to cancel this order? It stays in your account marked as canceled.',
+                  text: isCompleted
+                      ? 'Are you sure you want to remove this order from your history?'
+                      : 'Are you sure you want to cancel this order? It stays in your account marked as canceled.',
                   fontFamily: AppFonts.goudyOldStyle,
                   fontSize: 14.sp,
                   textColor: AppColors.textPrimary,
@@ -164,9 +170,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                     SizedBox(width: 12.w),
                     Expanded(
                       child: CustomButton(
-                        label: 'CANCEL ORDER',
+                        label: isCompleted
+                            ? 'REMOVE FROM HISTORY'
+                            : 'CANCEL ORDER',
                         fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16.sp,
+                        fontSize: isCompleted ? 12.sp : 16.sp,
                         fontWeight: FontWeight.bold,
                         textColor: AppColors.white,
                         backgroundColor: AppColors.canceledText,
@@ -187,14 +195,22 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
 
     if (confirmed != true || !mounted) return;
     try {
-      await OrdersCubit.instance.cancelOrder(order);
+      if (isCompleted) {
+        await OrdersCubit.instance.deleteOrder(order);
+      } else {
+        await OrdersCubit.instance.cancelOrder(order);
+      }
     } catch (_) {
       if (!mounted) return;
       final messenger = scaffoldMessengerKey.currentState;
       messenger?.hideCurrentSnackBar();
       messenger?.showSnackBar(
-        const SnackBar(
-          content: Text('Could not cancel this order'),
+        SnackBar(
+          content: Text(
+            isCompleted
+                ? 'Could not remove this order'
+                : 'Could not cancel this order',
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );

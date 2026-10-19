@@ -83,6 +83,22 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
   }
 
+  /// Deletes an order permanently from this customer's account so it is removed
+  /// from history.
+  Future<void> deleteOrder(CustomerOrder order) async {
+    final client = Supabase.instance.client;
+    await client.from('orders').delete().eq('id', order.id);
+    emit(
+      OrdersLoaded([
+        for (final o in orders)
+          if (o.id != order.id) o,
+      ]),
+    );
+  }
+
+  /// Alias for [deleteOrder] to remove a completed order from history.
+  Future<void> removeFromHistory(CustomerOrder order) => deleteOrder(order);
+
   /// Cancels every order in the list, keeping all rows in the dashboard.
   Future<void> cancelAll() async {
     if (orders.isEmpty) return;

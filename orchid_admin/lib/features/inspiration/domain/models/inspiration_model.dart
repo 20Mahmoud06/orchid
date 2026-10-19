@@ -37,6 +37,7 @@ class InspirationItem {
     this.imageUrl,
     this.description,
     this.sourceOrderItemId,
+    this.profileImage,
   });
 
   final String id;
@@ -46,6 +47,7 @@ class InspirationItem {
   final String? imageUrl;
   final String? description;
   final String? sourceOrderItemId;
+  final String? profileImage;
 
   double get total => ingredients.fold(
         0,
@@ -60,6 +62,7 @@ class InspirationItem {
       imageUrl: row['image_snapshot'] as String?,
       description: row['description'] as String?,
       sourceOrderItemId: row['source_order_item_id'] as String?,
+      profileImage: row['profile_image'] as String?,
       createdAt: DateTime.tryParse(row['created_at'] as String? ?? '') ??
           DateTime.now(),
       ingredients: raw is List
@@ -82,6 +85,7 @@ class InspirationCandidate {
     this.imageUrl,
     this.description,
     this.orderCreatedAt,
+    this.profileImage,
   });
 
   final String orderItemId;
@@ -90,6 +94,7 @@ class InspirationCandidate {
   final String? imageUrl;
   final String? description;
   final DateTime? orderCreatedAt;
+  final String? profileImage;
 
   double get total => ingredients.fold(
         0,
