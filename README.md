@@ -219,12 +219,6 @@ Configure the required environment variables in the corresponding Vercel project
 - Validate privileged operations on the server side.
 - Never expose `service_role` keys or `sb_secret_` keys in client applications.
 
-## 🖼️ Screenshots
-
-Screenshots and application previews will be added here.
-
-<!-- Add application screenshots below when available. -->
-
 ## 🗺️ Roadmap
 
 - [ ] Add the final project banner and application screenshots.
@@ -240,7 +234,7 @@ Screenshots and application previews will be added here.
   <a href="https://github.com/20Mahmoud06">
     <img src="https://img.shields.io/badge/GitHub-20Mahmoud06-181717?style=for-the-badge&logo=github" alt="GitHub Profile" />
   </a>
-  <a href="https://linktr.ee/mahmoudsafa220">
+  <a href="https://linktr.ee/ORCHID_Flowers">
     <img src="https://img.shields.io/badge/Linktree-Connect-43E55E?style=for-the-badge&logo=linktree&logoColor=white" alt="Linktree" />
   </a>
 </p>
