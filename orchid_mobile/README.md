@@ -13,15 +13,6 @@
   <img src="https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white" alt="Flutter" />
   <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
-  <img src="https://img.shields.io/badge/Platform-Android%20%7C%20iOS-6C63FF?style=for-the-badge" alt="Android and iOS" />
-</p>
-
-<p align="center">
-  <a href="#-overview">Overview</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-architecture">Architecture</a> •
-  <a href="#-getting-started">Getting Started</a>
 </p>
 
 ---
@@ -221,12 +212,6 @@ Orchid Mobile connects to backend services, so protecting data and enforcing acc
 - Keep privileged operations behind trusted server-side endpoints.
 - Validate user permissions independently of the client interface.
 - Avoid logging credentials, tokens, or sensitive user information.
-
-## 🖼️ Screenshots
-
-Application screenshots will be added here to showcase the actual mobile interface.
-
-<!-- Add screenshots of the home screen, product catalog, product details, cart, and order history here. -->
 
 ## 🌍 Part of the Orchid Platform
 
