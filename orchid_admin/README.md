@@ -19,6 +19,15 @@
 
 ---
 
+## 🔗 Live Dashboard
+
+Access the administrative dashboard here:
+**[🛠️ Orchid Admin — Live Dashboard](https://orchid-dmin.vercel.app/)**
+
+> **Note:** Access is restricted. You must have an authorized administrator account to log in and view the platform's data.
+
+---
+
 ## 🌷 Overview
 
 **Orchid Admin Dashboard** is the administrative web application within the Orchid platform. It provides an interface for authorized administrators to manage and monitor the platform's operational data.
