@@ -24,8 +24,6 @@
 Experience the platform directly in your browser:
 **[🌐 Orchid Web — Live Website](https://orchid-orchidweb.vercel.app/#/main-nav)**
 
-## 🌷 Overview
-
 ---
 
 ## 🌷 Overview
