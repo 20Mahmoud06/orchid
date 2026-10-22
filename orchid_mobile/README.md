@@ -1,4 +1,4 @@
-<p align=*center*> <img src=*assets/orchid-mobile-banner.jpg* width=***100**%* alt=*Orchid Mobile — Flower & Bouquet Shopping App* /> </p>
+<p align=*center*> <img src=*assets/orchid-mobile-banner.png* width=***100**%* alt=*Orchid Mobile — Flower & Bouquet Shopping App* /> </p>
 
 <h1 align=*center*>🌸 Orchid Mobile</h1>
 
@@ -91,7 +91,7 @@ Whether customers are looking for a beautiful bouquet, exploring floral ideas, o
 
 The application organizes its code by feature, separating presentation, state management, and data-access responsibilities where applicable.
 
-```text orchid_mobile/ ├── lib/ │   ├── core/                  # Shared utilities and configuration │   ├── features/ │   │   ├── auth/              # Authentication │   │   ├── order/             # Order-related functionality │   │   └── ...                # Other application features │   └── main.dart              # Application entry point │ ├── supabase/ │   ├── migrations/            # Database migrations │   └── functions/             # Edge Functions, if configured │ ├── assets/                    # Images, icons, and other assets ├── test/                      # Automated tests, if present ├── pubspec.yaml               # Dependencies and asset configuration └── **README**.md The tree above is a high-level illustration; exact folders may vary as the project evolves.
+text orchid_mobile/ ├── lib/ │   ├── core/                  # Shared utilities and configuration │   ├── features/ │   │   ├── auth/              # Authentication │   │   ├── order/             # Order-related functionality │   │   └── ...                # Other application features │   └── main.dart              # Application entry point │ ├── supabase/ │   ├── migrations/            # Database migrations │   └── functions/             # Edge Functions, if configured │ ├── assets/                    # Images, icons, and other assets ├── test/                      # Automated tests, if present ├── pubspec.yaml               # Dependencies and asset configuration └── **README**.md The tree above is a high-level illustration; exact folders may vary as the project evolves.
 
 ⚙️ Getting Started Prerequisites Before running Orchid Mobile, install:
 
