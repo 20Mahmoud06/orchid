@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/orchid-admin-banner.تحل" width="100%" alt="Orchid Admin Dashboard" />
+  <img src="assets/orchid-admin-banner.jpg" width="100%" alt="Orchid Admin Dashboard" />
 </p>
 
 <h1 align="center">🌸 Orchid Admin Dashboard</h1>
