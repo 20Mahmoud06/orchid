@@ -28,7 +28,7 @@ class _WebOccasionsSectionState extends State<WebOccasionsSection> {
     (key: 'anniversary', name: 'Anniversary', icon: AppAssets.anniversaryIcon),
     (key: 'apology', name: 'Apology', icon: AppAssets.apologyIcon),
     (key: 'graduation', name: 'Graduation', icon: AppAssets.graduationIcon),
-    (key: 'proposal', name: 'Just Because', icon: AppAssets.proposalIcon),
+    (key: 'proposal', name: 'Proposal', icon: AppAssets.proposalIcon),
   ];
 
   @override
