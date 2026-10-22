@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white" alt="Dart" />
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
   <img src="https://img.shields.io/badge/Platform-Flutter%20Web-6C63FF?style=for-the-badge" alt="Flutter Web" />
+  <img src="https://img.shields.io/badge/Deployment-Vercel-black?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
 ---
