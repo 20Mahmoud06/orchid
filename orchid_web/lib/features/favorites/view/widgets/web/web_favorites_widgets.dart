@@ -49,9 +49,7 @@ class WebFavoritesTabs extends StatelessWidget {
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.cardBorder
-                      : Colors.transparent,
+                  color: isSelected ? AppColors.cardBorder : Colors.transparent,
                   borderRadius: BorderRadius.circular(23),
                 ),
                 child: Text(
@@ -76,10 +74,7 @@ class WebFavoritesTabs extends StatelessWidget {
 class WebFavoritesEmptyState extends StatelessWidget {
   final String message;
 
-  const WebFavoritesEmptyState({
-    super.key,
-    required this.message,
-  });
+  const WebFavoritesEmptyState({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +82,7 @@ class WebFavoritesEmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(
-            AppAssets.flowerIcon,
-            width: 200,
-            height: 200,
-          ),
+          Image.asset(AppAssets.flowerIcon, width: 200, height: 200),
           const SizedBox(height: 16),
           CustomText(
             text: message,

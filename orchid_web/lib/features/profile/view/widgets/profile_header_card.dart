@@ -43,10 +43,7 @@ class ProfileHeaderCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(20.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
             ),
           ),
@@ -156,17 +153,11 @@ class ProfileHeaderCard extends StatelessWidget {
             right: -1.w,
             bottom: -10.h,
             child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 14.w,
-                vertical: 6.h,
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

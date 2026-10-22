@@ -8,11 +8,7 @@ class BouquetSearchBar extends StatefulWidget {
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
 
-  const BouquetSearchBar({
-    super.key,
-    this.controller,
-    this.onChanged,
-  });
+  const BouquetSearchBar({super.key, this.controller, this.onChanged});
 
   @override
   State<BouquetSearchBar> createState() => _BouquetSearchBarState();
@@ -39,22 +35,21 @@ class _BouquetSearchBarState extends State<BouquetSearchBar>
     );
 
     // Border width animation
-    _borderAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.5.w,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderAnimation = Tween<double>(begin: 0.0, end: 1.5.w).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     // Border color animation
-    _borderColorAnimation = ColorTween(
-      begin: Colors.transparent,
-      end: AppColors.selectedCategory,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderColorAnimation =
+        ColorTween(
+          begin: Colors.transparent,
+          end: AppColors.selectedCategory,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -167,21 +162,23 @@ class _BouquetSearchBarState extends State<BouquetSearchBar>
               ),
               suffixIcon: _hasText
                   ? GestureDetector(
-                onTap: _clearText,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: 1.0,
-                  child: Icon(
-                    Icons.close_rounded,
-                    size: 16.r,
-                    color: AppColors.iconColor,
-                  ),
-                ),
-              )
+                      onTap: _clearText,
+                      child: AnimatedOpacity(
+                        duration: const Duration(milliseconds: 200),
+                        opacity: 1.0,
+                        child: Icon(
+                          Icons.close_rounded,
+                          size: 16.r,
+                          color: AppColors.iconColor,
+                        ),
+                      ),
+                    )
                   : null,
               border: InputBorder.none,
-              contentPadding:
-              EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+              contentPadding: EdgeInsets.symmetric(
+                vertical: 12.h,
+                horizontal: 16.w,
+              ),
             ),
           ),
         );

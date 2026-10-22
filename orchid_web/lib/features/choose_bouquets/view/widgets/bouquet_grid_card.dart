@@ -156,11 +156,7 @@ class _QuantityControl extends StatelessWidget {
             color: AppColors.incrementButton,
             borderRadius: BorderRadius.circular(50.r), // Perfect circle
           ),
-          child: Icon(
-            Icons.add,
-            size: 18.r,
-            color: AppColors.white,
-          ),
+          child: Icon(Icons.add, size: 18.r, color: AppColors.white),
         ),
       );
     }
@@ -182,11 +178,7 @@ class _QuantityControl extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
-              child: Icon(
-                Icons.remove,
-                size: 12.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.remove, size: 12.r, color: AppColors.white),
             ),
           ),
           Padding(
@@ -203,11 +195,7 @@ class _QuantityControl extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
-              child: Icon(
-                Icons.add,
-                size: 12.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.add, size: 12.r, color: AppColors.white),
             ),
           ),
         ],

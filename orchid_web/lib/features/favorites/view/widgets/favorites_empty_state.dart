@@ -9,10 +9,7 @@ import '../../../../shared/widgets/custom_text.dart';
 class FavoritesEmptyState extends StatelessWidget {
   final String message;
 
-  const FavoritesEmptyState({
-    super.key,
-    required this.message,
-  });
+  const FavoritesEmptyState({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +17,7 @@ class FavoritesEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            AppAssets.flowerIcon,
-            width: 200.w,
-            height: 200.h,
-          ),
+          Image.asset(AppAssets.flowerIcon, width: 200.w, height: 200.h),
           CustomText(
             text: message,
             fontFamily: AppFonts.goudyOldStyle,

@@ -7,10 +7,7 @@ import 'contact_section_tile.dart';
 class ContactSection extends StatelessWidget {
   final List<ContactSectionTile> tiles;
 
-  const ContactSection({
-    super.key,
-    required this.tiles,
-  });
+  const ContactSection({super.key, required this.tiles});
 
   @override
   Widget build(BuildContext context) {

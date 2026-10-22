@@ -1,26 +1,17 @@
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:ionicons/ionicons.dart';
-import '../../../../core/constants/app_assets.dart';
+import 'package:image_picker/image_picker.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
-import '../../../../core/utils/phone_formatter.dart';
 import '../../../../core/utils/viewport.dart';
 import '../../../../core/validators/phone_validator.dart';
-import '../../../auth/cubit/auth_cubit.dart';
-import '../../../auth/view/widgets/auth_web_ui.dart';
-import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text.dart';
-import '../widgets/complete_profile_avatar.dart';
-import '../widgets/complete_profile_field.dart';
-import '../widgets/complete_profile_header.dart';
-import '../widgets/profile_form_error_text.dart';
+import '../../../auth/cubit/auth_cubit.dart';
+import '../widgets/complete_profile_mobile_view.dart';
 import '../widgets/profile_snack.dart';
-import '../widgets/web/web_profile_avatars.dart';
+import '../widgets/web/web_complete_profile_view.dart';
 
 /// Complete Your Profile Screen matching Orchid design specifications with PNG icons.
 class CompleteProfileScreen extends StatefulWidget {
@@ -289,184 +280,38 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           // used by the other auth pages. Narrow viewports keep the existing
           // Orchid mobile layout.
           if (constraints.maxWidth >= 768) {
-            return AuthWebScaffold(card: _buildWebCard());
+            return WebCompleteProfileView(
+              onPickImage: _pickProfileImage,
+              onSubmit: _isLoading ? null : _validateAndSubmit,
+              usernameController: _usernameController,
+              phoneController: _phoneController,
+              whatsappController: _whatsappController,
+              addressController: _addressController,
+              profileImage: _profileImage,
+              isLoading: _isLoading,
+              usernameError: _usernameError,
+              phoneError: _phoneError,
+              addressError: _addressError,
+              generalError: _generalError,
+            );
           }
 
-          return Scaffold(
-            body: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomAppBar(
-                      title: 'Complete Your Account',
-                      onBackPressed: _isLoading ? null : _leave,
-                      titleFontFamily: AppFonts.inriaSerif,
-                      titleFontSize: 29.sp,
-                      titleColor: AppColors.darkGreen,
-                      titleFontWeight: FontWeight.w400,
-                      padding: EdgeInsets.zero,
-                      centerWidget: const CompleteProfileHeader(),
-                    ),
-                    SizedBox(height: 50.h),
-                    // Circular Profile Image Placeholder with Camera Icon
-                    CompleteProfileAvatar(
-                      profileImage: _profileImage,
-                      onTap: _pickProfileImage,
-                    ),
-                    SizedBox(height: 50.h),
-                    CompleteProfileField(
-                      controller: _usernameController,
-                      hint: 'user name',
-                      prefixIcon: Icon(
-                        Icons.person,
-                        size: 22.r,
-                        color: AppColors.iconColor,
-                      ),
-                      errorText: _usernameError,
-                    ),
-                    SizedBox(height: 16.h),
-                    CompleteProfileField(
-                      controller: _phoneController,
-                      hint: 'phone number',
-                      prefixIcon: Icon(
-                        Icons.phone,
-                        size: 22.r,
-                        color: AppColors.iconColor,
-                      ),
-                      errorText: _phoneError,
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(11),
-                        PhoneInputFormatter(),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    CompleteProfileField(
-                      controller: _whatsappController,
-                      hint: 'whatsapp number (optional)',
-                      prefixIcon: Image.asset(
-                        AppAssets.whatsappIcon,
-                        width: 22.r,
-                        height: 22.r,
-                      ),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(11),
-                        PhoneInputFormatter(),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    CompleteProfileField(
-                      controller: _addressController,
-                      hint: 'delivery address',
-                      prefixIcon: Icon(
-                        Icons.location_on,
-                        size: 22.r,
-                        color: AppColors.iconColor,
-                      ),
-                      errorText: _addressError,
-                    ),
-                    if (_generalError != null)
-                      ProfileFormErrorText(
-                        message: _generalError!,
-                        topSpacing: 8,
-                      ),
-                    SizedBox(height: 28.h),
-                    CustomButton(
-                      label: 'Complete Account',
-                      isLoading: _isLoading,
-                      onPressed: _isLoading ? null : _validateAndSubmit,
-                    ),
-                    SizedBox(height: 24.h),
-                  ],
-                ),
-              ),
-            ),
+          return CompleteProfileMobileView(
+            onBackPressed: _isLoading ? null : _leave,
+            onPickImage: _pickProfileImage,
+            onSubmit: _isLoading ? null : _validateAndSubmit,
+            usernameController: _usernameController,
+            phoneController: _phoneController,
+            whatsappController: _whatsappController,
+            addressController: _addressController,
+            profileImage: _profileImage,
+            isLoading: _isLoading,
+            usernameError: _usernameError,
+            phoneError: _phoneError,
+            addressError: _addressError,
+            generalError: _generalError,
           );
         },
-      ),
-    );
-  }
-
-  /// Professional website "complete profile" panel (>= 768px). Mirrors the
-  /// mobile fields and validation; only the presentation differs.
-  Widget _buildWebCard() {
-    return AuthCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: WebCompleteProfileAvatar(
-              profileImage: _profileImage,
-              onTap: _pickProfileImage,
-            ),
-          ),
-          const SizedBox(height: 26),
-          const AuthHeading(
-            title: 'Complete Your Account',
-            subtitle: 'add your details to personalize your experience',
-          ),
-          const SizedBox(height: 28),
-          AuthTextField(
-            controller: _usernameController,
-            label: 'User name',
-            hint: 'user name',
-            prefixIcon: const Icon(Icons.person, size: 20),
-            errorText: _usernameError,
-          ),
-          const SizedBox(height: 18),
-          AuthTextField(
-            controller: _phoneController,
-            label: 'Phone number',
-            hint: 'phone number',
-            keyboardType: TextInputType.phone,
-            prefixIcon: const Icon(Icons.phone, size: 20),
-            errorText: _phoneError,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(11),
-              PhoneInputFormatter(),
-            ],
-          ),
-          const SizedBox(height: 18),
-          AuthTextField(
-            controller: _whatsappController,
-            label: 'WhatsApp number',
-            hint: 'whatsapp number (optional)',
-            keyboardType: TextInputType.phone,
-            prefixIcon: const Icon(
-                                Ionicons.logo_whatsapp,
-                  size: 20,
-              ),
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(11),
-              PhoneInputFormatter(),
-            ],
-          ),
-          const SizedBox(height: 18),
-          AuthTextField(
-            controller: _addressController,
-            label: 'Delivery address',
-            hint: 'delivery address',
-            prefixIcon: const Icon(Icons.location_on, size: 20),
-            errorText: _addressError,
-          ),
-          if (_generalError != null) ...[
-            const SizedBox(height: 16),
-            AuthErrorText(message: _generalError!),
-          ],
-          const SizedBox(height: 26),
-          AuthPrimaryButton(
-            label: 'Complete Account',
-            isLoading: _isLoading,
-            onPressed: _isLoading ? null : _validateAndSubmit,
-          ),
-        ],
       ),
     );
   }

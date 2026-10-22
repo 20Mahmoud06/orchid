@@ -15,10 +15,7 @@ class ResetPasswordDialog extends StatefulWidget {
   /// error can be surfaced inside the dialog.
   final Future<void> Function(String newPassword) onSubmit;
 
-  const ResetPasswordDialog({
-    super.key,
-    required this.onSubmit,
-  });
+  const ResetPasswordDialog({super.key, required this.onSubmit});
 
   @override
   State<ResetPasswordDialog> createState() => _ResetPasswordDialogState();
@@ -111,9 +108,7 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
       canPop: _canSkip,
       child: Dialog(
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         backgroundColor: Colors.white,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 420),

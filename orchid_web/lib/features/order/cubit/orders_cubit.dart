@@ -104,9 +104,6 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
   }
 
-  /// Alias for [deleteOrder] to remove a completed order from history.
-  Future<void> removeFromHistory(CustomerOrder order) => deleteOrder(order);
-
   /// Cancels every order in the list, keeping all rows in the dashboard.
   Future<void> cancelAll() async {
     if (orders.isEmpty) return;

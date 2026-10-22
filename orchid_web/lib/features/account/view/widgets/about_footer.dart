@@ -39,7 +39,10 @@ class AboutFooter extends StatelessWidget {
               )..layout();
 
               // Ensure the calculated width doesn't exceed available space
-              final titleWidth = textPainter.width.clamp(0.0, constraints.maxWidth);
+              final titleWidth = textPainter.width.clamp(
+                0.0,
+                constraints.maxWidth,
+              );
 
               return Column(
                 mainAxisSize: MainAxisSize.min,

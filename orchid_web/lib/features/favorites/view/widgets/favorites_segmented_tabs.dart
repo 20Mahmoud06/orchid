@@ -57,9 +57,7 @@ class FavoritesSegmentedTabs extends StatelessWidget {
                     color: AppColors.black,
                     fontWeight: FontWeight.w400,
                   ),
-                  child: Text(
-                    _tabs[tab]!,
-                  ),
+                  child: Text(_tabs[tab]!),
                 ),
               ),
             ),

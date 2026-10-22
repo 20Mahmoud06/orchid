@@ -55,15 +55,15 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Home renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Home renders without overflow (${entry.key})', (tester) async {
       await pumpAt(tester, entry.value, const HomeScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Home uses the desktop storefront wording on wide screens',
-      (tester) async {
+  testWidgets('Home uses the desktop storefront wording on wide screens', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const HomeScreen());
     expect(find.text('Shop by occasion'), findsOneWidget);
     expect(find.text('Popular flowers'), findsOneWidget);
@@ -71,16 +71,18 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Home keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Home keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const HomeScreen());
     expect(find.text('Build your own\nbouquet'), findsOneWidget);
     expect(find.text('Shop by occasion'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Shell shows the desktop header and hides the bottom bar',
-      (tester) async {
+  testWidgets('Shell shows the desktop header and hides the bottom bar', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const MainNavigationScreen());
     expect(find.byType(WebTopNavBar), findsOneWidget);
     expect(find.byType(CustomBottomNavigationBar), findsNothing);
@@ -94,8 +96,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Web product card never overflows with a long title',
-      (tester) async {
+  testWidgets('Web product card never overflows with a long title', (
+    tester,
+  ) async {
     await pumpAt(
       tester,
       const Size(400, 600),

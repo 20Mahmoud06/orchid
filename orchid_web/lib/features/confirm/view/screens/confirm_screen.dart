@@ -9,7 +9,7 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/user/user_profile.dart';
 import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/skeleton_image.dart';
-import '../widgets/web/web_confirm_widgets.dart';
+import '../widgets/web/confirm_web_view.dart';
 
 /// Order confirmation screen shown after a successful checkout.
 class ConfirmScreen extends StatefulWidget {
@@ -42,113 +42,14 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
         // Desktop-first web presentation (>= 768px). Narrow viewports keep the
         // untouched Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb();
+          return ConfirmWebView(
+            username: _username,
+            orderCode: _orderCode,
+            onHomePressed: _goHome,
+          );
         }
         return _buildMobile();
       },
-    );
-  }
-
-  /// Desktop-first confirmation page (>= 768px). Same colors, copy and
-  /// behaviour as the mobile screen — the home shortcut pinned top-right and
-  /// the confirmation split in two columns: the completed illustration on the
-  /// left, the message and order code on the right.
-  Widget _buildWeb() {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 36, 40, 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  WebConfirmHeader(onHomePressed: _goHome),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Center(
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 960),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SkeletonImage(
-                                path: AppAssets.completed,
-                                width: 300,
-                                fit: BoxFit.contain,
-                                placeholderSize: const Size(300, 300),
-                                errorWidget: const SkeletonFallbackBox(),
-                              ),
-                              const SizedBox(width: 56),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const CustomText(
-                                      text: 'ORDER CONFIRMED !',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      textColor: AppColors.primary,
-                                    ),
-                                    const SizedBox(height: 16),
-                                    CustomText(
-                                      text: 'Thank you, $_username !',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      textColor: AppColors.black,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    CustomText(
-                                      text:
-                                          'your bouquet has been confirmed successfully',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 16,
-                                      textColor: AppColors.black.withValues(
-                                        alpha: 0.7,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
-                                    WebConfirmOrderCodeCard(
-                                      orderCode: _orderCode,
-                                    ),
-                                    const SizedBox(height: 28),
-                                    const CustomText(
-                                      text:
-                                          'You Will Receive a WhatsApp\nMessage When Your Order is on\nits way',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 22,
-                                      textColor: AppColors.primary,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    const SizedBox(height: 20),
-                                    const CustomText(
-                                      text: 'Thank you for choosing ORCHID',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      textColor: AppColors.thanksText,
-                                    ),
-                                    const SizedBox(height: 20),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 

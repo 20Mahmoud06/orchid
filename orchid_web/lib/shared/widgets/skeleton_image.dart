@@ -160,9 +160,8 @@ class _SkeletonImageState extends State<SkeletonImage> {
     _listener = null;
   }
 
-  void _onImage(ImageInfo image, bool synchronousCall) => _applyStatus(
-        _SkeletonImageStatus.loaded,
-      );
+  void _onImage(ImageInfo image, bool synchronousCall) =>
+      _applyStatus(_SkeletonImageStatus.loaded);
 
   void _onError(Object error, StackTrace? stackTrace) =>
       _applyStatus(_SkeletonImageStatus.error);
@@ -251,7 +250,9 @@ class _SkeletonImageState extends State<SkeletonImage> {
       widget.width ??
           (constraints.hasBoundedWidth ? constraints.maxWidth : fallback.width),
       widget.height ??
-          (constraints.hasBoundedHeight ? constraints.maxHeight : fallback.height),
+          (constraints.hasBoundedHeight
+              ? constraints.maxHeight
+              : fallback.height),
     );
   }
 }

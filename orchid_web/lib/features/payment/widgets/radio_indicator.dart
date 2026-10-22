@@ -27,18 +27,18 @@ class RadioIndicator extends StatelessWidget {
       ),
       child: isSelected
           ? Center(
-        child: Transform.scale(
-          scale: scaleAnimation.value,
-          child: Container(
-            width: 10.r,
-            height: 10.r,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.black,
-            ),
-          ),
-        ),
-      )
+              child: Transform.scale(
+                scale: scaleAnimation.value,
+                child: Container(
+                  width: 10.r,
+                  height: 10.r,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+            )
           : null,
     );
   }

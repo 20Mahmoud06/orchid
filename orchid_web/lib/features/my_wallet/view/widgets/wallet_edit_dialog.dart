@@ -33,9 +33,7 @@ class WalletEditDialog extends StatelessWidget {
     final controller = TextEditingController(text: initialValue);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.r),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
       backgroundColor: AppColors.background,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
@@ -141,7 +139,8 @@ class WalletEditDialog extends StatelessWidget {
                     height: 48.h,
                     borderRadius: BorderRadius.circular(12.r),
                     boxShadow: const [],
-                    onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+                    onPressed: () =>
+                        Navigator.of(context).pop(controller.text.trim()),
                   ),
                 ),
               ],

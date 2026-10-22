@@ -1,6 +1,7 @@
 import 'package:ORCHID/features/add_message/view/screens/add_message_screen.dart';
 import 'package:ORCHID/features/add_message/view/widgets/add_message_header.dart';
-import 'package:ORCHID/features/add_message/view/widgets/web/web_add_message_widgets.dart';
+import 'package:ORCHID/features/add_message/view/widgets/web/web_add_message_header.dart';
+import 'package:ORCHID/features/add_message/view/widgets/web/web_message_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -51,15 +52,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Add Message renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Add Message renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const AddMessageScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Add Message uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Add Message uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const AddMessageScreen());
     expect(find.byType(WebAddMessageHeader), findsOneWidget);
     expect(find.byType(AddMessageHeader), findsNothing);
@@ -70,8 +73,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Add Message keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Add Message keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const AddMessageScreen());
     expect(find.byType(WebAddMessageHeader), findsNothing);
     expect(find.byType(AddMessageHeader), findsOneWidget);

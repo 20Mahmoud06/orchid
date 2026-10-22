@@ -60,16 +60,18 @@ void main() {
 
   for (final screen in screens.entries) {
     for (final entry in breakpoints.entries) {
-      testWidgets('${screen.key} renders without overflow (${entry.key})',
-          (tester) async {
+      testWidgets('${screen.key} renders without overflow (${entry.key})', (
+        tester,
+      ) async {
         await pumpAt(tester, entry.value, screen.value);
         expect(tester.takeException(), isNull);
       });
     }
   }
 
-  testWidgets('About uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('About uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const AboutScreen());
     expect(find.byType(AccountWebScaffold), findsOneWidget);
     expect(find.text('about app'), findsOneWidget);
@@ -81,8 +83,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Privacy uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Privacy uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const PrivacyPolicyScreen());
     expect(find.byType(AccountWebScaffold), findsOneWidget);
     expect(find.text('privacy policy'), findsOneWidget);
@@ -94,8 +97,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Terms uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Terms uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const TermsConditionsScreen());
     expect(find.byType(AccountWebScaffold), findsOneWidget);
     expect(find.text('terms & conditions'), findsOneWidget);
@@ -107,8 +111,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Account pages keep the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Account pages keep the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const AboutScreen());
     expect(find.byType(AccountWebScaffold), findsNothing);
     expect(find.text('about app'), findsOneWidget);

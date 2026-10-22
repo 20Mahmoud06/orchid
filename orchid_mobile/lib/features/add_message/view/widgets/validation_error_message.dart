@@ -7,10 +7,7 @@ import '../../../../shared/widgets/custom_text.dart';
 class ValidationErrorMessage extends StatelessWidget {
   final String message;
 
-  const ValidationErrorMessage({
-    super.key,
-    required this.message,
-  });
+  const ValidationErrorMessage({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {

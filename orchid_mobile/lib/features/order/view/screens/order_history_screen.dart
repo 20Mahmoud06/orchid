@@ -4,31 +4,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../../../../core/app_keys.dart';
-import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text.dart';
-import '../../../../shared/widgets/flower_category_tabs.dart';
 import '../../../../shared/widgets/fade_slide_in.dart';
+import '../../../../shared/widgets/flower_category_tabs.dart';
 import '../../../../shared/widgets/slider_direction.dart';
-import '../../../../shared/widgets/catalog_error_view.dart';
 import '../../cubit/orders_cubit.dart';
 import '../../cubit/orders_state.dart';
 import '../../models/customer_order.dart';
-import '../widgets/order_empty_state.dart';
-import '../widgets/order_history_card.dart';
+import '../widgets/order_history_dialogs.dart';
+import '../widgets/order_history_list.dart';
 
 /// Live history of the signed-in customer's orders.
 class OrderHistoryScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
 
-  const OrderHistoryScreen({
-    super.key,
-    this.onBackPressed,
-  });
+  const OrderHistoryScreen({super.key, this.onBackPressed});
 
   @override
   State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
@@ -44,32 +36,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   static const SlideDirection _direction = SlideDirection.leftToRight;
 
   static const _tabs = <String>['All', 'Preparing', 'Completed', 'Canceled'];
-
-  List<CustomerOrder> _filterOrders(List<CustomerOrder> orders) {
-    switch (_selectedTabIndex) {
-      case 1:
-        return orders.where((o) => o.status == 'PREPARING').toList();
-      case 2:
-        return orders.where((o) => o.status == 'COMPLETED').toList();
-      case 3:
-        return orders.where((o) => o.status == 'CANCELED').toList();
-      default:
-        return orders;
-    }
-  }
-
-  String get _emptyMessage {
-    switch (_selectedTabIndex) {
-      case 1:
-        return 'no preparing orders yet';
-      case 2:
-        return 'no completed orders yet';
-      case 3:
-        return 'no canceled orders yet';
-      default:
-        return 'no orders yet';
-    }
-  }
 
   @override
   void initState() {
@@ -102,95 +68,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   /// or removes it from history if completed.
   Future<void> _confirmCancelOrder(CustomerOrder order) async {
     final isCompleted = order.status.toUpperCase() == 'COMPLETED';
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          backgroundColor: AppColors.background,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 64.r,
-                  height: 64.r,
-                  decoration: BoxDecoration(
-                    color: AppColors.textFieldPink,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isCompleted
-                        ? Ionicons.trash
-                        : Ionicons.close_circle_outline,
-                    size: 32.r,
-                    color: AppColors.redText,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                CustomText(
-                  text: isCompleted
-                      ? 'Remove from history?'
-                      : 'Cancel this order?',
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w700,
-                  textColor: AppColors.black,
-                ),
-                SizedBox(height: 12.h),
-                CustomText(
-                  text: isCompleted
-                      ? 'Are you sure you want to remove this order from your history?'
-                      : 'Are you sure you want to cancel this order? It stays in your account marked as canceled.',
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 14.sp,
-                  textColor: AppColors.textPrimary,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomButton(
-                        label: 'KEEP',
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        textColor: AppColors.black,
-                        backgroundColor: AppColors.white,
-                        height: 48.h,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: const [],
-                        onPressed: () => Navigator.of(ctx).pop(false),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: CustomButton(
-                        label: isCompleted
-                            ? 'REMOVE FROM HISTORY'
-                            : 'CANCEL ORDER',
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: isCompleted ? 12.sp : 16.sp,
-                        fontWeight: FontWeight.bold,
-                        textColor: AppColors.white,
-                        backgroundColor: AppColors.canceledText,
-                        height: 48.h,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: const [],
-                        onPressed: () => Navigator.of(ctx).pop(true),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+    final confirmed = await showCancelOrderDialog(
+      context,
+      isCompleted: isCompleted,
     );
 
     if (confirmed != true || !mounted) return;
@@ -222,89 +102,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   }
 
   Future<void> _confirmCancelAll() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          backgroundColor: AppColors.background,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 64.r,
-                  height: 64.r,
-                  decoration: BoxDecoration(
-                    color: AppColors.textFieldPink,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Ionicons.trash,
-                    size: 32.r,
-                    color: AppColors.redText,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                CustomText(
-                  text: 'Cancel all orders?',
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w700,
-                  textColor: AppColors.black,
-                ),
-                SizedBox(height: 12.h),
-                CustomText(
-                  text:
-                      'All your orders will be marked as canceled. They stay in your account and in the dashboard.',
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 14.sp,
-                  textColor: AppColors.textPrimary,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 24.h),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomButton(
-                        label: 'KEEP',
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        textColor: AppColors.black,
-                        backgroundColor: AppColors.white,
-                        height: 48.h,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: const [],
-                        onPressed: () => Navigator.of(ctx).pop(false),
-                      ),
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: CustomButton(
-                        label: 'CANCEL ALL',
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        textColor: AppColors.white,
-                        backgroundColor: AppColors.canceledText,
-                        height: 48.h,
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: const [],
-                        onPressed: () => Navigator.of(ctx).pop(true),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    final confirmed = await showCancelAllOrdersDialog(context);
 
     if (confirmed == true && mounted) {
       try {
@@ -376,48 +174,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 animation: _animFor(2),
                 direction: _direction,
                 distance: _slideDistance,
-                child: BlocBuilder<OrdersCubit, OrdersState>(
-                  bloc: OrdersCubit.instance,
-                  builder: (context, state) {
-                    final controller = OrdersCubit.instance;
-                    if (controller.isLoading && !controller.isLoaded) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (controller.error != null && !controller.isLoaded) {
-                      return CatalogErrorView(
-                        message: 'Could not load your orders',
-                        onRetry: () => controller.load(force: true),
-                      );
-                    }
-                    final filtered = _filterOrders(controller.orders);
-                    if (filtered.isEmpty) {
-                      return OrderEmptyState(message: _emptyMessage);
-                    }
-                    return RefreshIndicator(
-                      onRefresh: () => controller.load(force: true),
-                      child: ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
-                        itemCount: filtered.length,
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 16.h),
-                        itemBuilder: (context, index) {
-                          final order = filtered[index];
-                          return OrderHistoryCard(
-                            title: order.title,
-                            orderId: order.displayCode,
-                            date: _formatDate(order.createdAt),
-                            price: order.total,
-                            status: order.status,
-                            image: order.coverImageUrl ??
-                                AppAssets.bouquetTest,
-                            onTap: () => _openDetails(order),
-                            onRemove: () => _confirmCancelOrder(order),
-                          );
-                        },
-                      ),
-                    );
-                  },
+                child: OrderHistoryList(
+                  selectedTabIndex: _selectedTabIndex,
+                  onOpenDetails: _openDetails,
+                  onRemove: _confirmCancelOrder,
                 ),
               ),
             ),
@@ -426,22 +186,4 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       ),
     );
   }
-
-  static const _months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-
-  String _formatDate(DateTime date) =>
-      '${date.day} ${_months[date.month - 1]} ${date.year}';
 }

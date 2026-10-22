@@ -38,10 +38,7 @@ class OrderSummaryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
               child: Padding(
                 padding: EdgeInsets.fromLTRB(38.w, 16.h, 16.w, 16.h),
@@ -99,10 +96,7 @@ class OrderSummaryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(16.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.r)),

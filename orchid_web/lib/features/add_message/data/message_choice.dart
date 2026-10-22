@@ -1,4 +1,1 @@
-enum MessageChoice {
-  yes,
-  no,
-}
+enum MessageChoice { yes, no }

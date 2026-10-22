@@ -1,17 +1,19 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/utils/phone_formatter.dart';
-import '../../../../core/validators/phone_validator.dart';
 import '../../../auth/cubit/auth_cubit.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text.dart';
+import '../../cubit/complete_profile_cubit.dart';
+import '../../cubit/complete_profile_state.dart';
 import '../widgets/complete_profile_avatar.dart';
 import '../widgets/complete_profile_field.dart';
 import '../widgets/complete_profile_header.dart';
@@ -44,13 +46,11 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final _auth = AuthCubit.instance;
+  late final CompleteProfileCubit _completeProfileCubit = CompleteProfileCubit(
+    _auth,
+  );
 
   XFile? _profileImage;
-  bool _isLoading = false;
-  String? _usernameError;
-  String? _phoneError;
-  String? _addressError;
-  String? _generalError;
 
   @override
   void dispose() {
@@ -58,11 +58,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     _phoneController.dispose();
     _whatsappController.dispose();
     _addressController.dispose();
+    _completeProfileCubit.close();
     super.dispose();
   }
 
   Future<void> _pickProfileImage() async {
-    if (_isLoading) return;
+    if (_completeProfileCubit.state.isLoading) return;
 
     try {
       final picked = await ImagePicker().pickImage(
@@ -84,117 +85,12 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   }
 
   void _validateAndSubmit() {
-    setState(() {
-      _usernameError = null;
-      _phoneError = null;
-      _addressError = null;
-      _generalError = null;
-    });
-
-    final username = _usernameController.text.trim();
-    final phone = _phoneController.text.trim();
-    final address = _addressController.text.trim();
-
-    // Validate username.
-    if (username.isEmpty) {
-      setState(() => _usernameError = 'please enter your username');
-      return;
-    }
-
-    // Validate phone.
-    final phoneErr = PhoneValidator.validateEgyptianPhone(phone);
-    if (phoneErr != null) {
-      setState(() => _phoneError = phoneErr);
-      return;
-    }
-
-    // Validate address.
-    if (address.isEmpty) {
-      setState(() => _addressError = 'please enter your delivery address');
-      return;
-    }
-
-    _performCompleteProfile(
-      username: username,
-      phone: phone,
+    _completeProfileCubit.submit(
+      username: _usernameController.text.trim(),
+      phone: _phoneController.text.trim(),
       whatsapp: _whatsappController.text.trim(),
-      address: address,
-    );
-  }
-
-  Future<void> _performCompleteProfile({
-    required String username,
-    required String phone,
-    String? whatsapp,
-    required String address,
-  }) async {
-    if (_isLoading) return;
-
-    setState(() => _isLoading = true);
-    _generalError = null;
-
-    String? profileImagePath;
-    try {
-      // Upload the profile picture first (optional).
-      if (_profileImage != null) {
-        final bytes = await _profileImage!.readAsBytes();
-        profileImagePath = await _auth.uploadProfileImage(
-          bytes: bytes,
-          contentType: _contentTypeFor(_profileImage!),
-        );
-      }
-
-      final result = await _auth.completeProfile(
-        username: username,
-        phone: phone,
-        whatsapp: whatsapp,
-        address: address,
-        profileImagePath: profileImagePath,
-      );
-
-      if (!mounted) return;
-
-      switch (result) {
-        case CompleteProfileSuccess():
-          await _handleProfileSuccess();
-          break;
-        case CompleteProfileFailure():
-          // The save failed after the image was uploaded — clean up the orphan.
-          if (profileImagePath != null) {
-            await _auth.deleteProfileImage(profileImagePath);
-          }
-          if (!mounted) return;
-          setState(() => _generalError = result.message);
-          break;
-      }
-    } catch (error) {
-      // Clean up the orphaned upload before surfacing the error.
-      if (profileImagePath != null) {
-        await _auth.deleteProfileImage(profileImagePath);
-      }
-      if (!mounted) return;
-      setState(() {
-        _generalError = error is String
-            ? error
-            : 'failed to save your profile, please try again';
-      });
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  /// Handles what happens after the profile row is saved successfully.
-  /// Both a fresh sign-up and an existing registered user land on the main
-  /// navigation afterwards. The user is NEVER forced back to the login screen
-  /// or signed out here: they just completed their profile and the session is
-  /// still valid, so dropping them into a re-login is both redundant and
-  /// confusing.
-  Future<void> _handleProfileSuccess() async {
-    if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      AppRoutes.mainNav,
-      (route) => false,
+      address: _addressController.text.trim(),
+      profileImage: _profileImage,
     );
   }
 
@@ -202,7 +98,7 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
   /// (which it always is after signup/login/splash) and offers a clean way out:
   /// confirm, sign out and return to login.
   Future<void> _leave() async {
-    if (_isLoading) return;
+    if (_completeProfileCubit.state.isLoading) return;
     final shouldLogout = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
@@ -219,7 +115,8 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
           textColor: AppColors.darkGreen,
         ),
         content: const CustomText(
-          text: "your profile isn't complete yet.\n"
+          text:
+              "your profile isn't complete yet.\n"
               'logging out now means you will need to complete it '
               'after logging back in.',
           fontFamily: AppFonts.inriaSerif,
@@ -253,119 +150,122 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
     await _auth.logout();
     if (!mounted) return;
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
-  }
-
-  String _contentTypeFor(XFile file) {
-    final name = file.name.toLowerCase();
-    if (name.endsWith('.png')) return 'image/png';
-    if (name.endsWith('.webp')) return 'image/webp';
-    if (name.endsWith('.gif')) return 'image/gif';
-    return 'image/jpeg';
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) return;
-        _leave();
+    return BlocConsumer<CompleteProfileCubit, CompleteProfileState>(
+      bloc: _completeProfileCubit,
+      listener: (context, state) {
+        if (state.isSuccess) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.mainNav,
+            (route) => false,
+          );
+        }
       },
-      child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomAppBar(
-                  title: 'Complete Your Account',
-                  onBackPressed: _isLoading ? null : _leave,
-                  titleFontFamily: AppFonts.inriaSerif,
-                  titleFontSize: 29.sp,
-                  titleColor: AppColors.darkGreen,
-                  titleFontWeight: FontWeight.w400,
-                  padding: EdgeInsets.zero,
-                  centerWidget: const CompleteProfileHeader(),
-                ),
-                SizedBox(height: 50.h),
-                // Circular Profile Image Placeholder with Camera Icon
-                CompleteProfileAvatar(
-                  profileImage: _profileImage,
-                  onTap: _pickProfileImage,
-                ),
-                SizedBox(height: 50.h),
-                CompleteProfileField(
-                  controller: _usernameController,
-                  hint: 'user name',
-                  prefixIcon: Icon(
-                    Icons.person,
-                    size: 22.r,
-                    color: AppColors.iconColor,
+      builder: (context, state) => PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) return;
+          _leave();
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomAppBar(
+                    title: 'Complete Your Account',
+                    onBackPressed: state.isLoading ? null : _leave,
+                    titleFontFamily: AppFonts.inriaSerif,
+                    titleFontSize: 29.sp,
+                    titleColor: AppColors.darkGreen,
+                    titleFontWeight: FontWeight.w400,
+                    padding: EdgeInsets.zero,
+                    centerWidget: const CompleteProfileHeader(),
                   ),
-                  errorText: _usernameError,
-                ),
-                SizedBox(height: 16.h),
-                CompleteProfileField(
-                  controller: _phoneController,
-                  hint: 'phone number',
-                  prefixIcon: Icon(
-                    Icons.phone,
-                    size: 22.r,
-                    color: AppColors.iconColor,
+                  SizedBox(height: 50.h),
+                  // Circular Profile Image Placeholder with Camera Icon
+                  CompleteProfileAvatar(
+                    profileImage: _profileImage,
+                    onTap: _pickProfileImage,
                   ),
-                  errorText: _phoneError,
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(11),
-                    PhoneInputFormatter(),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                CompleteProfileField(
-                  controller: _whatsappController,
-                  hint: 'whatsapp number (optional)',
-                  prefixIcon: Image.asset(
-                    AppAssets.whatsappIcon,
-                    width: 22.r,
-                    height: 22.r,
+                  SizedBox(height: 50.h),
+                  CompleteProfileField(
+                    controller: _usernameController,
+                    hint: 'user name',
+                    prefixIcon: Icon(
+                      Icons.person,
+                      size: 22.r,
+                      color: AppColors.iconColor,
+                    ),
+                    errorText: state.usernameError,
                   ),
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(11),
-                    PhoneInputFormatter(),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-                CompleteProfileField(
-                  controller: _addressController,
-                  hint: 'delivery address',
-                  prefixIcon: Icon(
-                    Icons.location_on,
-                    size: 22.r,
-                    color: AppColors.iconColor,
+                  SizedBox(height: 16.h),
+                  CompleteProfileField(
+                    controller: _phoneController,
+                    hint: 'phone number',
+                    prefixIcon: Icon(
+                      Icons.phone,
+                      size: 22.r,
+                      color: AppColors.iconColor,
+                    ),
+                    errorText: state.phoneError,
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(11),
+                      PhoneInputFormatter(),
+                    ],
                   ),
-                  errorText: _addressError,
-                ),
-                if (_generalError != null)
-                  ProfileFormErrorText(
-                    message: _generalError!,
-                    topSpacing: 8,
+                  SizedBox(height: 16.h),
+                  CompleteProfileField(
+                    controller: _whatsappController,
+                    hint: 'whatsapp number (optional)',
+                    prefixIcon: Image.asset(
+                      AppAssets.whatsappIcon,
+                      width: 22.r,
+                      height: 22.r,
+                    ),
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(11),
+                      PhoneInputFormatter(),
+                    ],
                   ),
-                SizedBox(height: 28.h),
-                CustomButton(
-                  label: 'Complete Account',
-                  isLoading: _isLoading,
-                  onPressed: _isLoading ? null : _validateAndSubmit,
-                ),
-                SizedBox(height: 24.h),
-              ],
+                  SizedBox(height: 16.h),
+                  CompleteProfileField(
+                    controller: _addressController,
+                    hint: 'delivery address',
+                    prefixIcon: Icon(
+                      Icons.location_on,
+                      size: 22.r,
+                      color: AppColors.iconColor,
+                    ),
+                    errorText: state.addressError,
+                  ),
+                  if (state.generalError != null)
+                    ProfileFormErrorText(
+                      message: state.generalError!,
+                      topSpacing: 8,
+                    ),
+                  SizedBox(height: 28.h),
+                  CustomButton(
+                    label: 'Complete Account',
+                    isLoading: state.isLoading,
+                    onPressed: state.isLoading ? null : _validateAndSubmit,
+                  ),
+                  SizedBox(height: 24.h),
+                ],
+              ),
             ),
           ),
         ),

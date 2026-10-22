@@ -37,8 +37,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   void _persist(List<CartItem> items) {
-    AppPrefs.instance
-        .saveString(AppPrefKeys.cartItems, jsonEncode(items));
+    AppPrefs.instance.saveString(AppPrefKeys.cartItems, jsonEncode(items));
   }
 
   void _emit(List<CartItem> items) {

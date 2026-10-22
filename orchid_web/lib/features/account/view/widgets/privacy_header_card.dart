@@ -29,7 +29,8 @@ class PrivacyHeaderCard extends StatelessWidget {
           ),
           SizedBox(height: 6.h),
           CustomText(
-            text: 'We care about how your information\nis collected, used and protected.',
+            text:
+                'We care about how your information\nis collected, used and protected.',
             fontFamily: AppFonts.goudyOldStyle,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,

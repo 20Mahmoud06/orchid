@@ -35,11 +35,7 @@ class QuantityStepper extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.all(4.r),
-              child: Icon(
-                Icons.remove,
-                size: 16.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.remove, size: 16.r, color: AppColors.white),
             ),
           ),
           SizedBox(width: 8.w),
@@ -56,11 +52,7 @@ class QuantityStepper extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.all(4.r),
-              child: Icon(
-                Icons.add,
-                size: 16.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.add, size: 16.r, color: AppColors.white),
             ),
           ),
         ],

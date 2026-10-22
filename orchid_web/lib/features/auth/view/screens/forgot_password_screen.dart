@@ -14,6 +14,7 @@ import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/orchid_brand_widget.dart';
 import '../widgets/auth_web_ui.dart';
 import '../widgets/reset_password_dialog.dart';
+import '../widgets/web/forgot_password_web_card.dart';
 import '../../cubit/auth_cubit.dart';
 
 /// Route arguments for [ForgotPasswordScreen].
@@ -106,8 +107,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (error) {
       if (!mounted) return;
       setState(() => _isSending = false);
-      _showMessage(error is String ? error : AppStrings.networkError,
-          isError: true);
+      _showMessage(
+        error is String ? error : AppStrings.networkError,
+        isError: true,
+      );
     }
   }
 
@@ -133,10 +136,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     _showMessage(
       'password updated successfully, please login with your new password',
     );
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
+    Navigator.of(
+      context,
+    ).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   void _showMessage(String message, {bool isError = false}) {
@@ -227,12 +229,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             // panel matching Login/Sign-up. Narrow viewports keep the Orchid
             // mobile layout.
             if (constraints.maxWidth >= 768) {
-              return AuthWebScaffold(card: _buildWebCard());
+              return AuthWebScaffold(
+                card: ForgotPasswordWebCard(
+                  isRecoveryMode: _isRecoveryMode,
+                  emailController: _emailController,
+                  emailError: _emailError,
+                  isSending: _isSending,
+                  onEmailChanged: () {
+                    if (_emailError != null) {
+                      setState(() => _emailError = null);
+                    }
+                  },
+                  onResetPassword: _openResetPasswordDialog,
+                  onSendResetLink: _sendResetLink,
+                ),
+              );
             }
 
             return SingleChildScrollView(
-              padding:
-                  EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 520),
@@ -254,54 +269,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             );
           },
         ),
-      ),
-    );
-  }
-
-  /// Professional website forgot-password / recovery panel (>= 768px).
-  Widget _buildWebCard() {
-    return AuthCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AuthHeading(
-            title: _isRecoveryMode
-                ? 'Create New Password'
-                : 'Forgot Password?',
-            subtitle: _isRecoveryMode
-                ? 'enter your new password and confirm it below'
-                : "enter your email address and we'll send you a link to "
-                    'reset your password',
-          ),
-          const SizedBox(height: 28),
-          if (_isRecoveryMode)
-            AuthPrimaryButton(
-              label: 'Reset Password',
-              onPressed: _openResetPasswordDialog,
-            )
-          else ...[
-            AuthTextField(
-              controller: _emailController,
-              label: 'Email address',
-              hint: 'email address',
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              errorText: _emailError,
-              onChanged: (_) {
-                if (_emailError != null) {
-                  setState(() => _emailError = null);
-                }
-              },
-              onSubmitted: (_) => _sendResetLink(),
-            ),
-            const SizedBox(height: 24),
-            AuthPrimaryButton(
-              label: 'Send Reset Link',
-              isLoading: _isSending,
-              onPressed: _sendResetLink,
-            ),
-          ],
-        ],
       ),
     );
   }

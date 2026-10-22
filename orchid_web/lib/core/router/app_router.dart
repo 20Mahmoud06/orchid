@@ -1,11 +1,9 @@
 import 'package:ORCHID/features/my_bank_cart/view/screens/my_bank_cart_screen.dart';
 import 'package:ORCHID/features/my_wallet/view/screens/my_wallet_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../features/auth/view/screens/forgot_password_screen.dart';
 import '../../features/auth/view/screens/login_screen.dart';
 import '../../features/auth/view/screens/sign_up_screen.dart';
-import '../../features/auth/view/screens/splash_screen.dart';
 import '../../features/auth/view/screens/web_startup_gate.dart';
 import '../../features/payment/view/screens/payment_screen.dart';
 import '../../features/profile/view/screens/complete_profile_screen.dart';
@@ -36,13 +34,11 @@ abstract class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case AppRoutes.splash:
-        // The splash is a mobile startup animation; on the web the startup gate
-        // resolves the remembered session and routes straight to the right
+        // Resolve the remembered session and route straight to the right
         // screen (login / home / complete profile).
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) =>
-              kIsWeb ? const WebStartupGate() : const SplashScreen(),
+          builder: (_) => const WebStartupGate(),
         );
 
       case AppRoutes.login:

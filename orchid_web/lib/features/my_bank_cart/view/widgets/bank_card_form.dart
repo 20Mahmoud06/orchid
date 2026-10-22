@@ -5,11 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import 'bank_card_input_decoration.dart';
 
 class BankCardForm extends StatefulWidget {
-  const BankCardForm({
-    super.key,
-    this.onChanged,
-    this.formKey,
-  });
+  const BankCardForm({super.key, this.onChanged, this.formKey});
 
   final void Function(CreditCardModel creditCardModel)? onChanged;
 

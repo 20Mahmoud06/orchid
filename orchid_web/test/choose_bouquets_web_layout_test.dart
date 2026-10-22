@@ -52,15 +52,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Choose Bouquets renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Choose Bouquets renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const ChooseBouquetScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Choose Bouquets uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Choose Bouquets uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const ChooseBouquetScreen());
     expect(find.byType(WebFlowerSearchBar), findsOneWidget);
     expect(find.byType(WebFlowerCategoryTabs), findsOneWidget);
@@ -69,8 +71,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Choose Bouquets keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Choose Bouquets keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const ChooseBouquetScreen());
     expect(find.byType(WebFlowerSearchBar), findsNothing);
     expect(find.byType(WebFlowerCategoryTabs), findsNothing);
@@ -78,8 +81,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Web bouquet card never overflows with a long title',
-      (tester) async {
+  testWidgets('Web bouquet card never overflows with a long title', (
+    tester,
+  ) async {
     await pumpAt(
       tester,
       const Size(400, 600),

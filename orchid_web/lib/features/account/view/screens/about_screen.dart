@@ -10,7 +10,7 @@ import '../../../../shared/widgets/orchid_brand_widget.dart';
 import '../../../../shared/widgets/slider_direction.dart';
 import '../widgets/about_footer.dart';
 import '../widgets/about_info_row.dart';
-import '../widgets/web/web_account_widgets.dart';
+import '../widgets/web/about_web_view.dart';
 
 class AboutScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
@@ -64,90 +64,14 @@ class _AboutScreenState extends State<AboutScreen>
         // in a centered reading column. Narrow viewports keep the untouched
         // Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb();
+          return AboutWebView(
+            animationFor: _animFor,
+            direction: _direction,
+            slideDistance: _slideDistance,
+          );
         }
         return _buildMobile();
       },
-    );
-  }
-
-  /// Entrance helper mirroring the mobile stagger for a single web section.
-  Widget _webSlide(int index, Widget child) => FadeSlideIn(
-    animation: _animFor(index),
-    direction: _direction,
-    distance: _slideDistance,
-    child: child,
-  );
-
-  /// Desktop-first "about app" page (>= 768px). Same colors, copy and content
-  /// as the mobile screen — only the layout differs.
-  Widget _buildWeb() {
-    return AccountWebScaffold(
-      title: 'about app',
-      titleAnimation: _animFor(0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _webSlide(1, const Center(child: WebOrchidBrand())),
-          const SizedBox(height: 12),
-          _webSlide(
-            2,
-            const Text(
-              'a special flower shop app made with\nlove for flower lovers.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                color: AppColors.darkGreen,
-              ),
-            ),
-          ),
-          const SizedBox(height: 28),
-          _webSlide(
-            3,
-            const AccountWebCardGrid(
-              children: [
-                WebAboutInfoRow(
-                  iconAsset: AppAssets.appNameIcon,
-                  label: 'App Name',
-                  value: 'ORCHID',
-                ),
-                WebAboutInfoRow(
-                  iconAsset: AppAssets.versionIcon,
-                  label: 'Version',
-                  value: '1.0.0',
-                ),
-                WebAboutInfoRow(
-                  iconAsset: AppAssets.lastUpdatedIcon,
-                  label: 'Last Updated',
-                  value: 'Sep 2026',
-                ),
-                WebAboutInfoRow(
-                  iconAsset: AppAssets.developerIcon,
-                  label: 'Developer',
-                  value: 'ORCHID team',
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
-          _webSlide(4, const WebAboutFooter()),
-          const SizedBox(height: 24),
-          _webSlide(
-            5,
-            Center(
-              child: Image.asset(
-                AppAssets.coloredFlowerIcon,
-                width: 40,
-                height: 40,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 

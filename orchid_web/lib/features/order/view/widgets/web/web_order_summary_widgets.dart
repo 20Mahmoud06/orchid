@@ -144,9 +144,9 @@ class WebSummaryItem extends StatelessWidget {
     this.subtitle,
     required this.trailing,
   }) : assert(
-          leading != null || iconPath != null,
-          'Either leading or iconPath must be provided',
-        );
+         leading != null || iconPath != null,
+         'Either leading or iconPath must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +160,8 @@ class WebSummaryItem extends StatelessWidget {
           SizedBox(
             height: titleLineHeight,
             child: Center(
-              child: leading ??
+              child:
+                  leading ??
                   Image.asset(
                     iconPath!,
                     width: iconSize,
@@ -204,36 +205,6 @@ class WebSummaryItem extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// "TOTAL" row with the order grand total.
-class WebTotalRow extends StatelessWidget {
-  final int total;
-
-  const WebTotalRow({super.key, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        const CustomText(
-          text: 'TOTAL',
-          fontFamily: AppFonts.goudyOldStyle,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          textColor: AppColors.black,
-        ),
-        CustomText(
-          text: '$total EGP',
-          fontFamily: AppFonts.goudyOldStyle,
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
-          textColor: AppColors.black,
-        ),
-      ],
     );
   }
 }

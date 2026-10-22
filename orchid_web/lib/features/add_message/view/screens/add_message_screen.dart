@@ -14,7 +14,7 @@ import '../widgets/message_empty_placeholder.dart';
 import '../widgets/message_input_field.dart';
 import '../widgets/message_option_cards.dart';
 import '../widgets/validation_error_message.dart';
-import '../widgets/web/web_add_message_widgets.dart';
+import '../widgets/web/add_message_web_view.dart';
 
 /// Add a message screen matching the Orchid Figma design.
 class AddMessageScreen extends StatefulWidget {
@@ -127,93 +127,26 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
         // Desktop-first web presentation (>= 768px). Narrow viewports keep the
         // untouched Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb(context);
+          return AddMessageWebView(
+            selectedChoice: _selectedChoice,
+            onChoiceSelected: _handleChoiceSelection,
+            messageController: _messageController,
+            characterCount: _characterCount,
+            onMessageChanged: () {
+              _updateCharacterCount();
+              if (_validationError != null) {
+                setState(() {
+                  _validationError = null;
+                });
+              }
+            },
+            validationError: _validationError,
+            onContinue: _handleContinue,
+            onBackPressed: widget.onBackPressed,
+          );
         }
         return _buildMobile(context);
       },
-    );
-  }
-
-  /// Desktop-first add a message page (>= 768px). Same colors, copy and
-  /// behaviour as the mobile screen — back header, prompt, Yes/No cards, the
-  /// message box (or the empty placeholder) and the continue button.
-  Widget _buildWeb(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(40, 28, 40, 40),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  WebAddMessageHeader(onBackPressed: widget.onBackPressed),
-                  const SizedBox(height: 24),
-                  const WebAddMessageTitle(),
-                  const SizedBox(height: 24),
-                  WebMessageOptionCards(
-                    selectedChoice: _selectedChoice,
-                    onChoiceSelected: _handleChoiceSelection,
-                  ),
-                  const SizedBox(height: 24),
-                  if (_selectedChoice == MessageChoice.yes)
-                    _buildWebMessageInputSection()
-                  else
-                    const WebMessageEmptyPlaceholder(),
-                  if (_validationError != null) ...[
-                    const SizedBox(height: 16),
-                    WebValidationErrorMessage(message: _validationError!),
-                  ],
-                  const SizedBox(height: 24),
-                  CustomButton(
-                    label: 'continue',
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w400,
-                    textColor: AppColors.primary,
-                    backgroundColor: AppColors.incrementButton,
-                    height: 52,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [],
-                    onPressed: _handleContinue,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Builds the message input section when "Yes" is selected (web).
-  Widget _buildWebMessageInputSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CustomText(
-          text: 'Your Message',
-          fontFamily: AppFonts.goudyOldStyle,
-          fontSize: 16,
-          textColor: AppColors.darkGreen,
-        ),
-        const SizedBox(height: 10),
-        WebMessageInputField(
-          controller: _messageController,
-          characterCount: _characterCount,
-          onChanged: (_) {
-            _updateCharacterCount();
-            if (_validationError != null) {
-              setState(() {
-                _validationError = null;
-              });
-            }
-          },
-        ),
-      ],
     );
   }
 
@@ -228,19 +161,18 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
             return SingleChildScrollView(
               physics: const ClampingScrollPhysics(),
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: IntrinsicHeight(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 20.w,
+                      vertical: 10.h,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Header
-                        AddMessageHeader(
-                          onBackPressed: widget.onBackPressed,
-                        ),
+                        AddMessageHeader(onBackPressed: widget.onBackPressed),
                         SizedBox(height: 20.h),
 
                         // Title
@@ -264,9 +196,7 @@ class _AddMessageScreenState extends State<AddMessageScreen> {
                         // Validation error message
                         if (_validationError != null) ...[
                           SizedBox(height: 12.h),
-                          ValidationErrorMessage(
-                            message: _validationError!,
-                          ),
+                          ValidationErrorMessage(message: _validationError!),
                         ],
 
                         // Continue button

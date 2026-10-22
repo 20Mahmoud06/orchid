@@ -51,15 +51,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Delivery Details renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Delivery Details renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const DeliveryDetailsScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Delivery Details uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Delivery Details uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const DeliveryDetailsScreen());
     expect(find.byType(WebDeliveryHeader), findsOneWidget);
     expect(find.byType(WebEstimatedDeliveryCard), findsOneWidget);
@@ -71,8 +73,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Delivery Details keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Delivery Details keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const DeliveryDetailsScreen());
     expect(find.byType(WebDeliveryHeader), findsNothing);
     expect(find.byType(WebEstimatedDeliveryCard), findsNothing);

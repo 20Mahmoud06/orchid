@@ -12,11 +12,7 @@ class EstimatedDeliveryCard extends StatelessWidget {
   final String? date;
   final String? timeRange;
 
-  const EstimatedDeliveryCard({
-    super.key,
-    this.date,
-    this.timeRange,
-  });
+  const EstimatedDeliveryCard({super.key, this.date, this.timeRange});
 
   @override
   Widget build(BuildContext context) {

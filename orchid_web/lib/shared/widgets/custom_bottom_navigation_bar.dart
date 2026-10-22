@@ -91,7 +91,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
                       text: item.label,
                       fontFamily: AppFonts.inriaSerif,
                       fontSize: 12.sp,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
                       textColor: AppColors.darkGreen,
                       textAlign: TextAlign.center,
                     ),

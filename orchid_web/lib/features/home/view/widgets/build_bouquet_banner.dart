@@ -70,7 +70,8 @@ class BuildBouquetBanner extends StatelessWidget {
                         width: 200.w,
                         child: CustomText(
                           textAlign: TextAlign.center,
-                          text: 'choose your flowers and\ncreate your perfect bouquet.',
+                          text:
+                              'choose your flowers and\ncreate your perfect bouquet.',
                           fontFamily: AppFonts.goudyOldStyle,
                           fontSize: 16.sp,
                           textColor: AppColors.black,

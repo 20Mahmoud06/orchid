@@ -11,15 +11,14 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
     GlobalKey<ScaffoldMessengerState>();
 
-/// Route observer used to track route lifecycle events (e.g. re-activating the
-/// splash screen after the recovery screen pushed on top of it gets popped).
+/// Route observer used to track route lifecycle events during navigation
+/// tests.
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
 
 /// Local preference keys persisted through [AppPrefs].
 abstract class AppPrefKeys {
   static const String rememberMe = 'remember_me';
-  static const String passwordRecoveryActive = 'password_recovery_active';
   static const String favoriteFlowerIds = 'favorite_flower_ids';
   static const String favoriteBouquetIds = 'favorite_bouquet_ids';
   static const String bouquetQuantities = 'bouquet_quantities';

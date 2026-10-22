@@ -68,16 +68,12 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       .where((bouquet) => state.bouquetIds.contains(bouquet.id))
       .toList();
 
-  int get totalFavorites =>
-      state.flowerIds.length + state.bouquetIds.length;
+  int get totalFavorites => state.flowerIds.length + state.bouquetIds.length;
 
   void toggleFlowerFavorite(String id) {
     final ids = Set<String>.of(state.flowerIds);
     if (!ids.remove(id)) ids.add(id);
-    final next = FavoritesState(
-      flowerIds: ids,
-      bouquetIds: state.bouquetIds,
-    );
+    final next = FavoritesState(flowerIds: ids, bouquetIds: state.bouquetIds);
     _persist(next);
     emit(next);
   }
@@ -85,10 +81,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
   void toggleBouquetFavorite(String id) {
     final ids = Set<String>.of(state.bouquetIds);
     if (!ids.remove(id)) ids.add(id);
-    final next = FavoritesState(
-      flowerIds: state.flowerIds,
-      bouquetIds: ids,
-    );
+    final next = FavoritesState(flowerIds: state.flowerIds, bouquetIds: ids);
     _persist(next);
     emit(next);
   }

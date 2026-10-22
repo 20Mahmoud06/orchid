@@ -55,11 +55,7 @@ class CompleteProfileAvatar extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),
-                child: Icon(
-                  Icons.camera_alt,
-                  size: 18.r,
-                  color: Colors.black,
-                ),
+                child: Icon(Icons.camera_alt, size: 18.r, color: Colors.black),
               ),
             ),
           ],

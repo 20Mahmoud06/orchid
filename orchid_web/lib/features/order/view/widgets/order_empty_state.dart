@@ -10,10 +10,7 @@ import '../../../../shared/widgets/custom_text.dart';
 class OrderEmptyState extends StatelessWidget {
   final String message;
 
-  const OrderEmptyState({
-    super.key,
-    required this.message,
-  });
+  const OrderEmptyState({super.key, required this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -21,11 +18,7 @@ class OrderEmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            AppAssets.flowerIcon,
-            width: 200.w,
-            height: 200.h,
-          ),
+          Image.asset(AppAssets.flowerIcon, width: 200.w, height: 200.h),
           SizedBox(height: 12.h),
           CustomText(
             text: message,

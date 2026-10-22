@@ -26,14 +26,10 @@ class _WebStartupGateState extends State<WebStartupGate> {
   Future<void> _resolveRoute() async {
     String authRoute;
     try {
-      authRoute = await AuthCubit.instance
-          .checkInitialAuthState()
-          .timeout(const Duration(seconds: 8));
-    } catch (error) {
-      debugPrint(
-        '[web-startup] initial auth resolution failed/hung '
-        '(error: $error) - falling back to login',
+      authRoute = await AuthCubit.instance.checkInitialAuthState().timeout(
+        const Duration(seconds: 8),
       );
+    } catch (_) {
       authRoute = 'login';
     }
     if (!mounted) return;
@@ -44,7 +40,6 @@ class _WebStartupGateState extends State<WebStartupGate> {
       'forgotPassword' => AppRoutes.forgotPassword,
       _ => AppRoutes.login,
     };
-    debugPrint('[web-startup] resolved initial route: $route');
 
     Navigator.of(context).pushNamedAndRemoveUntil(route, (route) => false);
   }

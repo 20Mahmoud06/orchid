@@ -50,15 +50,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Empty favorites renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Empty favorites renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const FavoritesScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Favorites uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Favorites uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const FavoritesScreen());
     expect(find.byType(WebFavoritesTabs), findsOneWidget);
     expect(find.byType(WebFavoritesEmptyState), findsOneWidget);
@@ -66,13 +68,17 @@ void main() {
     expect(find.text('Bouquets'), findsOneWidget);
     expect(find.text('Flowers'), findsOneWidget);
     expect(find.text('favorites'), findsOneWidget);
-    expect(find.text('all flowers you love, saved in one place'), findsOneWidget);
+    expect(
+      find.text('all flowers you love, saved in one place'),
+      findsOneWidget,
+    );
     expect(find.text('no favorite items here'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Favorites tab filters change the empty-state wording',
-      (tester) async {
+  testWidgets('Favorites tab filters change the empty-state wording', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const FavoritesScreen());
 
     await tester.tap(find.text('Bouquets'));
@@ -89,8 +95,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Favorites keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Favorites keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const FavoritesScreen());
     expect(find.byType(WebFavoritesTabs), findsNothing);
     expect(find.byType(WebFavoritesEmptyState), findsNothing);
@@ -99,8 +106,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Web favorite card never overflows with a long title',
-      (tester) async {
+  testWidgets('Web favorite card never overflows with a long title', (
+    tester,
+  ) async {
     await pumpAt(
       tester,
       const Size(400, 600),

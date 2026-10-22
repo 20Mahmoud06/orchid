@@ -9,7 +9,8 @@ import '../../../../core/constants/app_fonts.dart';
 class DeliveryTextField extends StatefulWidget {
   final TextEditingController controller;
   final String hint;
-  final dynamic suffixIcon; // Can be IconData, String (asset path), or Widget (Icon, Image, etc.)
+  final dynamic
+  suffixIcon; // Can be IconData, String (asset path), or Widget (Icon, Image, etc.)
   final int maxLines;
   final TextInputType keyboardType;
   final bool enabled;
@@ -71,21 +72,20 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
       duration: const Duration(milliseconds: 250),
     );
 
-    _borderColorAnimation = ColorTween(
-      begin: AppColors.cardBorder,
-      end: AppColors.selectedCategory,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderColorAnimation =
+        ColorTween(
+          begin: AppColors.cardBorder,
+          end: AppColors.selectedCategory,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
-    _borderWidthAnimation = Tween<double>(
-      begin: 1.0,
-      end: 2.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderWidthAnimation = Tween<double>(begin: 1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -140,11 +140,7 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
               : Alignment.center,
           widthFactor: 1,
           heightFactor: 1,
-          child: Icon(
-            widget.suffixIcon,
-            size: 22.r,
-            color: AppColors.black,
-          ),
+          child: Icon(widget.suffixIcon, size: 22.r, color: AppColors.black),
         ),
       );
     }
@@ -194,10 +190,7 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
 
     final focusedOutlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(radius),
-      borderSide: BorderSide(
-        color: AppColors.selectedCategory,
-        width: 2.0.w,
-      ),
+      borderSide: BorderSide(color: AppColors.selectedCategory, width: 2.0.w),
     );
 
     final textField = AnimatedBuilder(
@@ -231,12 +224,12 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
             hintStyle: TextStyle(
               fontFamily: AppFonts.goudyOldStyle,
               fontSize: 15.sp,
-              color: widget.hintColor ??
-                  AppColors.black.withValues(alpha: 0.5),
+              color: widget.hintColor ?? AppColors.black.withValues(alpha: 0.5),
             ),
             filled: true,
             fillColor: widget.fillColor ?? AppColors.white,
-            contentPadding: widget.contentPadding ??
+            contentPadding:
+                widget.contentPadding ??
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
 
             // Border configurations
@@ -254,9 +247,9 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
             suffixIcon: _buildSuffixIcon(),
             suffixIconConstraints: widget.suffixIcon != null
                 ? BoxConstraints(
-              minWidth: 40.w,
-              minHeight: widget.maxLines > 1 ? 40.h : 48.h,
-            )
+                    minWidth: 40.w,
+                    minHeight: widget.maxLines > 1 ? 40.h : 48.h,
+                  )
                 : null,
           ),
         );
@@ -265,11 +258,7 @@ class _DeliveryTextFieldState extends State<DeliveryTextField>
 
     // 👇 Apply height constraint if provided
     return widget.height != null
-        ? SizedBox(
-      height: widget.height,
-      child: textField,
-    )
+        ? SizedBox(height: widget.height, child: textField)
         : textField;
   }
-
 }

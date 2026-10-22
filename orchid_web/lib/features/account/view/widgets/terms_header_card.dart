@@ -29,7 +29,8 @@ class TermsHeaderCard extends StatelessWidget {
           ),
           SizedBox(height: 6.h),
           CustomText(
-            text: 'By using our app, you agree to the\nfollowing terms and conditions.',
+            text:
+                'By using our app, you agree to the\nfollowing terms and conditions.',
             fontFamily: AppFonts.goudyOldStyle,
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,

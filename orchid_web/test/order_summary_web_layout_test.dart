@@ -50,15 +50,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Order Summary renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Order Summary renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const OrderSummaryScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Order Summary uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Order Summary uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const OrderSummaryScreen());
     expect(find.byType(WebOrderSummaryHeader), findsOneWidget);
     expect(find.text('Order Summary'), findsOneWidget);
@@ -69,8 +71,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Order Summary keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Order Summary keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const OrderSummaryScreen());
     expect(find.byType(WebOrderSummaryHeader), findsNothing);
     expect(find.text('Order Summary'), findsOneWidget);

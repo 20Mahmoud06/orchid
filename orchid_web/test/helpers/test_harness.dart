@@ -5,15 +5,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Everything `flutter test` needs in order to boot the real app.
 ///
-/// Without these the app renders nothing at all: `flutter_offline`'s
-/// `OfflineBuilder` replaces the whole tree with an empty `SizedBox` until the
-/// connectivity stream emits, `AppPrefs` throws `MissingPluginException`, and
-/// `Supabase.instance` asserts.
+/// Without these the app renders nothing at all: `AppPrefs` throws
+/// `MissingPluginException`, and `Supabase.instance` asserts.
 class TestHarness {
   TestHarness._();
-
-  static const _connectivity =
-      MethodChannel('dev.fluttercommunity.plus/connectivity');
 
   static bool _fontsLoaded = false;
 
@@ -25,14 +20,13 @@ class TestHarness {
     'Inria Serif': 'assets/fonts/Inria_Serif/InriaSerif-Regular.ttf',
   };
 
-  /// Sets up fonts, preferences, connectivity and Supabase.
+  /// Sets up fonts, preferences and Supabase.
   ///
   /// Nothing is fetched: `currentSession` stays null, so a cold boot lands on
   /// the login screen exactly like a first run on a device.
   static Future<void> boot({WidgetTester? tester}) async {
     await loadFonts();
     seedPreferences();
-    connectToWifi();
     if (tester != null) useDesignSize(tester);
     await initSupabase();
   }
@@ -46,25 +40,11 @@ class TestHarness {
   static Future<void> loadFonts() async {
     if (_fontsLoaded) return;
     for (final entry in fonts.entries) {
-      final loader = FontLoader(entry.key)..addFont(rootBundle.load(entry.value));
+      final loader = FontLoader(entry.key)
+        ..addFont(rootBundle.load(entry.value));
       await loader.load();
     }
     _fontsLoaded = true;
-  }
-
-  /// Reports the device as connected on wifi.
-  static void connectToWifi() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-      _connectivity,
-      (call) async => <String>['wifi'],
-    );
-  }
-
-  /// Reports the device as having no connection at all.
-  static void goOffline() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(_connectivity, (call) async => <String>[]);
   }
 
   /// Seeds an (empty by default) preference store.
@@ -74,8 +54,6 @@ class TestHarness {
 
   /// Removes every platform handler installed here.
   static void tearDown() {
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(_connectivity, null);
     SharedPreferences.setMockInitialValues({});
   }
 

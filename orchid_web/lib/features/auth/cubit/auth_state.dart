@@ -13,8 +13,6 @@ enum AuthStatus {
   signupSuccess,
   profileIncomplete,
   profileComplete,
-  passwordRecovery,
-  passwordResetSuccess,
   error,
 }
 
@@ -41,9 +39,9 @@ class AuthFlowState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        status,
-        userProfile,
-        errorMessage,
-        rememberMe,
-      ];
+    status,
+    userProfile,
+    errorMessage,
+    rememberMe,
+  ];
 }

@@ -40,9 +40,7 @@ class MessageInputField extends StatelessWidget {
             minLines: 6, // Same as maxLines
             maxLength: maxCharacters,
             maxLengthEnforcement: MaxLengthEnforcement.enforced,
-            inputFormatters: [
-              LengthLimitingTextInputFormatter(maxCharacters),
-            ],
+            inputFormatters: [LengthLimitingTextInputFormatter(maxCharacters)],
             style: TextStyle(
               fontFamily: AppFonts.goudyOldStyle,
               fontSize: 15.sp,

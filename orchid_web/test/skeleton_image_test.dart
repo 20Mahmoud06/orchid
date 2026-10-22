@@ -25,8 +25,9 @@ void main() {
   // NOTE: asset loading needs real I/O, which the fake-async test zone only
   // services for the first `testWidgets` in a file. That is why this end-to-end
   // loading test must stay first; everything below is purely structural.
-  testWidgets('shows a shimmering bone, then swaps to the real image',
-      (tester) async {
+  testWidgets('shows a shimmering bone, then swaps to the real image', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -84,8 +85,9 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
   });
 
-  testWidgets('falls back without shimmering when there is no picture path',
-      (tester) async {
+  testWidgets('falls back without shimmering when there is no picture path', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         const SizedBox(
@@ -99,37 +101,45 @@ void main() {
 
     expect(bones, findsNothing);
     expect(find.byType(Image), findsNothing);
-    expect(tester.getSize(find.byType(SkeletonFallbackBox)), const Size(120, 90));
+    expect(
+      tester.getSize(find.byType(SkeletonFallbackBox)),
+      const Size(120, 90),
+    );
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('paints a plain colored box by default when there is no picture',
-      (tester) async {
-    await tester.pumpWidget(
-      _host(
-        const SizedBox(
-          width: 120,
-          height: 90,
-          child: SkeletonImage(path: ''),
+  testWidgets(
+    'paints a plain colored box by default when there is no picture',
+    (tester) async {
+      await tester.pumpWidget(
+        _host(
+          const SizedBox(
+            width: 120,
+            height: 90,
+            child: SkeletonImage(path: ''),
+          ),
         ),
-      ),
-    );
-    await tester.pump(const Duration(milliseconds: 400));
+      );
+      await tester.pump(const Duration(milliseconds: 400));
 
-    final box = tester.widget<Container>(
-      find.descendant(
-        of: find.byType(SkeletonImage),
-        matching: find.byType(Container),
-      ).first,
-    );
-    expect(box.constraints?.maxWidth, 120);
-    expect(box.constraints?.maxHeight, 90);
-    expect(box.color, AppSkeleton.fallbackColor);
-    expect(tester.takeException(), isNull);
-  });
+      final box = tester.widget<Container>(
+        find
+            .descendant(
+              of: find.byType(SkeletonImage),
+              matching: find.byType(Container),
+            )
+            .first,
+      );
+      expect(box.constraints?.maxWidth, 120);
+      expect(box.constraints?.maxHeight, 90);
+      expect(box.color, AppSkeleton.fallbackColor);
+      expect(tester.takeException(), isNull);
+    },
+  );
 
-  testWidgets('never requests an infinite size inside a scroll view',
-      (tester) async {
+  testWidgets('never requests an infinite size inside a scroll view', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         const SkeletonImage(
@@ -163,8 +173,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fills a bounded parent it was not given a size for',
-      (tester) async {
+  testWidgets('fills a bounded parent it was not given a size for', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         const SizedBox(
@@ -179,15 +190,12 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('fallback box fills its parent and never goes infinite',
-      (tester) async {
+  testWidgets('fallback box fills its parent and never goes infinite', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
-        const SizedBox(
-          width: 120,
-          height: 90,
-          child: SkeletonFallbackBox(),
-        ),
+        const SizedBox(width: 120, height: 90, child: SkeletonFallbackBox()),
       ),
     );
 
@@ -196,12 +204,15 @@ void main() {
       const Size(120, 90),
     );
 
-    await tester.pumpWidget(_host(const SkeletonFallbackBox(), inScrollView: true));
+    await tester.pumpWidget(
+      _host(const SkeletonFallbackBox(), inScrollView: true),
+    );
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('shows the bone again when the picture path changes',
-      (tester) async {
+  testWidgets('shows the bone again when the picture path changes', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         const SizedBox(
@@ -228,8 +239,9 @@ void main() {
     expect(bones, findsOneWidget);
   });
 
-  testWidgets('keeps a cached picture visible across dependency changes',
-      (tester) async {
+  testWidgets('keeps a cached picture visible across dependency changes', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       _host(
         const SizedBox(

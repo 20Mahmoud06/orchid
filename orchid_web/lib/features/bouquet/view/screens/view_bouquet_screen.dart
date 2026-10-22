@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../features/bouquet/cubit/bouquet_cubit.dart';
 import '../../../../core/app_keys.dart';
 import '../../../../core/constants/app_assets.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/router/app_routes.dart';
+import '../../../../features/bouquet/cubit/bouquet_cubit.dart';
 import '../../../../shared/widgets/app_snack_bar.dart';
-import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text.dart';
-import '../../../../shared/widgets/skeleton_image.dart';
 import '../../../cart/cubit/cart_cubit.dart';
 import '../../../cart/models/cart_item.dart';
 import '../../../checkout/cubit/checkout_cubit.dart';
 import '../../../inspiration/models/inspiration_item.dart';
+import '../widgets/view_bouquet_mobile_view.dart';
+import '../widgets/web/view_bouquet_web_view.dart';
 
 class ViewBouquetScreen extends StatelessWidget {
   final VoidCallback? onBackPressed;
@@ -56,291 +51,39 @@ class ViewBouquetScreen extends StatelessWidget {
         // preview with side-by-side actions. Narrow viewports keep the
         // untouched Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb(
-            context,
+          return ViewBouquetWebView(
             title: title,
             imagePath: imagePath,
             description: description,
             showTwoButtons: showTwoButtons,
-            isFromInspiration: isFromInspiration,
+            onEditBouquet: () => Navigator.maybePop(context),
+            onLooksGood: () =>
+                _handleLooksGood(context, isFromInspiration: isFromInspiration),
           );
         }
-        return _buildMobile(
-          context,
+        return ViewBouquetMobileView(
           title: title,
           imagePath: imagePath,
           description: description,
           showTwoButtons: showTwoButtons,
-          isFromInspiration: isFromInspiration,
+          onBackPressed: onBackPressed,
+          onEditBouquet: () => Navigator.maybePop(context),
+          onLooksGood: () =>
+              _handleLooksGood(context, isFromInspiration: isFromInspiration),
         );
       },
     );
   }
 
-  /// Desktop-first view bouquet page (>= 768px). Same colors, copy and
-  /// behaviour as the mobile screen — heading, a rectangular bouquet photo on
-  /// one side with the ingredient list and Edit Bouquet / Looks Good actions
-  /// on the other.
-  Widget _buildWeb(
-    BuildContext context, {
-    required String title,
-    required String imagePath,
-    required List<String> description,
-    required bool showTwoButtons,
-    required bool isFromInspiration,
-  }) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 36, 40, 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Rectangular bouquet photo.
-                        Expanded(
-                          flex: 5,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: SkeletonImage(
-                              path: imagePath,
-                              fit: BoxFit.cover,
-                              errorWidget: const SkeletonFallbackBox(
-                                color: AppColors.fieldPink,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 40),
-                        // Details with the actions underneath.
-                        Expanded(
-                          flex: 6,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (description.isNotEmpty)
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: description
-                                              .map(
-                                                (line) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 6,
-                                                      ),
-                                                  child: CustomText(
-                                                    text: line,
-                                                    fontFamily:
-                                                        AppFonts.goudyOldStyle,
-                                                    fontSize: 22,
-                                                    textColor:
-                                                        AppColors.textPrimary,
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              if (showTwoButtons)
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: CustomButton(
-                                        label: 'Edit Bouquet',
-                                        fontFamily: AppFonts.goudyOldStyle,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400,
-                                        textColor: AppColors.primary,
-                                        backgroundColor: AppColors.background,
-                                        height: 54,
-                                        borderRadius: BorderRadius.circular(14),
-                                        border: Border.all(
-                                          color: AppColors.incrementButton,
-                                          width: 1,
-                                        ),
-                                        boxShadow: const [],
-                                        onPressed: () =>
-                                            Navigator.maybePop(context),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: _looksGoodButton(
-                                        context,
-                                        isFromInspiration: isFromInspiration,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              else
-                                SizedBox(
-                                  width: 420,
-                                  child: _looksGoodButton(
-                                    context,
-                                    isFromInspiration: isFromInspiration,
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _looksGoodButton(
+  void _handleLooksGood(
     BuildContext context, {
     required bool isFromInspiration,
   }) {
-    return CustomButton(
-      label: 'Looks Good',
-      fontFamily: AppFonts.goudyOldStyle,
-      fontSize: 20,
-      fontWeight: FontWeight.w400,
-      textColor: AppColors.primary,
-      backgroundColor: AppColors.incrementButton,
-      height: 54,
-      borderRadius: BorderRadius.circular(14),
-      boxShadow: const [],
-      onPressed: () {
-        if (isFromInspiration) {
-          _saveInspirationToCart(context);
-          return;
-        }
-        _saveArrangementToCart(context);
-      },
-    );
-  }
-
-  /// Mobile layout (unchanged).
-  Widget _buildMobile(
-    BuildContext context, {
-    required String title,
-    required String imagePath,
-    required List<String> description,
-    required bool showTwoButtons,
-    required bool isFromInspiration,
-  }) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-          child: Column(
-            children: [
-              CustomAppBar.orchid(title: title, onBackPressed: onBackPressed),
-              SizedBox(height: 24.h),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SkeletonImage(
-                        path: imagePath,
-                        width: 280.w,
-                        fit: BoxFit.contain,
-                        placeholderSize: Size(280.w, 280.h),
-                        errorWidget: const SkeletonFallbackBox(
-                          color: AppColors.fieldPink,
-                        ),
-                      ),
-                      SizedBox(height: 32.h),
-                      if (description.isNotEmpty)
-                        Column(
-                          children: description
-                              .map(
-                                (line) => CustomText(
-                                  text: line,
-                                  fontFamily: AppFonts.goudyOldStyle,
-                                  fontSize: 24.sp,
-                                  textColor: AppColors.textPrimary,
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                              .toList(),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-              if (showTwoButtons) ...[
-                SizedBox(height: 12.h),
-                CustomButton(
-                  label: 'Edit Bouquet',
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.w400,
-                  textColor: AppColors.primary,
-                  backgroundColor: AppColors.background,
-                  height: 60.h,
-                  borderRadius: BorderRadius.circular(16.r),
-                  border: Border.all(
-                    color: AppColors.incrementButton,
-                    width: 1.w,
-                  ),
-                  boxShadow: const [],
-                  onPressed: () => Navigator.maybePop(context),
-                ),
-                SizedBox(height: 12.h),
-              ],
-              CustomButton(
-                label: 'Looks Good',
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 24.sp,
-                fontWeight: FontWeight.w400,
-                textColor: AppColors.primary,
-                backgroundColor: AppColors.incrementButton,
-                height: 60.h,
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: const [],
-                onPressed: () {
-                  if (isFromInspiration) {
-                    _saveInspirationToCart(context);
-                    return;
-                  }
-                  _saveArrangementToCart(context);
-                },
-              ),
-              SizedBox(height: 24.h),
-            ],
-          ),
-        ),
-      ),
-    );
+    if (isFromInspiration) {
+      _saveInspirationToCart(context);
+      return;
+    }
+    _saveArrangementToCart(context);
   }
 
   /// Saves the current arrangement as cart line items: one custom bouquet

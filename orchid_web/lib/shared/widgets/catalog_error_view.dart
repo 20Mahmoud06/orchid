@@ -38,10 +38,7 @@ class CatalogErrorView extends StatelessWidget {
               onPressed: onRetry,
               child: Text(
                 'Tap to retry',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.primary,
-                ),
+                style: TextStyle(fontSize: 14.sp, color: AppColors.primary),
               ),
             ),
           ],

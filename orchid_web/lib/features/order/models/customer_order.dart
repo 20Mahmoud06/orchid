@@ -114,7 +114,8 @@ class CustomerOrder {
       id: row['id'] as String? ?? '',
       orderCode: row['order_code'] as String? ?? '',
       status: row['status'] as String? ?? 'PENDING',
-      createdAt: DateTime.tryParse(row['created_at'] as String? ?? '') ??
+      createdAt:
+          DateTime.tryParse(row['created_at'] as String? ?? '') ??
           DateTime.now(),
       total: ((row['total'] as num?) ?? 0).round(),
       deliveryAddress: row['delivery_address'] as String? ?? '',

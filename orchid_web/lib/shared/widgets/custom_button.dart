@@ -45,7 +45,8 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final double buttonHeight = height ?? 56.h;
     final double buttonFontSize = fontSize ?? 24.sp;
-    final BorderRadius defaultRadius = borderRadius ?? BorderRadius.circular(10.r);
+    final BorderRadius defaultRadius =
+        borderRadius ?? BorderRadius.circular(10.r);
 
     return Container(
       width: width ?? double.infinity,
@@ -55,7 +56,8 @@ class CustomButton extends StatelessWidget {
         color: backgroundColor ?? AppColors.buttonPink,
         borderRadius: defaultRadius,
         border: border,
-        boxShadow: boxShadow ??
+        boxShadow:
+            boxShadow ??
             [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.15),
@@ -77,16 +79,15 @@ class CustomButton extends StatelessWidget {
                     width: 22.r,
                     child: const CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.darkGreen),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.darkGreen,
+                      ),
                     ),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (icon != null) ...[
-                        icon!,
-                        SizedBox(width: 8.w),
-                      ],
+                      if (icon != null) ...[icon!, SizedBox(width: 8.w)],
                       Flexible(
                         child: CustomText(
                           text: label,

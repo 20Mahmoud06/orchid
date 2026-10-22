@@ -38,10 +38,7 @@ class InspirationCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
             ),
           ),
@@ -55,10 +52,7 @@ class InspirationCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.only(
@@ -119,7 +113,9 @@ class InspirationCard extends StatelessWidget {
                   Padding(
                     // This aligns the text with the username text,
                     // matching the Figma layout.
-                    padding: EdgeInsets.only(left: 28.w), // 20 (avatar diameter) + 8 (gap)
+                    padding: EdgeInsets.only(
+                      left: 28.w,
+                    ), // 20 (avatar diameter) + 8 (gap)
                     child: ListView.separated(
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
@@ -148,7 +144,10 @@ class InspirationCard extends StatelessWidget {
                         onTap: onChoose,
                         borderRadius: BorderRadius.circular(20.r),
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 6.h,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.cardBorder,
                             borderRadius: BorderRadius.circular(20.r),

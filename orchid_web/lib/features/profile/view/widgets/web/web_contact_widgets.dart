@@ -77,10 +77,7 @@ class WebContactBrand extends StatelessWidget {
 class WebContactSection extends StatelessWidget {
   final List<WebContactTile> tiles;
 
-  const WebContactSection({
-    super.key,
-    required this.tiles,
-  });
+  const WebContactSection({super.key, required this.tiles});
 
   @override
   Widget build(BuildContext context) {
@@ -136,11 +133,7 @@ class WebContactTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           child: Row(
             children: [
-              SizedBox(
-                width: 28,
-                height: 28,
-                child: Center(child: icon),
-              ),
+              SizedBox(width: 28, height: 28, child: Center(child: icon)),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -189,11 +182,6 @@ class WebSocialIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      asset,
-      width: 52,
-      height: 52,
-      fit: BoxFit.contain,
-    );
+    return Image.asset(asset, width: 52, height: 52, fit: BoxFit.contain);
   }
 }

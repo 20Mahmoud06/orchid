@@ -106,7 +106,8 @@ class CartItemCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   textColor: AppColors.black,
                 ),
-                if (item.message != null && item.message!.trim().isNotEmpty) ...[
+                if (item.message != null &&
+                    item.message!.trim().isNotEmpty) ...[
                   SizedBox(height: 4.h),
                   CustomText(
                     text: item.message!,

@@ -40,11 +40,7 @@ class WebEstimatedDeliveryCard extends StatelessWidget {
   final String? date;
   final String? timeRange;
 
-  const WebEstimatedDeliveryCard({
-    super.key,
-    this.date,
-    this.timeRange,
-  });
+  const WebEstimatedDeliveryCard({super.key, this.date, this.timeRange});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +178,10 @@ class _WebDeliveryTextFieldState extends State<WebDeliveryTextField> {
         ),
         filled: true,
         fillColor: AppColors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: border,
         enabledBorder: border,
         focusedBorder: border,

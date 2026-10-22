@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ionicons/ionicons.dart';
 
 import '../../../../core/app_keys.dart';
-import '../../../../core/constants/app_assets.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/storage/local_storage.dart';
@@ -12,11 +11,11 @@ import '../../../../features/auth/cubit/auth_cubit.dart';
 import '../../../../features/checkout/checkout_flow.dart';
 import '../../../../features/checkout/cubit/checkout_cubit.dart';
 import '../../../../shared/widgets/app_snack_bar.dart';
-import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text.dart';
-import '../widgets/wallet_card.dart';
+import '../widgets/my_wallet_mobile_view.dart';
 import '../widgets/wallet_provider.dart';
+import '../widgets/web/my_wallet_web_view.dart';
 import '../widgets/web/web_wallet_widgets.dart';
 
 class MyWalletScreen extends StatefulWidget {
@@ -276,179 +275,26 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
         // Desktop-first web presentation (>= 768px). Narrow viewports keep the
         // untouched Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb(context);
+          return MyWalletWebView(
+            onBackPressed: widget.onBackPressed,
+            selectedProvider: _selectedProvider,
+            ownerNameController: _ownerNameController,
+            walletIdController: _walletIdController,
+            balanceController: _balanceController,
+            onProviderChanged: _handleProviderChanged,
+            onConfirm: _handleConfirm,
+          );
         }
-        return _buildMobile(context);
+        return MyWalletMobileView(
+          onBackPressed: widget.onBackPressed,
+          selectedProvider: _selectedProvider,
+          ownerNameController: _ownerNameController,
+          walletIdController: _walletIdController,
+          balanceController: _balanceController,
+          onProviderChanged: _handleProviderChanged,
+          onConfirm: _handleConfirm,
+        );
       },
-    );
-  }
-
-  /// Desktop-first "my wallet" page (>= 768px). Same colors, copy and behaviour
-  /// as the mobile screen — a two-column layout like the other web checkout
-  /// pages: the wallet illustration on the left and the wallet card with the
-  /// CONFIRM action in the sidebar.
-  Widget _buildWeb(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1100),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(40, 36, 40, 32),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  WebWalletHeader(onBackPressed: widget.onBackPressed),
-                  const SizedBox(height: 24),
-                  Expanded(
-                    child: LayoutBuilder(
-                      builder: (context, rowConstraints) {
-                        final sideWidth = (rowConstraints.maxWidth * 0.40)
-                            .clamp(360.0, 440.0);
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    const SizedBox(height: 12),
-                                    Center(
-                                      child: Image.asset(
-                                        AppAssets.myWallet,
-                                        width: 460,
-                                        height: 340,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 28),
-                            SizedBox(
-                              width: sideWidth,
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    WebWalletCard(
-                                      walletLogo: const Icon(
-                                        Icons.account_balance_wallet_rounded,
-                                        size: 22,
-                                      ),
-                                      initialBalanceVisible: false,
-                                      selectedProvider: _selectedProvider,
-                                      ownerNameController: _ownerNameController,
-                                      walletIdController: _walletIdController,
-                                      balanceController: _balanceController,
-                                      onProviderChanged: _handleProviderChanged,
-                                      onBalanceVisibilityChanged: (isVisible) {
-                                        // balance visibility toggled
-                                      },
-                                    ),
-                                    const SizedBox(height: 20),
-                                    CustomButton(
-                                      label: 'CONFIRM',
-                                      fontFamily: AppFonts.goudyOldStyle,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      textColor: AppColors.black,
-                                      backgroundColor: AppColors.textFieldPink,
-                                      height: 52,
-                                      borderRadius: BorderRadius.circular(16),
-                                      boxShadow: const [],
-                                      onPressed: _handleConfirm,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Mobile layout (unchanged).
-  Widget _buildMobile(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CustomAppBar.orchid(
-                title: 'my wallet',
-                onBackPressed: widget.onBackPressed,
-                centerWidget: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CustomText(
-                      text: 'my wallet',
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 24.sp,
-                      fontWeight: FontWeight.w400,
-                      textColor: AppColors.black,
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16.h),
-              Image.asset(
-                AppAssets.myWallet,
-                width: 280.w,
-                height: 220.h,
-                fit: BoxFit.contain,
-              ),
-              SizedBox(height: 20.h),
-              WalletCard(
-                walletLogo: const Icon(
-                  Icons.account_balance_wallet_rounded,
-                  size: 22,
-                ),
-                initialBalanceVisible: false,
-                selectedProvider: _selectedProvider,
-                ownerNameController: _ownerNameController,
-                walletIdController: _walletIdController,
-                balanceController: _balanceController,
-                onProviderChanged: _handleProviderChanged,
-                onBalanceVisibilityChanged: (isVisible) {
-                  // balance visibility toggled
-                },
-              ),
-              SizedBox(height: 140.h),
-              CustomButton(
-                label: 'CONFIRM',
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                textColor: AppColors.black,
-                backgroundColor: AppColors.textFieldPink,
-                height: 52.h,
-                borderRadius: BorderRadius.circular(16.r),
-                boxShadow: const [],
-                onPressed: _handleConfirm,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

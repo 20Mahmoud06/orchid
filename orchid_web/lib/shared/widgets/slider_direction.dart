@@ -1,6 +1,1 @@
-enum SlideDirection {
-  leftToRight,
-  rightToLeft,
-  topToBottom,
-  bottomToTop,
-}
+enum SlideDirection { leftToRight, rightToLeft, topToBottom, bottomToTop }

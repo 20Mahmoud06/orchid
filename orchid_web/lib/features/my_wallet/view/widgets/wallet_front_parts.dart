@@ -71,7 +71,9 @@ class LogoContainer extends StatelessWidget {
       width: 35.r,
       height: 35.r,
       decoration: BoxDecoration(
-        color: isProviderSelected ? provider.lightColor : AppColors.incrementButton.withValues(alpha: 0.15),
+        color: isProviderSelected
+            ? provider.lightColor
+            : AppColors.incrementButton.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(15.r),
         border: Border.all(
           color: isProviderSelected
@@ -81,12 +83,15 @@ class LogoContainer extends StatelessWidget {
         ),
       ),
       alignment: Alignment.center,
-      child: child ??
+      child:
+          child ??
           Icon(
             isProviderSelected
                 ? (provider.icon ?? Icons.account_balance_wallet_outlined)
                 : Icons.account_balance_wallet_outlined,
-            color: isProviderSelected ? provider.brandColor : AppColors.textGrey.withValues(alpha: 0.5),
+            color: isProviderSelected
+                ? provider.brandColor
+                : AppColors.textGrey.withValues(alpha: 0.5),
             size: 23.r,
           ),
     );
@@ -114,7 +119,9 @@ class WalletIdentity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final content = Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: alignEnd
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         CustomText(
           text: label,
@@ -146,9 +153,6 @@ class WalletIdentity extends StatelessWidget {
       return content;
     }
 
-    return InkWell(
-      onTap: onTap,
-      child: content,
-    );
+    return InkWell(onTap: onTap, child: content);
   }
 }

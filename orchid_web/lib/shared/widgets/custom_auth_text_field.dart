@@ -65,22 +65,21 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField>
       duration: const Duration(milliseconds: 250),
     );
 
-    _borderColorAnimation = ColorTween(
-      begin: Colors.transparent,
-      end: AppColors.incrementButton,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderColorAnimation =
+        ColorTween(
+          begin: Colors.transparent,
+          end: AppColors.incrementButton,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Border width animation
-    _borderWidthAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.5,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderWidthAnimation = Tween<double>(begin: 0.0, end: 1.5).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -118,10 +117,7 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField>
 
     final focusedOutlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(radius),
-      borderSide: BorderSide(
-        color: AppColors.selectedCategory,
-        width: 1.5.w,
-      ),
+      borderSide: BorderSide(color: AppColors.selectedCategory, width: 1.5.w),
     );
 
     return AnimatedBuilder(
@@ -156,13 +152,13 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField>
             decoration: InputDecoration(
               label: widget.label != null
                   ? CustomText(
-                text: widget.label!,
-                textColor: _isFocused
-                    ? AppColors.incrementButton
-                    : AppColors.darkGreen.withValues(alpha: 0.7),
-                fontSize: 14.sp,
-                fontFamily: 'InriaSerif',
-              )
+                      text: widget.label!,
+                      textColor: _isFocused
+                          ? AppColors.incrementButton
+                          : AppColors.darkGreen.withValues(alpha: 0.7),
+                      fontSize: 14.sp,
+                      fontFamily: 'InriaSerif',
+                    )
                   : null,
               hintText: widget.hint,
               hintStyle: TextStyle(
@@ -189,29 +185,30 @@ class _CustomAuthTextFieldState extends State<CustomAuthTextField>
               ),
               prefixIcon: widget.prefixIcon != null
                   ? Padding(
-                padding: EdgeInsets.symmetric(horizontal: 14.w),
-                child: widget.prefixIcon,
-              )
+                      padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      child: widget.prefixIcon,
+                    )
                   : null,
               suffixIcon: widget.isPassword
                   ? IconButton(
-                icon: Icon(
-                  _obscureText
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
-                  color: _isFocused
-                      ? AppColors.iconColor
-                      : AppColors.iconColor,
-                  size: 22.r,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )
+                      icon: Icon(
+                        _obscureText
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: _isFocused
+                            ? AppColors.iconColor
+                            : AppColors.iconColor,
+                        size: 22.r,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    )
                   : null,
-              contentPadding: widget.contentPadding ??
+              contentPadding:
+                  widget.contentPadding ??
                   EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             ),
           ),

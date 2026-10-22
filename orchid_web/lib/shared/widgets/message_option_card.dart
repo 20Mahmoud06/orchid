@@ -25,9 +25,9 @@ class MessageOptionCard extends StatefulWidget {
     this.isEnabledStyle = true,
     required this.onTap,
   }) : assert(
-  iconPath != null || icon != null || customIcon != null,
-  'Either iconPath, icon, or customIcon must be provided',
-  );
+         iconPath != null || icon != null || customIcon != null,
+         'Either iconPath, icon, or customIcon must be provided',
+       );
 
   @override
   State<MessageOptionCard> createState() => _MessageOptionCardState();
@@ -49,22 +49,21 @@ class _MessageOptionCardState extends State<MessageOptionCard>
     );
 
     // Border color animation - smooth transition
-    _borderColorAnimation = ColorTween(
-      begin: AppColors.incrementButton,
-      end: AppColors.selectedCategory,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderColorAnimation =
+        ColorTween(
+          begin: AppColors.incrementButton,
+          end: AppColors.selectedCategory,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Border width animation - subtle change
-    _borderWidthAnimation = Tween<double>(
-      begin: 1.0,
-      end: 1.5,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderWidthAnimation = Tween<double>(begin: 1.0, end: 1.5).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     // If initially selected, start with animation completed
     if (widget.isSelected) {
@@ -114,18 +113,17 @@ class _MessageOptionCardState extends State<MessageOptionCard>
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(10.r),
-              border: Border.all(
-                color: borderColor,
-                width: borderWidth,
-              ),
+              border: Border.all(color: borderColor, width: borderWidth),
               boxShadow: widget.isSelected
                   ? [
-                BoxShadow(
-                  color: AppColors.selectedCategory.withValues(alpha: 0.08),
-                  blurRadius: 4.r,
-                  offset: Offset(0, 1.h),
-                ),
-              ]
+                      BoxShadow(
+                        color: AppColors.selectedCategory.withValues(
+                          alpha: 0.08,
+                        ),
+                        blurRadius: 4.r,
+                        offset: Offset(0, 1.h),
+                      ),
+                    ]
                   : null,
             ),
             child: Row(

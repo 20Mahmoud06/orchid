@@ -47,10 +47,7 @@ class FadeSlideIn extends StatelessWidget {
           opacity: t,
           child: Transform.translate(
             // Interpolate from start offset to zero.
-            offset: Offset(
-              start.dx * (1 - t),
-              start.dy * (1 - t),
-            ),
+            offset: Offset(start.dx * (1 - t), start.dy * (1 - t)),
             child: child,
           ),
         );

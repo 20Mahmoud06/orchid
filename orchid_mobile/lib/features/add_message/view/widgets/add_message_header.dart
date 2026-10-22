@@ -42,8 +42,9 @@ class AddMessageHeader extends StatelessWidget {
                     fit: BoxFit.contain,
                   ),
                 ),
-                onPressed: onBackPressed ??
-                        () {
+                onPressed:
+                    onBackPressed ??
+                    () {
                       if (Navigator.canPop(context)) {
                         Navigator.maybePop(context);
                       }
@@ -56,10 +57,7 @@ class AddMessageHeader extends StatelessWidget {
             child: SizedBox(
               width: 24.r,
               height: 24.r,
-              child: Image.asset(
-                AppAssets.messageIcon,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(AppAssets.messageIcon, fit: BoxFit.contain),
             ),
           ),
         ],

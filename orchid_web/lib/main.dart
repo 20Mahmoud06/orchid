@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -15,7 +13,6 @@ import 'core/router/app_routes.dart';
 import 'core/theme/app_page_transitions.dart';
 import 'features/auth/recovery_link_handler.dart';
 import 'features/cart/cubit/cart_cubit.dart';
-import 'features/offline/view/screens/offline_screen.dart';
 import 'shared/widgets/web_home_button.dart';
 
 void main() async {
@@ -25,7 +22,7 @@ void main() async {
     publishableKey: 'sb_publishable_zihRKfJx8aa2Ga8E-ayqvA_3E9j_3ED',
   );
   // App-lifetime deep-link listener: password recovery links can arrive at any
-  // time, not only while the splash screen is visible.
+  // time, not only during startup.
   RecoveryLinkHandler.instance.init();
   // Restore the favorites, bouquet selections and cart contents that were
   // saved on this device during previous runs.
@@ -40,14 +37,6 @@ class OrchidApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-    }
-
     final app = ScreenUtilInit(
       designSize: const Size(375, 812),
       minTextAdapt: true,
@@ -75,30 +64,25 @@ class OrchidApp extends StatelessWidget {
               ),
               scaffoldBackgroundColor: AppColors.background,
               // Web: swap page content with a soft cross-fade instead of the
-              // default slide/zoom. Mobile keeps Flutter's native transitions.
-              pageTransitionsTheme: kIsWeb
-                  ? const PageTransitionsTheme(
-                      builders: {
-                        TargetPlatform.android: AppPageTransitionsBuilder(),
-                        TargetPlatform.iOS: AppPageTransitionsBuilder(),
-                        TargetPlatform.windows: AppPageTransitionsBuilder(),
-                        TargetPlatform.macOS: AppPageTransitionsBuilder(),
-                        TargetPlatform.linux: AppPageTransitionsBuilder(),
-                        TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
-                      },
-                    )
-                  : null,
+              // default slide/zoom.
+              pageTransitionsTheme: const PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: AppPageTransitionsBuilder(),
+                  TargetPlatform.iOS: AppPageTransitionsBuilder(),
+                  TargetPlatform.windows: AppPageTransitionsBuilder(),
+                  TargetPlatform.macOS: AppPageTransitionsBuilder(),
+                  TargetPlatform.linux: AppPageTransitionsBuilder(),
+                  TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
+                },
+              ),
             ),
             initialRoute: AppRoutes.splash,
             onGenerateRoute: AppRouter.generateRoute,
             builder: (context, child) {
               final content = SkeletonizerConfig(
                 data: AppSkeleton.configData,
-                // The offline overlay is a mobile-only feature; on the web the
-                // connectivity plugins are unnecessary.
-                child: kIsWeb ? child! : OfflineWrapper(child: child!),
+                child: child!,
               );
-              if (!kIsWeb) return content;
               // Web: float a home shortcut above every screen so shoppers can
               // always return to the storefront even when the browser's back
               // button misbehaves.
@@ -108,8 +92,6 @@ class OrchidApp extends StatelessWidget {
         );
       },
     );
-
-    if (!kIsWeb) return app;
 
     // Web: pin the perceived screen size to the design size so `flutter_screenutil`
     // keeps a 1:1 scale (no gigantic buttons/text on large monitors), but let the

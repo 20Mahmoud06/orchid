@@ -45,7 +45,9 @@ class FlowerCategoryTabs extends StatelessWidget {
                           color: isSelected
                               ? AppColors.selectedCategory
                               : AppColors.black,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                         child: CustomText(
                           text: categories[index],
@@ -70,7 +72,8 @@ class FlowerCategoryTabs extends StatelessWidget {
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: AppColors.selectedCategory.withValues(alpha: 0.3),
+                                    color: AppColors.selectedCategory
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 6.r,
                                     spreadRadius: 1.r,
                                     offset: Offset(0, 2.h),

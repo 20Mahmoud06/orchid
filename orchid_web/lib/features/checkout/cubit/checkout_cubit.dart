@@ -39,6 +39,32 @@ class CheckoutLineItem {
   final int quantity;
 }
 
+/// One line of the current draft, shared by the order summary
+/// ([CheckoutLineItem]) and the persisted `order_items` rows.
+class _CheckoutDraftItem {
+  const _CheckoutDraftItem({
+    required this.name,
+    required this.image,
+    required this.description,
+    required this.unitPrice,
+    required this.quantity,
+    required this.itemType,
+    this.productId,
+    this.customComponents,
+  });
+
+  final String name;
+  final String image;
+  final String description;
+  final int unitPrice;
+  final int quantity;
+  final String itemType;
+  final String? productId;
+  final Map<String, dynamic>? customComponents;
+
+  int get linePrice => unitPrice * quantity;
+}
+
 /// Shared order data collected across the checkout flow, and the single
 /// place that writes an order into the same `orders` / `order_items` tables
 /// the admin dashboard reads.
@@ -117,73 +143,18 @@ class CheckoutCubit extends Cubit<CheckoutState> {
 
   int get totalPrice => bouquetPrice + deliveryFee + serviceFee;
 
-  String get bouquetDescription => BouquetCubit.instance.descriptionText;
-
-  /// Items being purchased, in the shape the order summary displays.
-  List<String> get checkoutLines {
-    if (state.source == CheckoutSource.cart) {
-      return [
-        for (final item in CartCubit.instance.items)
-          '${item.quantity} ${item.name.toLowerCase()}'
-              '${item.message != null && item.message!.trim().isNotEmpty ? ' — ${item.message!.trim()}' : ''}',
-      ];
-    }
-    return BouquetCubit.instance.descriptionText.isEmpty
-        ? const <String>[]
-        : BouquetCubit.instance.descriptionText.split(', ').toList();
-  }
-
   /// Structured checkout lines (photo, name, composition, line price) so the
   /// order summary can draw one card per item instead of a single card.
-  List<CheckoutLineItem> get checkoutItems {
-    if (state.source == CheckoutSource.cart) {
-      return [
-        for (final item in CartCubit.instance.items)
-          CheckoutLineItem(
-            name: item.name,
-            image: item.imagePath,
-            description: _cartItemDescription(item),
-            price: item.total,
-            quantity: item.quantity,
-          ),
-      ];
-    }
-
-    final bouquet = BouquetCubit.instance;
-    final items = <CheckoutLineItem>[];
-
-    final flowers = bouquet.selectedFlowers;
-    if (flowers.isNotEmpty) {
-      final flowerSubtotal = flowers.fold<int>(
-        0,
-        (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
-      );
-      items.add(
-        CheckoutLineItem(
-          name: 'Custom Bouquet',
-          image: flowers.first.imagePath,
-          description: bouquet.descriptionText,
-          price: flowerSubtotal,
-          quantity: 1,
-        ),
-      );
-    }
-
-    for (final ready in bouquet.selectedReadyBouquets) {
-      final quantity = bouquet.getQuantity(ready.id);
-      items.add(
-        CheckoutLineItem(
-          name: ready.name,
-          image: ready.imagePath,
-          description: '',
-          price: ready.price * quantity,
-          quantity: quantity,
-        ),
-      );
-    }
-
-    return items;
-  }
+  List<CheckoutLineItem> get checkoutItems => [
+    for (final item in _draftItems)
+      CheckoutLineItem(
+        name: item.name,
+        image: item.image,
+        description: item.description,
+        price: item.linePrice,
+        quantity: item.quantity,
+      ),
+  ];
 
   String _cartItemDescription(CartItem item) {
     final message = item.message?.trim();
@@ -196,6 +167,99 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           : composition;
     }
     return message ?? '';
+  }
+
+  /// The current draft (saved cart or live bouquet builder) as neutral lines
+  /// that both the order summary and the `order_items` rows are derived from.
+  List<_CheckoutDraftItem> get _draftItems {
+    if (state.source == CheckoutSource.cart) {
+      final items = <_CheckoutDraftItem>[];
+      for (final item in CartCubit.instance.items) {
+        final message = item.message?.trim();
+        final components = <String, dynamic>{
+          if (message != null && message.isNotEmpty) 'message': message,
+          if (item.isCustomBouquet)
+            'description': item.components!
+                .map((c) => '${c.quantity} ${c.name.toLowerCase()}')
+                .join(', '),
+          if (item.isCustomBouquet)
+            'flowers': [
+              for (final component in item.components!)
+                {
+                  'product_id': component.productId,
+                  'name': component.name,
+                  'quantity': component.quantity,
+                  'unit_price': component.unitPrice,
+                },
+            ],
+        };
+        items.add(
+          _CheckoutDraftItem(
+            name: item.name,
+            image: item.imagePath,
+            description: _cartItemDescription(item),
+            unitPrice: item.price,
+            quantity: item.quantity,
+            itemType: item.isCustomBouquet
+                ? _bouquetType
+                : _productType(item.id),
+            productId: _uuidOrNull(item.id),
+            customComponents: components.isEmpty ? null : components,
+          ),
+        );
+      }
+      return items;
+    }
+
+    final bouquet = BouquetCubit.instance;
+    final items = <_CheckoutDraftItem>[];
+
+    final flowers = bouquet.selectedFlowers;
+    if (flowers.isNotEmpty) {
+      final flowerSubtotal = flowers.fold<int>(
+        0,
+        (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
+      );
+      items.add(
+        _CheckoutDraftItem(
+          name: 'Custom Bouquet',
+          image: flowers.first.imagePath,
+          description: bouquet.descriptionText,
+          unitPrice: flowerSubtotal,
+          quantity: 1,
+          itemType: _bouquetType,
+          customComponents: {
+            'description': bouquet.descriptionText,
+            'flowers': [
+              for (final flower in flowers)
+                {
+                  'product_id': flower.id,
+                  'name': flower.name,
+                  'quantity': bouquet.getQuantity(flower.id),
+                  'unit_price': flower.price,
+                },
+            ],
+          },
+        ),
+      );
+    }
+
+    for (final ready in bouquet.selectedReadyBouquets) {
+      final quantity = bouquet.getQuantity(ready.id);
+      items.add(
+        _CheckoutDraftItem(
+          name: ready.name,
+          image: ready.imagePath,
+          description: '',
+          unitPrice: ready.price,
+          quantity: quantity,
+          itemType: _bouquetType,
+          productId: ready.id,
+        ),
+      );
+    }
+
+    return items;
   }
 
   void setMessage({required bool hasMessage, required String text}) {
@@ -317,88 +381,18 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   /// always stored: a public URL, a bundled asset path, or '' — the admin and
   /// the app both render a floral placeholder for the latter two.
   @visibleForTesting
-  List<Map<String, dynamic>> buildItems() {
-    if (state.source == CheckoutSource.cart) {
-      final items = <Map<String, dynamic>>[];
-      for (final item in CartCubit.instance.items) {
-        final message = item.message?.trim();
-        final components = <String, dynamic>{
-          if (message != null && message.isNotEmpty) 'message': message,
-          if (item.isCustomBouquet)
-            'description': item.components!
-                .map((c) => '${c.quantity} ${c.name.toLowerCase()}')
-                .join(', '),
-          if (item.isCustomBouquet)
-            'flowers': [
-              for (final component in item.components!)
-                {
-                  'product_id': component.productId,
-                  'name': component.name,
-                  'quantity': component.quantity,
-                  'unit_price': component.unitPrice,
-                },
-            ],
-        };
-        items.add({
-          'item_type': item.isCustomBouquet
-              ? _bouquetType
-              : _productType(item.id),
-          'product_id': _uuidOrNull(item.id),
-          'name_snapshot': item.name,
-          'image_snapshot': item.imagePath,
-          'price_snapshot': item.price,
-          'quantity': item.quantity,
-          'custom_components': components.isEmpty ? null : components,
-        });
-      }
-      return items;
-    }
-
-    final bouquet = BouquetCubit.instance;
-    final items = <Map<String, dynamic>>[];
-
-    final flowers = bouquet.selectedFlowers;
-    if (flowers.isNotEmpty) {
-      final flowerSubtotal = flowers.fold<int>(
-        0,
-        (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
-      );
-      items.add({
-        'item_type': _bouquetType,
-        'product_id': null,
-        'name_snapshot': 'Custom Bouquet',
-        'image_snapshot': flowers.first.imagePath,
-        'price_snapshot': flowerSubtotal,
-        'quantity': 1,
-        'custom_components': {
-          'description': bouquet.descriptionText,
-          'flowers': [
-            for (final flower in flowers)
-              {
-                'product_id': flower.id,
-                'name': flower.name,
-                'quantity': bouquet.getQuantity(flower.id),
-                'unit_price': flower.price,
-              },
-          ],
-        },
-      });
-    }
-
-    for (final ready in bouquet.selectedReadyBouquets) {
-      items.add({
-        'item_type': _bouquetType,
-        'product_id': ready.id,
-        'name_snapshot': ready.name,
-        'image_snapshot': ready.imagePath,
-        'price_snapshot': ready.price,
-        'quantity': bouquet.getQuantity(ready.id),
-        'custom_components': null,
-      });
-    }
-
-    return items;
-  }
+  List<Map<String, dynamic>> buildItems() => [
+    for (final item in _draftItems)
+      {
+        'item_type': item.itemType,
+        'product_id': item.productId,
+        'name_snapshot': item.name,
+        'image_snapshot': item.image,
+        'price_snapshot': item.unitPrice,
+        'quantity': item.quantity,
+        'custom_components': item.customComponents,
+      },
+  ];
 
   String _generateOrderCode() {
     // Ambiguous letters (I, O, 0, 1...) are left out so codes are easy to

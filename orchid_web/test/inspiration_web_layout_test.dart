@@ -50,32 +50,39 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Inspiration renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Inspiration renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const InspirationScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Inspiration uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Inspiration uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const InspirationScreen());
     expect(find.text('inspiration'), findsOneWidget);
     expect(find.text('not sure what to choose ?'), findsOneWidget);
-    expect(find.text('take a look at what others are creating'), findsOneWidget);
+    expect(
+      find.text('take a look at what others are creating'),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Inspiration keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Inspiration keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const InspirationScreen());
     expect(find.byType(WebInspirationMessage), findsNothing);
     expect(find.text('inspiration'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('WebInspirationCard displays profile avatar with avatarUrl',
-      (tester) async {
+  testWidgets('WebInspirationCard displays profile avatar with avatarUrl', (
+    tester,
+  ) async {
     await pumpAt(
       tester,
       const Size(1440, 900),

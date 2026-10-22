@@ -26,24 +26,6 @@ class PhoneValidator {
     return null; // Valid
   }
 
-  // Generic international phone number validator
-  static String? validateInternationalPhone(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Phone number is required';
-    }
-
-    // Remove any non-digit characters except '+'
-    final cleanNumber = value.replaceAll(RegExp(r'[^0-9+]'), '');
-
-    // Check if it has at least 8 digits and at most 15 digits (E.164 standard)
-    final digitsOnly = cleanNumber.replaceAll('+', '');
-    if (digitsOnly.length < 8 || digitsOnly.length > 15) {
-      return 'Phone number must be between 8-15 digits';
-    }
-
-    return null; // Valid
-  }
-
   // WhatsApp number validator (same as phone but with specific checks)
   static String? validateWhatsAppNumber(String? value) {
     if (value == null || value.isEmpty) {

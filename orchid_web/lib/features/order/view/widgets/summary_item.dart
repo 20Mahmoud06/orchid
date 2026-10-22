@@ -12,7 +12,8 @@ class SummaryItem extends StatelessWidget {
   final String? subtitle;
   final String trailing;
 
-  const SummaryItem({super.key,
+  const SummaryItem({
+    super.key,
     this.leading,
     this.iconPath,
     this.iconSize,
@@ -20,9 +21,9 @@ class SummaryItem extends StatelessWidget {
     this.subtitle,
     required this.trailing,
   }) : assert(
-  leading != null || iconPath != null,
-  'Either leading or iconPath must be provided',
-  );
+         leading != null || iconPath != null,
+         'Either leading or iconPath must be provided',
+       );
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +43,11 @@ class SummaryItem extends StatelessWidget {
               child: leading != null
                   ? leading!
                   : Image.asset(
-                iconPath!,
-                width: size,
-                height: size,
-                fit: BoxFit.contain,
-              ),
+                      iconPath!,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.contain,
+                    ),
             ),
           ),
           SizedBox(width: 12.w),

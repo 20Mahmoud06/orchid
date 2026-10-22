@@ -12,10 +12,7 @@ import 'profile_screen.dart';
 class MainNavigationScreen extends StatefulWidget {
   final int initialIndex;
 
-  const MainNavigationScreen({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const MainNavigationScreen({super.key, this.initialIndex = 0});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
@@ -70,9 +67,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               const HomeScreen(),
               const FavoritesScreen(),
               const CartScreen(),
-              ProfileScreen(
-                onBackPressed: () {},
-              ),
+              ProfileScreen(onBackPressed: () {}),
             ],
           );
 

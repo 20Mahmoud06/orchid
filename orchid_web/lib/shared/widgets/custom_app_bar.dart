@@ -117,7 +117,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveLeading = leading ??
+    final effectiveLeading =
+        leading ??
         (showBackButton && Navigator.canPop(context)
             ? _buildDefaultBackButton(context)
             : null);
@@ -132,10 +133,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         alignment: Alignment.center,
         children: [
           if (effectiveLeading != null)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: effectiveLeading,
-            ),
+            Align(alignment: Alignment.centerLeft, child: effectiveLeading),
           if (centerWidget != null)
             Align(alignment: Alignment.center, child: centerWidget!)
           else
@@ -150,10 +148,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           if (effectiveActions != null)
-            Align(
-              alignment: Alignment.centerRight,
-              child: effectiveActions,
-            ),
+            Align(alignment: Alignment.centerRight, child: effectiveActions),
         ],
       ),
     );
@@ -166,10 +161,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       icon: SizedBox(
         width: 24.r,
         height: 24.r,
-        child: Image.asset(
-          AppAssets.backButtonIcon,
-          fit: BoxFit.contain,
-        ),
+        child: Image.asset(AppAssets.backButtonIcon, fit: BoxFit.contain),
       ),
       onPressed: onBackPressed ?? () => Navigator.maybePop(context),
     );
@@ -177,8 +169,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildActionsRow() {
     // Define how much to shift the icons to bring them together
-    double cartShift = 7.0.w;  // Shift cart right
-    double favShift = 2.0.w;   // Shift favorite left
+    double cartShift = 7.0.w; // Shift cart right
+    double favShift = 2.0.w; // Shift favorite left
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -196,16 +188,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         }
 
         // For the SECOND icon (favorite): Shift it LEFT to bring it near the cart.
-        return Transform.translate(
-          offset: Offset(-favShift, 0),
-          child: action,
-        );
+        return Transform.translate(offset: Offset(-favShift, 0), child: action);
       }).toList(),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight + (padding?.vertical ?? 0));
+  Size get preferredSize =>
+      Size.fromHeight(kToolbarHeight + (padding?.vertical ?? 0));
 }
 
 /// Convenience widget for creating standard trailing action buttons.
@@ -233,7 +223,11 @@ class AppBarAction extends StatelessWidget {
       icon: SizedBox(
         width: (size ?? 24).r,
         height: (size ?? 24).r,
-        child: Icon(icon, color: color ?? AppColors.black, size: iconSize ?? 20),
+        child: Icon(
+          icon,
+          color: color ?? AppColors.black,
+          size: iconSize ?? 20,
+        ),
       ),
       onPressed: onPressed,
     );

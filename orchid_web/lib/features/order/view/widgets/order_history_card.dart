@@ -49,10 +49,7 @@ class OrderHistoryCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.circular(14.r),
-                  border: Border.all(
-                    color: AppColors.cardBorder,
-                    width: 1.w,
-                  ),
+                  border: Border.all(color: AppColors.cardBorder, width: 1.w),
                 ),
               ),
             ),
@@ -67,10 +64,7 @@ class OrderHistoryCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(14.r),
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 1.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 1.w),
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.only(

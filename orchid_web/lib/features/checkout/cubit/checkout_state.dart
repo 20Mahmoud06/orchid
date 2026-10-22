@@ -60,15 +60,15 @@ class CheckoutState extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        hasMessage,
-        messageText,
-        fullName,
-        phone,
-        whatsapp,
-        location,
-        notes,
-        source,
-        paymentMethod,
-        lastOrderCode,
-      ];
+    hasMessage,
+    messageText,
+    fullName,
+    phone,
+    whatsapp,
+    location,
+    notes,
+    source,
+    paymentMethod,
+    lastOrderCode,
+  ];
 }

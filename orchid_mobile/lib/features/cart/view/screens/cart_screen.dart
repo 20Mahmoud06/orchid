@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:ionicons/ionicons.dart';
+
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
-import '../../../../core/router/app_routes.dart';
-import '../../../../shared/widgets/bouquet_options_dialog.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_button.dart' show CustomButton;
 import '../../../../shared/widgets/custom_text.dart';
 import '../../cubit/cart_cubit.dart';
 import '../../cubit/cart_state.dart';
-import '../widgets/cart_item_card.dart';
+import '../widgets/cart_dialogs.dart';
+import '../widgets/cart_empty_state.dart';
+import '../widgets/cart_item_list.dart';
 import '../widgets/checkout_summary.dart';
 
 /// Cart screen listing the user's added items with a checkout summary.
@@ -19,11 +20,7 @@ class CartScreen extends StatelessWidget {
   final VoidCallback? onBackPressed;
   final VoidCallback? onConfirmOrder;
 
-  const CartScreen({
-    super.key,
-    this.onBackPressed,
-    this.onConfirmOrder,
-  });
+  const CartScreen({super.key, this.onBackPressed, this.onConfirmOrder});
 
   @override
   Widget build(BuildContext context) {
@@ -46,16 +43,16 @@ class CartScreen extends StatelessWidget {
                     actions: items.isEmpty
                         ? null
                         : [
-                      AppBarAction(
-                        icon: Ionicons.trash,
-                        color: AppColors.error,
-                        size: 22,
-                        iconSize: 20,
-                        onPressed: () {
-                          _showClearCartDialog(context, cart);
-                        },
-                      ),
-                    ],
+                            AppBarAction(
+                              icon: Ionicons.trash,
+                              color: AppColors.error,
+                              size: 22,
+                              iconSize: 20,
+                              onPressed: () {
+                                showClearCartDialog(context, cart);
+                              },
+                            ),
+                          ],
                   ),
                   CustomText(
                     text: items.isEmpty
@@ -68,28 +65,13 @@ class CartScreen extends StatelessWidget {
                   SizedBox(height: 20.h),
                   Expanded(
                     child: items.isEmpty
-                        ? _CartEmptyState(
-                            onChooseItems: () => _showChooseBouquetDialog(
+                        ? CartEmptyState(
+                            onChooseItems: () => showChooseBouquetDialog(
                               context,
                               title: 'Choose Bouquet',
                             ),
                           )
-                        : ListView.separated(
-                      padding: EdgeInsets.only(bottom: 16.h),
-                      itemCount: items.length,
-                      separatorBuilder: (_, _) => SizedBox(height: 14.h),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        return CartItemCard(
-                          item: item,
-                          onRemove: () => cart.removeItem(item.id),
-                          onIncrement: () =>
-                              cart.incrementQuantity(item.id),
-                          onDecrement: () =>
-                              cart.decrementQuantity(item.id),
-                        );
-                      },
-                    ),
+                        : CartItemList(items: items, cart: cart),
                   ),
                   if (items.isNotEmpty) ...[
                     CustomButton(
@@ -106,7 +88,7 @@ class CartScreen extends StatelessWidget {
                         width: 1.w,
                       ),
                       boxShadow: const [],
-                      onPressed: () => _showChooseBouquetDialog(
+                      onPressed: () => showChooseBouquetDialog(
                         context,
                         title: 'Add More Items',
                       ),
@@ -122,160 +104,6 @@ class CartScreen extends StatelessWidget {
             );
           },
         ),
-      ),
-    );
-  }
-
-  /// Opens the shared bouquet chooser so the user can buy an existing bouquet
-  /// or create their own — used by both the empty cart and "add more items".
-  void _showChooseBouquetDialog(
-    BuildContext context, {
-    required String title,
-  }) {
-    showBouquetOptionsDialog(
-      context,
-      title: title,
-      description: 'Buy an existing bouquet or create your own.',
-      onBuyExisting: () =>
-          Navigator.pushNamed(context, AppRoutes.chooseBouquets),
-      onCreateCustom: () =>
-          Navigator.pushNamed(context, AppRoutes.chooseFlowers),
-    );
-  }
-
-  /// Shows a confirmation dialog before clearing the entire cart.
-  void _showClearCartDialog(BuildContext context, CartCubit cart) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        return PopScope(
-          canPop: true,
-          child: Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.r),
-            ),
-            backgroundColor: AppColors.background,
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 28.h),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 64.r,
-                    height: 64.r,
-                    decoration: const BoxDecoration(
-                      color: AppColors.redBackground,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Ionicons.trash,
-                      size: 32.r,
-                      color: AppColors.redText,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  CustomText(
-                    text: 'Clear Cart',
-                    textAlign: TextAlign.center,
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w700,
-                    textColor: AppColors.redText,
-                  ),
-                  SizedBox(height: 8.h),
-                  CustomText(
-                    text:
-                    'are you sure you want to remove all items '
-                        'from your cart?\nthis action cannot be undone.',
-                    textAlign: TextAlign.center,
-                    fontSize: 14.sp,
-                    textColor: AppColors.textPrimary,
-                  ),
-                  SizedBox(height: 24.h),
-                  CustomButton(
-                    label: 'Delete All',
-                    height: 48.h,
-                    borderRadius: BorderRadius.circular(14.r),
-                    backgroundColor: AppColors.canceledText,
-                    textColor: AppColors.white,
-                    onPressed: () {
-                      cart.clearCart();
-                      Navigator.of(ctx).pop();
-                    },
-                  ),
-                  SizedBox(height: 12.h),
-                  CustomButton(
-                    label: 'Cancel',
-                    height: 48.h,
-                    borderRadius: BorderRadius.circular(14.r),
-                    backgroundColor: AppColors.textFieldDarkerPink,
-                    textColor: AppColors.darkGreen,
-                    onPressed: () => Navigator.of(ctx).pop(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _CartEmptyState extends StatelessWidget {
-  final VoidCallback onChooseItems;
-
-  const _CartEmptyState({required this.onChooseItems});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 140.r,
-            height: 140.r,
-            decoration: BoxDecoration(
-              color: AppColors.fieldPink,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Ionicons.cart_outline,
-              size: 64.r,
-              color: AppColors.primary,
-            ),
-          ),
-          SizedBox(height: 24.h),
-          CustomText(
-            text: 'Your cart is empty',
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 24.sp,
-            fontWeight: FontWeight.w600,
-            textColor: AppColors.black,
-          ),
-          SizedBox(height: 8.h),
-          CustomText(
-            text: 'Start adding your favorite items!',
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 16.sp,
-            textColor: AppColors.textSecondary,
-          ),
-          SizedBox(height: 24.h),
-          CustomButton(
-            label: 'CHOOSE BOUQUET',
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-            textColor: AppColors.black,
-            backgroundColor: AppColors.textFieldPink,
-            height: 52.h,
-            borderRadius: BorderRadius.circular(10.r),
-            boxShadow: const [],
-            onPressed: onChooseItems,
-          ),
-        ],
       ),
     );
   }

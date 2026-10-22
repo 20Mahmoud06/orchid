@@ -9,7 +9,7 @@ import '../../../../shared/widgets/slider_direction.dart';
 import '../widgets/account_footer.dart';
 import '../widgets/privacy_info_card.dart';
 import '../widgets/terms_header_card.dart';
-import '../widgets/web/web_account_widgets.dart';
+import '../widgets/web/terms_conditions_web_view.dart';
 
 class TermsConditionsScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
@@ -63,86 +63,14 @@ class _TermsConditionsScreenState extends State<TermsConditionsScreen>
         // in a centered reading column. Narrow viewports keep the untouched
         // Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb();
+          return TermsConditionsWebView(
+            animationFor: _animFor,
+            direction: _direction,
+            slideDistance: _slideDistance,
+          );
         }
         return _buildMobile();
       },
-    );
-  }
-
-  /// Entrance helper mirroring the mobile stagger for a single web section.
-  Widget _webSlide(int index, Widget child) => FadeSlideIn(
-    animation: _animFor(index),
-    direction: _direction,
-    distance: _slideDistance,
-    child: child,
-  );
-
-  /// Desktop-first "terms & conditions" page (>= 768px). Same colors, copy and
-  /// content as the mobile screen — only the layout differs.
-  Widget _buildWeb() {
-    return AccountWebScaffold(
-      title: 'terms & conditions',
-      titleAnimation: _animFor(0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _webSlide(
-            1,
-            Center(
-              child: Image.asset(
-                AppAssets.terms,
-                width: 140,
-                height: 140,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          _webSlide(
-            2,
-            const WebAccountHeaderCard(
-              title: 'Terms & Conditions',
-              body:
-                  'By using our app, you agree to the\nfollowing terms and conditions.',
-            ),
-          ),
-          const SizedBox(height: 20),
-          _webSlide(
-            3,
-            const AccountWebCardGrid(
-              children: [
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.useAppIcon,
-                  title: 'Use of the App',
-                  body:
-                      'You agree to use the app for lawful purposes only and in accordance with these terms. You may not misuse, copy, or distribute any part of the app.',
-                ),
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.ordersIcon,
-                  title: 'Orders & Payments',
-                  body:
-                      'All orders are subject to availability and confirmation. Prices, payment methods and delivery times are as shown in the app.',
-                ),
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.limitationIcon,
-                  title: 'Limitation of Liability',
-                  body:
-                      'We are not responsible for any indirect, incidental, or consequential damages arising from the use of our app or services.',
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
-          _webSlide(
-            4,
-            const WebAccountFooter(
-              title: 'Thank you for being with us',
-              description: 'Together we grow',
-            ),
-          ),
-        ],
-      ),
     );
   }
 

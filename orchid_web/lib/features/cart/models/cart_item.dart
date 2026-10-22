@@ -13,11 +13,11 @@ class CartItemComponent {
   final String? productId;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'quantity': quantity,
-        'unit_price': unitPrice,
-        if (productId != null) 'product_id': productId,
-      };
+    'name': name,
+    'quantity': quantity,
+    'unit_price': unitPrice,
+    if (productId != null) 'product_id': productId,
+  };
 
   factory CartItemComponent.fromJson(Map<String, dynamic> json) {
     return CartItemComponent(
@@ -79,16 +79,15 @@ class CartItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'price': price,
-        'imagePath': imagePath,
-        'quantity': quantity,
-        if (message != null && message!.trim().isNotEmpty)
-          'message': message,
-        if (components != null)
-          'components': components!.map((c) => c.toJson()).toList(),
-      };
+    'id': id,
+    'name': name,
+    'price': price,
+    'imagePath': imagePath,
+    'quantity': quantity,
+    if (message != null && message!.trim().isNotEmpty) 'message': message,
+    if (components != null)
+      'components': components!.map((c) => c.toJson()).toList(),
+  };
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     final rawComponents = json['components'];
@@ -101,9 +100,12 @@ class CartItem {
       message: json['message'] as String?,
       components: rawComponents is List
           ? rawComponents
-              .whereType<Map>()
-              .map((c) => CartItemComponent.fromJson(Map<String, dynamic>.from(c)))
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (c) =>
+                      CartItemComponent.fromJson(Map<String, dynamic>.from(c)),
+                )
+                .toList()
           : null,
     );
   }

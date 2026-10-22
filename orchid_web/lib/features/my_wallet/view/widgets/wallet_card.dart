@@ -203,7 +203,6 @@ class _WalletCardState extends State<WalletCard>
         WalletProviderDropdown(
           selectedProvider: _selectedProvider,
           onChanged: _updateProvider,
-          isExpanded: true,
           hintText: 'Choose your wallet provider',
         ),
       ],

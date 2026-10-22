@@ -3,7 +3,9 @@ import 'package:ORCHID/features/order/cubit/orders_state.dart';
 import 'package:ORCHID/features/order/models/customer_order.dart';
 import 'package:ORCHID/features/order/view/screens/order_history_screen.dart';
 import 'package:ORCHID/features/order/view/widgets/order_history_card.dart';
-import 'package:ORCHID/features/order/view/widgets/web/web_order_history_widgets.dart';
+import 'package:ORCHID/features/order/view/widgets/web/web_order_empty_state.dart';
+import 'package:ORCHID/features/order/view/widgets/web/web_order_history_card.dart';
+import 'package:ORCHID/features/order/view/widgets/web/web_order_history_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -191,29 +193,28 @@ void main() {
     },
   );
 
-  testWidgets(
-    'Preparing order delete button shows cancel on web desktop',
-    (tester) async {
-      await pumpAt(tester, const Size(1440, 900));
-      await seedOrders(tester, [
-        order(id: 'p1', status: 'PREPARING', name: 'Rose Bouquet'),
-      ]);
+  testWidgets('Preparing order delete button shows cancel on web desktop', (
+    tester,
+  ) async {
+    await pumpAt(tester, const Size(1440, 900));
+    await seedOrders(tester, [
+      order(id: 'p1', status: 'PREPARING', name: 'Rose Bouquet'),
+    ]);
 
-      final cardTrash = find.descendant(
-        of: find.byType(WebOrderHistoryCard),
-        matching: find.byIcon(Ionicons.trash),
-      );
-      expect(cardTrash, findsOneWidget);
-      await tester.tap(cardTrash);
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+    final cardTrash = find.descendant(
+      of: find.byType(WebOrderHistoryCard),
+      matching: find.byIcon(Ionicons.trash),
+    );
+    expect(cardTrash, findsOneWidget);
+    await tester.tap(cardTrash);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 200));
 
-      expect(find.text('Cancel this order?'), findsOneWidget);
-      expect(find.text('CANCEL ORDER'), findsOneWidget);
-      expect(find.text('REMOVE FROM HISTORY'), findsNothing);
-      expect(find.text('Remove from history?'), findsNothing);
-    },
-  );
+    expect(find.text('Cancel this order?'), findsOneWidget);
+    expect(find.text('CANCEL ORDER'), findsOneWidget);
+    expect(find.text('REMOVE FROM HISTORY'), findsNothing);
+    expect(find.text('Remove from history?'), findsNothing);
+  });
 
   testWidgets(
     'Completed order delete button shows remove from history on mobile viewport',

@@ -9,7 +9,7 @@ import '../../../../shared/widgets/slider_direction.dart';
 import '../widgets/account_footer.dart';
 import '../widgets/privacy_header_card.dart';
 import '../widgets/privacy_info_card.dart';
-import '../widgets/web/web_account_widgets.dart';
+import '../widgets/web/privacy_policy_web_view.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
@@ -66,86 +66,14 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen>
         // in a centered reading column. Narrow viewports keep the untouched
         // Orchid mobile layout.
         if (constraints.maxWidth >= 768) {
-          return _buildWeb();
+          return PrivacyPolicyWebView(
+            animationFor: _animFor,
+            direction: _direction,
+            slideDistance: _slideDistance,
+          );
         }
         return _buildMobile();
       },
-    );
-  }
-
-  /// Entrance helper mirroring the mobile stagger for a single web section.
-  Widget _webSlide(int index, Widget child) => FadeSlideIn(
-    animation: _animFor(index),
-    direction: _direction,
-    distance: _slideDistance,
-    child: child,
-  );
-
-  /// Desktop-first "privacy policy" page (>= 768px). Same colors, copy and
-  /// content as the mobile screen — only the layout differs.
-  Widget _buildWeb() {
-    return AccountWebScaffold(
-      title: 'privacy policy',
-      titleAnimation: _animFor(0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _webSlide(
-            1,
-            Center(
-              child: Image.asset(
-                AppAssets.privacy,
-                width: 140,
-                height: 140,
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          _webSlide(
-            2,
-            const WebAccountHeaderCard(
-              title: 'Your Privacy Matters',
-              body:
-                  'We care about how your information\nis collected, used and protected.',
-            ),
-          ),
-          const SizedBox(height: 20),
-          _webSlide(
-            3,
-            const AccountWebCardGrid(
-              children: [
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.infoIcon,
-                  title: 'Information We Collect',
-                  body:
-                      'We collect only the information you provide such as your name, phone number, and delivery address to provide our services and improve your experience.',
-                ),
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.yourDataIcon,
-                  title: 'How We Use Your Data',
-                  body:
-                      'Your data is used to process your orders, communicate with you, and send you relevant updates and offers. We do not sell your data to third parties.',
-                ),
-                WebPrivacyInfoCard(
-                  iconAsset: AppAssets.yourSecurityIcon,
-                  title: 'Your Security',
-                  body:
-                      'We use industry-standard security measures to protect your information and keep it safe at all times.',
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
-          _webSlide(
-            4,
-            const WebAccountFooter(
-              title: 'Thank you for trusting ORCHID',
-              description: 'Your privacy is our priority',
-            ),
-          ),
-        ],
-      ),
     );
   }
 

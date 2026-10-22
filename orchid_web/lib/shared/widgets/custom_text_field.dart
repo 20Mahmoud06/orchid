@@ -74,22 +74,21 @@ class _CustomTextFieldState extends State<CustomTextField>
       duration: const Duration(milliseconds: 250),
     );
 
-    _borderColorAnimation = ColorTween(
-      begin: AppColors.cardBorder,
-      end: AppColors.selectedCategory,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderColorAnimation =
+        ColorTween(
+          begin: AppColors.cardBorder,
+          end: AppColors.selectedCategory,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOut,
+          ),
+        );
 
     // Border width animation
-    _borderWidthAnimation = Tween<double>(
-      begin: 1.0,
-      end: 2.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    _borderWidthAnimation = Tween<double>(begin: 1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _focusNode.addListener(() {
       if (_focusNode.hasFocus) {
@@ -127,10 +126,7 @@ class _CustomTextFieldState extends State<CustomTextField>
 
     final focusedOutlineInputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(radius),
-      borderSide: BorderSide(
-        color: AppColors.selectedCategory,
-        width: 2.0.w,
-      ),
+      borderSide: BorderSide(color: AppColors.selectedCategory, width: 2.0.w),
     );
 
     return AnimatedBuilder(
@@ -187,29 +183,30 @@ class _CustomTextFieldState extends State<CustomTextField>
             ),
             prefixIcon: widget.prefixIcon != null
                 ? Padding(
-              padding: EdgeInsets.symmetric(horizontal: 14.w),
-              child: widget.prefixIcon,
-            )
+                    padding: EdgeInsets.symmetric(horizontal: 14.w),
+                    child: widget.prefixIcon,
+                  )
                 : null,
             suffixIcon: widget.isPassword
                 ? IconButton(
-              icon: Icon(
-                _obscureText
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
-                color: _isFocused
-                    ? AppColors.selectedCategory
-                    : AppColors.iconColor,
-                size: 22.r,
-              ),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            )
+                    icon: Icon(
+                      _obscureText
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                      color: _isFocused
+                          ? AppColors.selectedCategory
+                          : AppColors.iconColor,
+                      size: 22.r,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  )
                 : widget.suffixIcon,
-            contentPadding: widget.contentPadding ??
+            contentPadding:
+                widget.contentPadding ??
                 EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           ),
         );

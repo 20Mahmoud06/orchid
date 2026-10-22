@@ -33,10 +33,7 @@ class EditProfileAvatar extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.background,
-                border: Border.all(
-                  color: AppColors.cardBorder,
-                  width: 2.w,
-                ),
+                border: Border.all(color: AppColors.cardBorder, width: 2.w),
               ),
               child: ClipOval(
                 child: profileImage != null
@@ -58,16 +55,9 @@ class EditProfileAvatar extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
-                  border: Border.all(
-                    color: Colors.black12,
-                    width: 1.w,
-                  ),
+                  border: Border.all(color: Colors.black12, width: 1.w),
                 ),
-                child: Icon(
-                  Icons.camera_alt,
-                  size: 13.r,
-                  color: Colors.black,
-                ),
+                child: Icon(Icons.camera_alt, size: 13.r, color: Colors.black),
               ),
             ),
           ],

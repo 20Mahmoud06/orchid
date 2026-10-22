@@ -68,13 +68,17 @@ class WalletFront extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: isProviderSelected ? walletName : 'Select a Provider',
+                            text: isProviderSelected
+                                ? walletName
+                                : 'Select a Provider',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             fontFamily: AppFonts.goudyOldStyle,
                             fontSize: 16.sp,
                             fontWeight: FontWeight.w800,
-                            textColor: isProviderSelected ? provider.brandColor : AppColors.textGrey,
+                            textColor: isProviderSelected
+                                ? provider.brandColor
+                                : AppColors.textGrey,
                           ),
                           SizedBox(height: 3.h),
                           CustomText(
@@ -131,15 +135,16 @@ class WalletFront extends StatelessWidget {
                     return FadeTransition(
                       opacity: animation,
                       child: SlideTransition(
-                        position: Tween<Offset>(
-                          begin: const Offset(0, 0.3),
-                          end: Offset.zero,
-                        ).animate(
-                          CurvedAnimation(
-                            parent: animation,
-                            curve: Curves.easeOutCubic,
-                          ),
-                        ),
+                        position:
+                            Tween<Offset>(
+                              begin: const Offset(0, 0.3),
+                              end: Offset.zero,
+                            ).animate(
+                              CurvedAnimation(
+                                parent: animation,
+                                curve: Curves.easeOutCubic,
+                              ),
+                            ),
                         child: child,
                       ),
                     );
@@ -160,8 +165,8 @@ class WalletFront extends StatelessWidget {
                     ),
                   ),
                 ),
-                // 👆 END OF UPDATED BALANCE SECTION 👆
 
+                // 👆 END OF UPDATED BALANCE SECTION 👆
                 SizedBox(height: 8.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,

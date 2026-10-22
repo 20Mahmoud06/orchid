@@ -51,11 +51,11 @@ final class CatalogLoaded extends CatalogState {
 
   @override
   List<Object?> get props => <Object?>[
-        flowers,
-        bouquets,
-        popularFlowers,
-        popularBouquets,
-        flowerCategories,
-        bouquetCategories,
-      ];
+    flowers,
+    bouquets,
+    popularFlowers,
+    popularBouquets,
+    flowerCategories,
+    bouquetCategories,
+  ];
 }

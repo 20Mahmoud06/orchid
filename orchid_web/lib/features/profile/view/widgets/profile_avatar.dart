@@ -10,11 +10,7 @@ class ProfileAvatarImage extends StatelessWidget {
   final String? imageUrl;
   final BoxFit fit;
 
-  const ProfileAvatarImage({
-    super.key,
-    this.imageUrl,
-    this.fit = BoxFit.cover,
-  });
+  const ProfileAvatarImage({super.key, this.imageUrl, this.fit = BoxFit.cover});
 
   @override
   Widget build(BuildContext context) {

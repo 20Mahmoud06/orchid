@@ -12,11 +12,7 @@ class CheckoutSummary extends StatelessWidget {
   final int total;
   final VoidCallback? onConfirmOrder;
 
-  const CheckoutSummary({
-    super.key,
-    required this.total,
-    this.onConfirmOrder,
-  });
+  const CheckoutSummary({super.key, required this.total, this.onConfirmOrder});
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +61,10 @@ class CheckoutSummary extends StatelessWidget {
             height: 52.h,
             borderRadius: BorderRadius.circular(10.r),
             boxShadow: const [],
-            onPressed: onConfirmOrder ??
-                    () {
-                  CheckoutCubit.instance
-                      .beginCheckout(CheckoutSource.cart);
+            onPressed:
+                onConfirmOrder ??
+                () {
+                  CheckoutCubit.instance.beginCheckout(CheckoutSource.cart);
                   Navigator.pushNamed(context, AppRoutes.deliveryDetails);
                 },
           ),

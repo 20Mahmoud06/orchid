@@ -50,15 +50,17 @@ void main() {
   };
 
   for (final entry in breakpoints.entries) {
-    testWidgets('Contact Us renders without overflow (${entry.key})',
-        (tester) async {
+    testWidgets('Contact Us renders without overflow (${entry.key})', (
+      tester,
+    ) async {
       await pumpAt(tester, entry.value, const ContactUsScreen());
       expect(tester.takeException(), isNull);
     });
   }
 
-  testWidgets('Contact Us uses the web layout and wording on desktop',
-      (tester) async {
+  testWidgets('Contact Us uses the web layout and wording on desktop', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(1440, 900), const ContactUsScreen());
     expect(find.byType(WebContactSection), findsOneWidget);
     expect(find.text('contact us'), findsOneWidget);
@@ -72,8 +74,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Contact Us keeps the mobile layout below the breakpoint',
-      (tester) async {
+  testWidgets('Contact Us keeps the mobile layout below the breakpoint', (
+    tester,
+  ) async {
     await pumpAt(tester, const Size(375, 812), const ContactUsScreen());
     expect(find.byType(WebContactSection), findsNothing);
     expect(find.text('Call Us'), findsOneWidget);

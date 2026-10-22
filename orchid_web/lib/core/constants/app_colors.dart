@@ -11,7 +11,6 @@ abstract class AppColors {
 
   // Web authentication neutrals
   static const Color ink = Color(0xFF252525);
-  static const Color inkSecondary = Color(0xFF666666);
   static const Color pinkBorder = Color(0xFFE6CFD7);
 
   // Background & Surface Colors
@@ -90,7 +89,6 @@ abstract class AppColors {
   static const Color storeNavText = Color(0xFF2C3E36);
   static const Color storeRose = Color(0xFFC76978);
   static const Color storeFooterText = Color(0xFF6B7B73);
-  static const Color storeFooterMuted = Color(0xFF8A9A92);
   static const Color announcementText = Color(0xFF6B5555);
 
   // Disabled form field fill

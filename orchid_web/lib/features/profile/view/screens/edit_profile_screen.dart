@@ -1,28 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/utils/phone_formatter.dart';
 import '../../../../core/validators/phone_validator.dart';
 import '../../../auth/cubit/auth_cubit.dart';
-import '../../../auth/view/widgets/auth_web_ui.dart';
-import '../../../../shared/widgets/custom_app_bar.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_text_field.dart';
-import '../widgets/edit_profile_avatar.dart';
-import '../widgets/profile_field_section.dart';
-import '../widgets/profile_form_error_text.dart';
+import '../../utils/edit_profile_save_operation.dart';
+import '../../utils/edit_profile_validators.dart';
+import '../../utils/profile_image_picker.dart';
+import '../widgets/edit_profile_mobile_view.dart';
 import '../widgets/profile_snack.dart';
-import '../widgets/web/web_profile_avatars.dart';
+import '../widgets/web/web_edit_profile_view.dart';
 
 /// Edit Profile Screen matching exact Orchid Figma design specifications.
 ///
 /// The form is pre-filled with the real profile data (no static placeholders),
 /// the avatar shows the uploaded profile picture, and Save persists changes to
 /// the `profiles` table (plus an optional password change) in Supabase.
+///
+/// The mobile and desktop layouts live in separate widget files; this screen
+/// owns the form state, validation and save flow.
 class EditProfileScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
 
@@ -104,12 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Future<void> _pickProfileImage() async {
     if (_isSaving) return;
     try {
-      final picked = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
-        imageQuality: 85,
-        maxWidth: 1200,
-        maxHeight: 1200,
-      );
+      final picked = await ProfileImagePicker.pick();
       if (picked == null || !mounted) return;
       setState(() => _profileImage = picked);
     } catch (_) {
@@ -122,58 +113,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  String? _validateUsername(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'please enter your username';
-    }
-    return null;
-  }
+  String? _validateUsername(String? value) =>
+      EditProfileValidators.validateUsername(value);
 
-  String? _validateAddress(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'please enter your delivery address';
-    }
-    return null;
-  }
+  String? _validateAddress(String? value) =>
+      EditProfileValidators.validateAddress(value);
 
   /// WhatsApp is optional — an empty value is allowed, anything else must be
   /// a valid 11-digit Egyptian mobile number.
-  String? _validateWhatsapp(String? value) {
-    final clean = (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
-    if (clean.isEmpty) return null;
-    return PhoneValidator.validateWhatsAppNumber(clean);
-  }
+  String? _validateWhatsapp(String? value) =>
+      EditProfileValidators.validateWhatsapp(value);
 
   bool _validatePasswords() {
-    final currentPass = _currentPasswordController.text;
-    final newPass = _newPasswordController.text;
-
-    if (newPass.isNotEmpty && currentPass.isEmpty) {
+    final result = EditProfileValidators.validatePasswords(
+      currentPassword: _currentPasswordController.text,
+      newPassword: _newPasswordController.text,
+    );
+    if (!result.isValid) {
       setState(() {
-        _currentPasswordError = 'please enter your current password';
+        _currentPasswordError = result.currentPasswordError;
+        _newPasswordError = result.newPasswordError;
       });
       return false;
-    }
-    if (currentPass.isNotEmpty && newPass.isEmpty) {
-      setState(() {
-        _newPasswordError = 'please enter your new password';
-      });
-      return false;
-    }
-    if (currentPass.isNotEmpty && newPass.isNotEmpty) {
-      if (newPass.length < 6) {
-        setState(() {
-          _newPasswordError = 'password must be at least 6 characters';
-        });
-        return false;
-      }
-      if (newPass == currentPass) {
-        setState(() {
-          _newPasswordError =
-              'your new password must be different from your current password';
-        });
-        return false;
-      }
     }
     return true;
   }
@@ -264,98 +225,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_isSaving) return;
     setState(() => _isSaving = true);
 
-    final wantsPasswordChange = _newPasswordController.text.isNotEmpty;
-    final oldProfileImagePath = _auth.userProfile?.profileImage;
+    final outcome = await EditProfileSaveOperation(
+      auth: _auth,
+      profileImage: _profileImage,
+      usernameController: _usernameController,
+      phoneController: _phoneController,
+      whatsappController: _whatsappController,
+      addressController: _addressController,
+      currentPasswordController: _currentPasswordController,
+      newPasswordController: _newPasswordController,
+    ).run();
 
-    String? profileImagePath;
-    try {
-      // Upload a newly picked profile picture first (optional).
-      if (_profileImage != null) {
-        final bytes = await _profileImage!.readAsBytes();
-        profileImagePath = await _auth.uploadProfileImage(
-          bytes: bytes,
-          contentType: _contentTypeFor(_profileImage!),
-        );
-      }
+    if (!mounted) return;
 
-      final result = await _auth.editProfile(
-        username: _usernameController.text.trim(),
-        phone: _phoneController.text.trim(),
-        whatsapp: _whatsappController.text.trim(),
-        address: _addressController.text.trim(),
-        profileImagePath: profileImagePath,
-      );
-
-      if (result is EditProfileFailure) {
-        // The save failed after the image was uploaded — clean up the orphan.
-        if (profileImagePath != null) {
-          await _auth.deleteProfileImage(profileImagePath);
-        }
-        if (!mounted) return;
+    switch (outcome) {
+      case EditProfileSaveSuccess():
+        // Clear the saving flag first so the PopScope (canPop: !_isSaving)
+        // stops blocking navigation, then rebuild and head back to the profile
+        // screen.
         setState(() {
           _isSaving = false;
-          _generalError = result.message;
         });
-        return;
-      }
-
-      // The old picture was replaced — remove the orphaned file.
-      if (profileImagePath != null &&
-          oldProfileImagePath != null &&
-          oldProfileImagePath != profileImagePath) {
-        await _auth.deleteProfileImage(oldProfileImagePath);
-      }
-
-      // Password change is optional and runs only after the profile saved.
-      if (wantsPasswordChange) {
-        final passwordError = await _auth.changePassword(
-          currentPassword: _currentPasswordController.text,
-          newPassword: _newPasswordController.text,
-        );
-        if (passwordError != null) {
-          if (!mounted) return;
-          setState(() {
-            _isSaving = false;
-            _generalError =
-                'your profile changes were saved, but we could not update '
-                'your password: $passwordError';
-          });
-          return;
-        }
-      }
-
-      if (!mounted) return;
-
-      // Clear the saving flag first so the PopScope (canPop: !_isSaving) stops
-      // blocking navigation, then rebuild and head back to the profile screen.
-      setState(() {
-        _isSaving = false;
-      });
-      showProfileSnack(context, 'profile updated successfully');
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) Navigator.maybePop(context);
-      });
-    } catch (error) {
-      // An upload error (a thrown String) or an unexpected failure.
-      if (profileImagePath != null) {
-        await _auth.deleteProfileImage(profileImagePath);
-      }
-      if (!mounted) return;
-      setState(() {
-        _isSaving = false;
-        _generalError = error is String
-            ? error
-            : 'failed to save your changes, please try again';
-      });
+        showProfileSnack(context, 'profile updated successfully');
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) Navigator.maybePop(context);
+        });
+      case EditProfileSaveFailure(:final message):
+        setState(() {
+          _isSaving = false;
+          _generalError = message;
+        });
     }
   }
 
-  String _contentTypeFor(XFile file) {
-    final name = file.name.toLowerCase();
-    if (name.endsWith('.png')) return 'image/png';
-    if (name.endsWith('.webp')) return 'image/webp';
-    if (name.endsWith('.gif')) return 'image/gif';
-    return 'image/jpeg';
+  void _clearUsernameError() {
+    if (_webUsernameError == null) return;
+    setState(() => _webUsernameError = null);
+  }
+
+  void _clearPhoneError() {
+    if (_webPhoneError == null) return;
+    setState(() => _webPhoneError = null);
+  }
+
+  void _clearWhatsappError() {
+    if (_webWhatsappError == null) return;
+    setState(() => _webWhatsappError = null);
+  }
+
+  void _clearAddressError() {
+    if (_webAddressError == null) return;
+    setState(() => _webAddressError = null);
+  }
+
+  void _clearCurrentPasswordError() {
+    if (_currentPasswordError == null && _generalError == null) return;
+    setState(() {
+      _currentPasswordError = null;
+      _generalError = null;
+    });
+  }
+
+  void _clearNewPasswordError() {
+    if (_newPasswordError == null && _generalError == null) return;
+    setState(() {
+      _newPasswordError = null;
+      _generalError = null;
+    });
   }
 
   @override
@@ -368,384 +304,56 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           // used by the other profile/auth pages. Narrow viewports keep the
           // existing Orchid mobile layout.
           if (constraints.maxWidth >= 768) {
-            return _buildWeb();
-          }
-          return _buildMobile();
-        },
-      ),
-    );
-  }
-
-  /// Mobile layout (unchanged).
-  Widget _buildMobile() {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomAppBar.orchid(
-                  title: 'Edit Profile',
-                  onBackPressed: widget.onBackPressed,
-                ),
-                SizedBox(height: 20.h),
-
-                // Profile Avatar Section
-                EditProfileAvatar(
-                  profileImage: _profileImage,
-                  existingImageUrl: _existingImageUrl,
-                  onTap: _pickProfileImage,
-                ),
-                SizedBox(height: 24.h),
-
-                ProfileFieldSection(
-                  label: 'Username',
-                  child: CustomTextField(
-                    controller: _usernameController,
-                    textColor: AppColors.textFieldText,
-                    containerColor: AppColors.background,
-                    fillColor: AppColors.background,
-                    boxShadow: const [],
-                    borderRadius: 20.r,
-                    validator: _validateUsername,
-                  ),
-                ),
-
-                ProfileFieldSection(
-                  label: 'Phone Number',
-                  child: CustomTextField(
-                    controller: _phoneController,
-                    textColor: AppColors.textFieldText,
-                    containerColor: AppColors.background,
-                    fillColor: AppColors.background,
-                    boxShadow: const [],
-                    keyboardType: TextInputType.phone,
-                    borderRadius: 20.r,
-                    validator: (value) =>
-                        PhoneValidator.validateEgyptianPhone(value),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(11),
-                      PhoneInputFormatter(),
-                    ],
-                  ),
-                ),
-
-                ProfileFieldSection(
-                  label: 'Whatsapp Number',
-                  child: CustomTextField(
-                    controller: _whatsappController,
-                    textColor: AppColors.textFieldText,
-                    containerColor: AppColors.background,
-                    fillColor: AppColors.background,
-                    boxShadow: const [],
-                    keyboardType: TextInputType.phone,
-                    borderRadius: 20.r,
-                    validator: _validateWhatsapp,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(11),
-                      PhoneInputFormatter(),
-                    ],
-                  ),
-                ),
-
-                ProfileFieldSection(
-                  label: 'Delivery Address',
-                  child: CustomTextField(
-                    controller: _addressController,
-                    textColor: AppColors.textFieldText,
-                    containerColor: AppColors.background,
-                    fillColor: AppColors.background,
-                    boxShadow: const [],
-                    borderRadius: 20.r,
-                    validator: _validateAddress,
-                  ),
-                ),
-
-                ProfileFieldSection(
-                  label: 'Edit Password',
-                  child: CustomTextField(
-                    controller: _currentPasswordController,
-                    hint: 'enter your current password',
-                    textColor: AppColors.textFieldText,
-                    containerColor: AppColors.background,
-                    fillColor: AppColors.background,
-                    boxShadow: const [],
-                    isPassword: true,
-                    borderRadius: 20.r,
-                  ),
-                ),
-
-                CustomTextField(
-                  controller: _newPasswordController,
-                  hint: 'enter your new password',
-                  textColor: AppColors.textFieldText,
-                  containerColor: AppColors.background,
-                  fillColor: AppColors.background,
-                  boxShadow: const [],
-                  isPassword: true,
-                  borderRadius: 20.r,
-                ),
-
-                if (_currentPasswordError != null)
-                  ProfileFormErrorText(message: _currentPasswordError!),
-                if (_newPasswordError != null)
-                  ProfileFormErrorText(message: _newPasswordError!),
-                if (_generalError != null)
-                  ProfileFormErrorText(message: _generalError!, topSpacing: 8),
-                SizedBox(height: 28.h),
-
-                // Save Changes Button Reusing CustomButton
-                CustomButton(
-                  label: 'Save Changes',
-                  height: 50.h,
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  backgroundColor: AppColors.textFieldDarkerPink,
-                  textColor: AppColors.darkGreen,
-                  borderRadius: BorderRadius.circular(20.r),
-                  boxShadow: const [],
-                  isLoading: _isSaving,
-                  onPressed: _isSaving ? null : _validateAndSave,
-                ),
-                SizedBox(height: 24.h),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Desktop-first "edit profile" page (>= 768px): a wide rectangular panel the
-  /// same width as the profile screen. Mirrors the mobile fields, labels and
-  /// validation; only the presentation differs.
-  Widget _buildWeb() {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 36),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 34,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.darkGreen,
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  _buildWebCard(),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWebCard() {
-    return Container(
-      padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: AppColors.background,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: WebEditProfileAvatar(
+            return EditProfileWebView(
               profileImage: _profileImage,
               existingImageUrl: _existingImageUrl,
-              onTap: _pickProfileImage,
-            ),
-          ),
-          const SizedBox(height: 28),
-          _WebFieldRow(
-            children: [
-              AuthTextField(
-                controller: _usernameController,
-                label: 'Username',
-                errorText: _webUsernameError,
-                onChanged: (_) {
-                  if (_webUsernameError != null) {
-                    setState(() => _webUsernameError = null);
-                  }
-                },
-              ),
-              AuthTextField(
-                controller: _phoneController,
-                label: 'Phone Number',
-                keyboardType: TextInputType.phone,
-                errorText: _webPhoneError,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(11),
-                  PhoneInputFormatter(),
-                ],
-                onChanged: (_) {
-                  if (_webPhoneError != null) {
-                    setState(() => _webPhoneError = null);
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          _WebFieldRow(
-            children: [
-              AuthTextField(
-                controller: _whatsappController,
-                label: 'Whatsapp Number',
-                keyboardType: TextInputType.phone,
-                errorText: _webWhatsappError,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(11),
-                  PhoneInputFormatter(),
-                ],
-                onChanged: (_) {
-                  if (_webWhatsappError != null) {
-                    setState(() => _webWhatsappError = null);
-                  }
-                },
-              ),
-              AuthTextField(
-                controller: _addressController,
-                label: 'Delivery Address',
-                errorText: _webAddressError,
-                onChanged: (_) {
-                  if (_webAddressError != null) {
-                    setState(() => _webAddressError = null);
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 26),
-          const _WebSectionLabel('Edit Password'),
-          const SizedBox(height: 14),
-          _WebFieldRow(
-            children: [
-              AuthTextField(
-                controller: _currentPasswordController,
-                label: 'Current Password',
-                hint: 'enter your current password',
-                isPassword: true,
-                errorText: _currentPasswordError,
-                onChanged: (_) {
-                  if (_currentPasswordError != null || _generalError != null) {
-                    setState(() {
-                      _currentPasswordError = null;
-                      _generalError = null;
-                    });
-                  }
-                },
-              ),
-              AuthTextField(
-                controller: _newPasswordController,
-                label: 'New Password',
-                hint: 'enter your new password',
-                isPassword: true,
-                errorText: _newPasswordError,
-                onChanged: (_) {
-                  if (_newPasswordError != null || _generalError != null) {
-                    setState(() {
-                      _newPasswordError = null;
-                      _generalError = null;
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          if (_generalError != null) ...[
-            const SizedBox(height: 16),
-            AuthErrorText(message: _generalError!),
-          ],
-          const SizedBox(height: 26),
-          AuthPrimaryButton(
-            label: 'Save Changes',
-            isLoading: _isSaving,
-            onPressed: _isSaving ? null : _validateAndSaveWeb,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Small section label used inside the desktop edit-profile panel.
-class _WebSectionLabel extends StatelessWidget {
-  final String text;
-
-  const _WebSectionLabel(this.text);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontFamily: AppFonts.goudyOldStyle,
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
-        color: AppColors.black,
-      ),
-    );
-  }
-}
-
-/// Two equal-width fields side by side, stacking when the panel gets narrow.
-class _WebFieldRow extends StatelessWidget {
-  final List<Widget> children;
-
-  const _WebFieldRow({required this.children});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 520) {
-          final stacked = <Widget>[];
-          for (var i = 0; i < children.length; i++) {
-            if (i > 0) stacked.add(const SizedBox(height: 18));
-            stacked.add(children[i]);
+              onPickImage: _pickProfileImage,
+              usernameController: _usernameController,
+              phoneController: _phoneController,
+              whatsappController: _whatsappController,
+              addressController: _addressController,
+              currentPasswordController: _currentPasswordController,
+              newPasswordController: _newPasswordController,
+              usernameError: _webUsernameError,
+              phoneError: _webPhoneError,
+              whatsappError: _webWhatsappError,
+              addressError: _webAddressError,
+              currentPasswordError: _currentPasswordError,
+              newPasswordError: _newPasswordError,
+              generalError: _generalError,
+              onClearUsernameError: _clearUsernameError,
+              onClearPhoneError: _clearPhoneError,
+              onClearWhatsappError: _clearWhatsappError,
+              onClearAddressError: _clearAddressError,
+              onClearCurrentPasswordError: _clearCurrentPasswordError,
+              onClearNewPasswordError: _clearNewPasswordError,
+              isSaving: _isSaving,
+              onSave: _validateAndSaveWeb,
+            );
           }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: stacked,
+          return EditProfileMobileView(
+            formKey: _formKey,
+            usernameController: _usernameController,
+            phoneController: _phoneController,
+            whatsappController: _whatsappController,
+            addressController: _addressController,
+            currentPasswordController: _currentPasswordController,
+            newPasswordController: _newPasswordController,
+            profileImage: _profileImage,
+            existingImageUrl: _existingImageUrl,
+            onPickImage: _pickProfileImage,
+            onBackPressed: widget.onBackPressed,
+            usernameValidator: _validateUsername,
+            whatsappValidator: _validateWhatsapp,
+            addressValidator: _validateAddress,
+            currentPasswordError: _currentPasswordError,
+            newPasswordError: _newPasswordError,
+            generalError: _generalError,
+            isSaving: _isSaving,
+            onSave: _validateAndSave,
           );
-        }
-
-        final row = <Widget>[];
-        for (var i = 0; i < children.length; i++) {
-          if (i > 0) row.add(const SizedBox(width: 18));
-          row.add(Expanded(child: children[i]));
-        }
-        return Row(crossAxisAlignment: CrossAxisAlignment.start, children: row);
-      },
+        },
+      ),
     );
   }
 }

@@ -52,7 +52,9 @@ class FlowerGridCard extends StatelessWidget {
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(12.r),
+                  ),
                   child: SizedBox(
                     width: double.infinity,
                     height: double.infinity,
@@ -153,11 +155,7 @@ class _QuantityControl extends StatelessWidget {
             color: AppColors.incrementButton,
             borderRadius: BorderRadius.circular(6.r),
           ),
-          child: Icon(
-            Icons.add,
-            size: 15.r,
-            color: AppColors.white,
-          ),
+          child: Icon(Icons.add, size: 15.r, color: AppColors.white),
         ),
       );
     }
@@ -178,11 +176,7 @@ class _QuantityControl extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
-              child: Icon(
-                Icons.remove,
-                size: 12.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.remove, size: 12.r, color: AppColors.white),
             ),
           ),
           Padding(
@@ -199,11 +193,7 @@ class _QuantityControl extends StatelessWidget {
             behavior: HitTestBehavior.opaque,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 2.w),
-              child: Icon(
-                Icons.add,
-                size: 12.r,
-                color: AppColors.white,
-              ),
+              child: Icon(Icons.add, size: 12.r, color: AppColors.white),
             ),
           ),
         ],
