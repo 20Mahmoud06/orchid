@@ -76,7 +76,7 @@ A dedicated Flutter Web dashboard for administrative operations.
 - Order management.
 - Inspiration content management.
 
-🔗 **Admin Dashboard:** [Orchid Admin](https://orchid-admin.vercel.app/)
+🔗 **Admin Dashboard:** [Orchid Admin](https://orchid-dmin.vercel.app/)
 
 > **Note:** The live URLs above are deployment addresses and may change as domains are configured.
 
