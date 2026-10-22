@@ -19,6 +19,15 @@
 
 ---
 
+## 🔗 Live Demo
+
+Experience the platform directly in your browser:
+**[🌐 Orchid Web — Live Website](https://orchid-orchidweb.vercel.app/#/main-nav)**
+
+## 🌷 Overview
+
+---
+
 ## 🌷 Overview
 
 **Orchid Web** is the browser-based customer experience within the Orchid platform. It brings floral products, bouquet inspiration, and order-related functionality into a responsive web application.
