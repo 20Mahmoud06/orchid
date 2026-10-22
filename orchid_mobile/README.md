@@ -15,6 +15,14 @@
   <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
 </p>
 
+
+---
+
+## 📥 Download APK
+
+Try the application on your Android device right now:
+**[📱 Download Orchid Mobile APK (Google Drive)](https://drive.google.com/file/d/1p48LvfCj1bXnZePLnrSDGn4q_n0Y5Tkg/view?usp=drive_link)**
+
 ---
 
 ## 🌷 Overview
