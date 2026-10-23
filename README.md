@@ -209,13 +209,6 @@ Configure the required environment variables in the corresponding Vercel project
 - Validate privileged operations on the server side.
 - Never expose `service_role` keys or `sb_secret_` keys in client applications.
 
-## 🗺️ Roadmap
-
-- [ ] Add the final project banner and application screenshots.
-- [ ] Document each application in its own README.
-- [ ] Expand setup and deployment documentation.
-- [ ] Continue improving the customer shopping experience and administrative workflows.
-
 ## 👨‍💻 Author
 
 **Mahmoud Safa**
