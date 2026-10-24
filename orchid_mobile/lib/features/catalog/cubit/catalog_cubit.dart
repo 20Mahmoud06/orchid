@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -18,6 +19,11 @@ class CatalogCubit extends Cubit<CatalogState> {
   CatalogCubit() : super(const CatalogInitial());
 
   static final CatalogCubit instance = CatalogCubit();
+
+  /// Replaces the catalog with [state] without a network fetch — used by
+  /// widget tests to render catalog-backed screens deterministically.
+  @visibleForTesting
+  void seed(CatalogLoaded state) => emit(state);
 
   static const String _bucket = 'product-images';
   static const String _allFlowersTab = 'All flowers';
@@ -57,7 +63,8 @@ class CatalogCubit extends Cubit<CatalogState> {
 
   bool get isLoading => state is CatalogLoading;
 
-  Object? get error => state is CatalogFailure ? (state as CatalogFailure).error : null;
+  Object? get error =>
+      state is CatalogFailure ? (state as CatalogFailure).error : null;
 
   /// Fetches the active catalog. Safe to call from every screen: the first
   /// call fetches, later calls are no-ops unless [force] re-fetches.
@@ -128,17 +135,13 @@ class CatalogCubit extends Cubit<CatalogState> {
     );
   }
 
-  ({
-    String id,
-    String name,
-    int price,
-    String category,
-    String imagePath,
-  }) _base(Map<String, dynamic> row) {
+  ({String id, String name, int price, String category, String imagePath})
+  _base(Map<String, dynamic> row) {
     final name = (row['name'] as String? ?? '').trim();
     final joined = row['categories'];
-    final categoryName =
-        joined is Map ? (joined['name'] as String?)?.trim() : null;
+    final categoryName = joined is Map
+        ? (joined['name'] as String?)?.trim()
+        : null;
     return (
       id: row['id'] as String,
       name: name.isEmpty ? 'Untitled' : name,
@@ -169,7 +172,12 @@ class CatalogCubit extends Cubit<CatalogState> {
         categories.add(category);
       }
     }
-    categories.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return <String>[allLabel, ...categories];
+    final more = categories
+        .where((category) => category.toLowerCase() == _uncategorised)
+        .toList();
+    categories
+      ..removeWhere((category) => category.toLowerCase() == _uncategorised)
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return <String>[allLabel, ...categories, ...more];
   }
 }

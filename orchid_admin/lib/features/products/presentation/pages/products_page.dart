@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import '../../../../app/router/app_nav.dart';
 import '../../../../app/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/widgets/app_button.dart';
 import '../../data/repositories/categories_repository.dart';
 import '../../data/repositories/products_repository.dart';
 import '../../domain/models/category_model.dart';
 import '../../domain/models/product_model.dart';
 import '../widgets/categories_manager_dialog.dart';
+import '../widgets/delete_product_dialog.dart';
 import '../widgets/product_filters.dart';
 import '../widgets/product_table.dart';
+import '../widgets/products_error_state.dart';
+import '../widgets/products_page_header.dart';
+import '../widgets/products_summary_row.dart';
 
 class ProductsPage extends StatefulWidget {
   const ProductsPage({super.key});
@@ -21,6 +23,8 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
+  static const int _pageSize = 6;
+
   final _productsRepository = ProductsRepository();
   final _categoriesRepository = CategoriesRepository();
   final _searchController = TextEditingController();
@@ -33,7 +37,6 @@ class _ProductsPageState extends State<ProductsPage> {
   ProductType? _type;
   bool? _active;
   int _currentPage = 1;
-  static const int _pageSize = 6;
 
   @override
   void initState() {
@@ -52,6 +55,7 @@ class _ProductsPageState extends State<ProductsPage> {
       _isLoading = true;
       _loadError = null;
     });
+
     try {
       final results = await Future.wait([
         _productsRepository.getAllProducts(),
@@ -73,34 +77,24 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   List<Product> get _filteredProducts {
-    var products = List<Product>.from(_allProducts);
-
     final query = _searchController.text.trim().toLowerCase();
-    if (query.isNotEmpty) {
-      products = products
-          .where(
-            (p) =>
-                p.name.toLowerCase().contains(query) ||
-                (p.categoryName?.toLowerCase().contains(query) ?? false),
-          )
-          .toList();
-    }
 
-    if (_type != null) {
-      products = products.where((p) => p.type == _type).toList();
-    }
-
-    if (_active != null) {
-      products = products.where((p) => p.isActive == _active).toList();
-    }
-
-    return products;
+    return _allProducts.where((product) {
+      final matchesSearch =
+          query.isEmpty ||
+          product.name.toLowerCase().contains(query) ||
+          (product.categoryName?.toLowerCase().contains(query) ?? false);
+      final matchesType = _type == null || product.type == _type;
+      final matchesActive = _active == null || product.isActive == _active;
+      return matchesSearch && matchesType && matchesActive;
+    }).toList();
   }
 
   List<Product> get _pagedProducts {
     final filtered = _filteredProducts;
     final start = (_currentPage - 1) * _pageSize;
     if (start >= filtered.length) return [];
+
     final end = (start + _pageSize).clamp(0, filtered.length);
     return filtered.sublist(start, end);
   }
@@ -112,11 +106,32 @@ class _ProductsPageState extends State<ProductsPage> {
   int get _activeCount => _allProducts.where((p) => p.isActive).length;
   int get _inactiveCount => _allProducts.where((p) => !p.isActive).length;
 
+  ProductsSummaryFilter? get _selectedSummaryFilter {
+    if (_active == true) return ProductsSummaryFilter.active;
+    if (_active == false) return ProductsSummaryFilter.inactive;
+    return _type == null ? ProductsSummaryFilter.all : null;
+  }
+
   void _resetFilters() {
     setState(() {
       _searchController.clear();
       _type = null;
       _active = null;
+      _currentPage = 1;
+    });
+  }
+
+  void _selectSummaryFilter(ProductsSummaryFilter filter) {
+    setState(() {
+      switch (filter) {
+        case ProductsSummaryFilter.all:
+          _active = null;
+          _type = null;
+        case ProductsSummaryFilter.active:
+          _active = true;
+        case ProductsSummaryFilter.inactive:
+          _active = false;
+      }
       _currentPage = 1;
     });
   }
@@ -140,51 +155,29 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   Future<void> _deleteProduct(Product product) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete product?'),
-        content: Text(
-          'Are you sure you want to delete "${product.name}"? '
-          'This cannot be undone.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
+    final confirmed = await confirmProductDeletion(context, product);
+    if (!confirmed || !mounted) return;
 
     try {
       await _productsRepository.deleteProduct(product.id);
       await _productsRepository.deleteProductImage(product.imagePath);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Product deleted'),
-          backgroundColor: AppColors.primary,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showSnack('Product deleted');
       await _load();
     } catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete product: $error'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+      _showSnack('Failed to delete product: $error', isError: true);
     }
+  }
+
+  void _showSnack(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? AppColors.error : AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -199,7 +192,11 @@ class _ProductsPageState extends State<ProductsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(isMobile: isMobile),
+              ProductsPageHeader(
+                isMobile: isMobile,
+                onManageCategories: _manageCategories,
+                onAddProduct: _addProduct,
+              ),
               const SizedBox(height: 24),
               if (_isLoading)
                 const Padding(
@@ -207,7 +204,7 @@ class _ProductsPageState extends State<ProductsPage> {
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (_loadError != null)
-                _buildErrorState()
+                ProductsErrorState(message: _loadError!, onRetry: _load)
               else ...[
                 ProductFilters(
                   searchController: _searchController,
@@ -231,7 +228,13 @@ class _ProductsPageState extends State<ProductsPage> {
                   onReset: _resetFilters,
                 ),
                 const SizedBox(height: 16),
-                _buildSummaryRow(),
+                ProductsSummaryRow(
+                  allCount: _allCount,
+                  activeCount: _activeCount,
+                  inactiveCount: _inactiveCount,
+                  selectedFilter: _selectedSummaryFilter,
+                  onFilterSelected: _selectSummaryFilter,
+                ),
                 const SizedBox(height: 20),
                 ProductTable(
                   products: _pagedProducts,
@@ -245,213 +248,6 @@ class _ProductsPageState extends State<ProductsPage> {
                 ),
               ],
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        children: [
-          const Icon(Icons.error_outline, size: 36, color: AppColors.error),
-          const SizedBox(height: 12),
-          Text('Failed to load products', style: AppTextStyles.sectionTitle),
-          const SizedBox(height: 6),
-          Text(
-            _loadError ?? '',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.caption,
-          ),
-          const SizedBox(height: 16),
-          AppButton(label: 'Retry', icon: Icons.refresh, onPressed: _load),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader({required bool isMobile}) {
-    final title = Text(
-      'Products',
-      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontSize: 28,
-            fontWeight: FontWeight.w700,
-            color: AppColors.primary,
-          ),
-    );
-    final subtitle = Text(
-      'Manage the products available in your Orchid mobile store.',
-      style: AppTextStyles.bodySecondary,
-    );
-    final buttons = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AppButton(
-          label: 'Categories',
-          icon: Icons.category_outlined,
-          variant: AppButtonVariant.outline,
-          onPressed: _manageCategories,
-        ),
-        const SizedBox(width: 12),
-        AppButton(
-          label: '+ Add Product',
-          onPressed: _addProduct,
-        ),
-      ],
-    );
-
-    if (isMobile) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          title,
-          const SizedBox(height: 6),
-          subtitle,
-          const SizedBox(height: 16),
-          Wrap(spacing: 12, runSpacing: 8, children: [
-            AppButton(
-              label: 'Categories',
-              icon: Icons.category_outlined,
-              variant: AppButtonVariant.outline,
-              onPressed: _manageCategories,
-            ),
-            AppButton(label: '+ Add Product', onPressed: _addProduct),
-          ]),
-        ],
-      );
-    }
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              title,
-              const SizedBox(height: 6),
-              subtitle,
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        buttons,
-      ],
-    );
-  }
-
-  Widget _buildSummaryRow() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          Text(
-            'SUMMARY:',
-            style: AppTextStyles.caption.copyWith(
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(width: 12),
-          _SummaryPill(
-            label: 'All Products',
-            count: _allCount,
-            tone: _SummaryTone.neutral,
-            isSelected: _active == null && _type == null,
-            onTap: () {
-              setState(() {
-                _active = null;
-                _type = null;
-                _currentPage = 1;
-              });
-            },
-          ),
-          const SizedBox(width: 8),
-          _SummaryPill(
-            label: 'Active',
-            count: _activeCount,
-            tone: _SummaryTone.active,
-            isSelected: _active == true,
-            onTap: () {
-              setState(() {
-                _active = true;
-                _currentPage = 1;
-              });
-            },
-          ),
-          const SizedBox(width: 8),
-          _SummaryPill(
-            label: 'Inactive',
-            count: _inactiveCount,
-            tone: _SummaryTone.inactive,
-            isSelected: _active == false,
-            onTap: () {
-              setState(() {
-                _active = false;
-                _currentPage = 1;
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-enum _SummaryTone { neutral, active, inactive }
-
-class _SummaryPill extends StatelessWidget {
-  const _SummaryPill({
-    required this.label,
-    required this.count,
-    required this.tone,
-    required this.isSelected,
-    this.onTap,
-  });
-
-  final String label;
-  final int count;
-  final _SummaryTone tone;
-  final bool isSelected;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = switch (tone) {
-      _SummaryTone.neutral =>
-        (bg: AppColors.surfaceMuted, fg: AppColors.textSecondary),
-      _SummaryTone.active => (bg: AppColors.softLime, fg: AppColors.primary),
-      _SummaryTone.inactive =>
-        (bg: AppColors.alertSoft, fg: AppColors.error),
-    };
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-        decoration: BoxDecoration(
-          color: colors.bg,
-          borderRadius: BorderRadius.circular(999),
-          border: isSelected
-              ? Border.all(color: colors.fg.withValues(alpha: 0.35))
-              : null,
-        ),
-        child: Text(
-          '$label ($count)',
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: colors.fg,
           ),
         ),
       ),

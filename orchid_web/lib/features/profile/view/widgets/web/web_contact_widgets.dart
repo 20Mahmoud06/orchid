@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:ORCHID/core/constants/app_assets.dart';
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first Contact Us widgets.
 ///
@@ -29,44 +30,40 @@ class WebContactBrand extends StatelessWidget {
           fit: BoxFit.contain,
         ),
         const SizedBox(height: 4),
-        Text(
-          'ORCHID',
+        CustomText(
+          text: 'ORCHID',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 62,
-            fontWeight: FontWeight.w400,
-            height: 1.0,
-            letterSpacing: -1.24,
-            color: AppColors.darkGreen,
-            shadows: [
-              Shadow(
-                offset: const Offset(4, 4),
-                blurRadius: 7,
-                color: Colors.black.withValues(alpha: 0.25),
-              ),
-            ],
-          ),
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 62,
+          fontWeight: FontWeight.w400,
+          height: 1.0,
+          letterSpacing: -1.24,
+          textColor: AppColors.darkGreen,
+          shadows: [
+            Shadow(
+              offset: const Offset(4, 4),
+              blurRadius: 7,
+              color: Colors.black.withValues(alpha: 0.25),
+            ),
+          ],
         ),
         const SizedBox(height: 4),
-        Text(
-          'flower shop',
+        CustomText(
+          text: 'flower shop',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyBookletter,
-            fontSize: 22,
-            fontWeight: FontWeight.w400,
-            height: 1.0,
-            letterSpacing: -0.44,
-            color: AppColors.flowerShopGreen,
-            shadows: [
-              Shadow(
-                offset: const Offset(0, 4),
-                blurRadius: 4,
-                color: Colors.black.withValues(alpha: 0.25),
-              ),
-            ],
-          ),
+          fontFamily: AppFonts.goudyBookletter,
+          fontSize: 22,
+          fontWeight: FontWeight.w400,
+          height: 1.0,
+          letterSpacing: -0.44,
+          textColor: AppColors.flowerShopGreen,
+          shadows: [
+            Shadow(
+              offset: const Offset(0, 4),
+              blurRadius: 4,
+              color: Colors.black.withValues(alpha: 0.25),
+            ),
+          ],
         ),
       ],
     );
@@ -139,24 +136,20 @@ class WebContactTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkGreen,
-                      ),
+                    CustomText(
+                      text: title,
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      textColor: AppColors.darkGreen,
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: const TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.textSecondary,
-                      ),
+                    CustomText(
+                      text: subtitle,
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      textColor: AppColors.textSecondary,
                     ),
                   ],
                 ),

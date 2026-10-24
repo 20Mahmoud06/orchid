@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_fonts.dart';
+import 'custom_text.dart';
 
 /// Desktop header action link with icon, label, and optional count badge.
 class WebTopNavActionLink extends StatefulWidget {
@@ -62,31 +63,25 @@ class _WebTopNavActionLinkState extends State<WebTopNavActionLink> {
                         borderRadius: BorderRadius.circular(999),
                       ),
                       constraints: const BoxConstraints(minWidth: 15),
-                      child: Text(
-                        '${widget.badgeCount}',
+                      child: CustomText(
+                        text: '${widget.badgeCount}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          height: 1.2,
-                        ),
+                        fontSize: 9,
+                        fontWeight: FontWeight.w700,
+                        textColor: Colors.white,
+                        height: 1.2,
                       ),
                     ),
                   ),
               ],
             ),
             const SizedBox(width: 6),
-            Text(
-              widget.label,
-              style: TextStyle(
-                fontFamily: AppFonts.inriaSerif,
-                fontSize: 14,
-                fontWeight: widget.isSelected
-                    ? FontWeight.w600
-                    : FontWeight.w400,
-                color: color,
-              ),
+            CustomText(
+              text: widget.label,
+              fontFamily: AppFonts.inriaSerif,
+              fontSize: 14,
+              fontWeight: widget.isSelected ? FontWeight.w600 : FontWeight.w400,
+              textColor: color,
             ),
           ],
         ),

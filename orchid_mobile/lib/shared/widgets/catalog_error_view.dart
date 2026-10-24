@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../core/constants/app_colors.dart';
+import 'custom_text.dart';
 
 /// Retry panel shown where the live product catalog could not be loaded.
 class CatalogErrorView extends StatelessWidget {
@@ -28,20 +29,19 @@ class CatalogErrorView extends StatelessWidget {
               color: AppColors.black.withValues(alpha: 0.35),
             ),
             SizedBox(height: 10.h),
-            Text(
-              message,
+            CustomText(
+              text: message,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14.sp, color: AppColors.black),
+              fontSize: 14.sp,
+              textColor: AppColors.black,
             ),
             SizedBox(height: 6.h),
             TextButton(
               onPressed: onRetry,
-              child: Text(
-                'Tap to retry',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: AppColors.primary,
-                ),
+              child: CustomText(
+                text: 'Tap to retry',
+                fontSize: 14.sp,
+                textColor: AppColors.primary,
               ),
             ),
           ],

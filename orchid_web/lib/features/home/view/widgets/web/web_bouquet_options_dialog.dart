@@ -3,6 +3,7 @@ import 'package:ionicons/ionicons.dart';
 
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// "Your Message Is Ready" dialog offering the two bouquet options.
 class WebBouquetOptionsDialog extends StatelessWidget {
@@ -41,25 +42,22 @@ class WebBouquetOptionsDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              const Text(
-                'Your Message Is Ready',
-                style: TextStyle(
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.black,
-                ),
+              const CustomText(
+                text: 'Your Message Is Ready',
+                fontFamily: AppFonts.goudyOldStyle,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                textColor: AppColors.black,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              const Text(
-                'Choose a bouquet for your celebration. Buy an existing bouquet or create your own.',
-                style: TextStyle(
-                  fontFamily: AppFonts.inriaSerif,
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                  height: 1.4,
-                ),
+              const CustomText(
+                text:
+                    'Choose a bouquet for your celebration. Buy an existing bouquet or create your own.',
+                fontFamily: AppFonts.inriaSerif,
+                fontSize: 14,
+                textColor: AppColors.textPrimary,
+                height: 1.4,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -75,15 +73,13 @@ class WebBouquetOptionsDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'BUY EXISTING BOUQUET',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                      letterSpacing: 0.5,
-                    ),
+                  child: const CustomText(
+                    text: 'BUY EXISTING BOUQUET',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    textColor: AppColors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -101,15 +97,13 @@ class WebBouquetOptionsDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'CREATE MY BOUQUET',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                      letterSpacing: 0.5,
-                    ),
+                  child: const CustomText(
+                    text: 'CREATE MY BOUQUET',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    textColor: AppColors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),

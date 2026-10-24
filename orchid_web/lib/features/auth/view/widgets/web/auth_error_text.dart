@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Compact inline error message (general/network errors).
 class AuthErrorText extends StatelessWidget {
@@ -17,14 +18,12 @@ class AuthErrorText extends StatelessWidget {
         const Icon(Icons.error_outline, color: AppColors.error, size: 16),
         const SizedBox(width: 6),
         Expanded(
-          child: Text(
-            message,
-            style: const TextStyle(
-              fontFamily: AppFonts.inriaSerif,
-              fontSize: 13,
-              height: 1.3,
-              color: AppColors.error,
-            ),
+          child: CustomText(
+            text: message,
+            fontFamily: AppFonts.inriaSerif,
+            fontSize: 13,
+            height: 1.3,
+            textColor: AppColors.error,
           ),
         ),
       ],

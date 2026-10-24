@@ -6,9 +6,12 @@ import '../../../../../core/constants/app_fonts.dart';
 import '../../../../../core/router/app_routes.dart';
 import '../../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../../shared/widgets/slider_direction.dart';
+import '../../../../catalog/cubit/catalog_cubit.dart';
+import '../../../../catalog/cubit/catalog_state.dart';
 import '../../../cubit/inspiration_cubit.dart';
 import '../../../cubit/inspiration_state.dart';
 import 'web_inspiration_widgets.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first inspiration page (>= 768px). Same colors, copy and behaviour
 /// as the mobile screen — heading, subtitle and a responsive card grid.
@@ -41,14 +44,12 @@ class InspirationWebView extends StatelessWidget {
                     animation: animationFor(0),
                     direction: direction,
                     distance: slideDistance,
-                    child: const Text(
-                      'inspiration',
-                      style: TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.black,
-                      ),
+                    child: const CustomText(
+                      text: 'inspiration',
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w400,
+                      textColor: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -56,14 +57,12 @@ class InspirationWebView extends StatelessWidget {
                     animation: animationFor(1),
                     direction: direction,
                     distance: slideDistance,
-                    child: const Text(
-                      'not sure what to choose ?',
-                      style: TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkGreen,
-                      ),
+                    child: const CustomText(
+                      text: 'not sure what to choose ?',
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      textColor: AppColors.darkGreen,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -71,21 +70,23 @@ class InspirationWebView extends StatelessWidget {
                     animation: animationFor(2),
                     direction: direction,
                     distance: slideDistance,
-                    child: const Text(
-                      'take a look at what others are creating',
-                      style: TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.black,
-                      ),
+                    child: const CustomText(
+                      text: 'take a look at what others are creating',
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                      textColor: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 24),
                   Expanded(
-                    child: BlocBuilder<InspirationCubit, InspirationState>(
-                      bloc: InspirationCubit.instance,
-                      builder: (context, state) => _buildItems(context),
+                    child: BlocBuilder<CatalogCubit, CatalogState>(
+                      bloc: CatalogCubit.instance,
+                      builder: (context, _) =>
+                          BlocBuilder<InspirationCubit, InspirationState>(
+                            bloc: InspirationCubit.instance,
+                            builder: (context, state) => _buildItems(context),
+                          ),
                     ),
                   ),
                 ],
@@ -133,7 +134,7 @@ class InspirationWebView extends StatelessWidget {
         final item = items[index];
         return WebInspirationCard(
           username: item.username,
-          imagePath: item.imagePath,
+          imagePath: item.displayImagePath,
           ingredients: item.ingredients,
           avatarUrl: item.avatarUrl,
           onChoose: () {

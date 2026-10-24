@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Modal shown when the shopper confirms a wallet payment. Same copy as the
 /// mobile dialog, sized like the other desktop web dialogs.
@@ -41,25 +42,22 @@ class WebWalletConfirmationDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              const Text(
-                'Confirm Wallet Payment',
-                style: TextStyle(
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.black,
-                ),
+              const CustomText(
+                text: 'Confirm Wallet Payment',
+                fontFamily: AppFonts.goudyOldStyle,
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                textColor: AppColors.black,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              const Text(
-                'The amount will be deducted from your wallet balance upon delivery. Do you want to confirm this order?',
-                style: TextStyle(
-                  fontFamily: AppFonts.inriaSerif,
-                  fontSize: 14,
-                  color: AppColors.textPrimary,
-                  height: 1.4,
-                ),
+              const CustomText(
+                text:
+                    'The amount will be deducted from your wallet balance upon delivery. Do you want to confirm this order?',
+                fontFamily: AppFonts.inriaSerif,
+                fontSize: 14,
+                textColor: AppColors.textPrimary,
+                height: 1.4,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
@@ -75,15 +73,13 @@ class WebWalletConfirmationDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'CONFIRM',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                      letterSpacing: 0.5,
-                    ),
+                  child: const CustomText(
+                    text: 'CONFIRM',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    textColor: AppColors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),
@@ -101,15 +97,13 @@ class WebWalletConfirmationDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text(
-                    'CANCEL',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                      letterSpacing: 0.5,
-                    ),
+                  child: const CustomText(
+                    text: 'CANCEL',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    textColor: AppColors.black,
+                    letterSpacing: 0.5,
                   ),
                 ),
               ),

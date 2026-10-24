@@ -39,14 +39,12 @@ class ViewBouquetWebView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.black,
-                    ),
+                  CustomText(
+                    text: title,
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w400,
+                    textColor: AppColors.black,
                   ),
                   const SizedBox(height: 24),
                   Expanded(

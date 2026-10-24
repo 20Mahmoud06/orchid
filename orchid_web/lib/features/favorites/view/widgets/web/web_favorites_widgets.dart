@@ -52,14 +52,12 @@ class WebFavoritesTabs extends StatelessWidget {
                   color: isSelected ? AppColors.cardBorder : Colors.transparent,
                   borderRadius: BorderRadius.circular(23),
                 ),
-                child: Text(
-                  _tabs[tab]!,
-                  style: const TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 18,
-                    color: AppColors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
+                child: CustomText(
+                  text: _tabs[tab]!,
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 18,
+                  textColor: AppColors.black,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),

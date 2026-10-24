@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'custom_text.dart';
+
 class StatusBadge extends StatelessWidget {
-  const StatusBadge({
-    super.key,
-    required this.label,
-    required this.color,
-  });
+  const StatusBadge({super.key, required this.label, required this.color});
 
   final String label;
   final Color color;
@@ -27,9 +25,13 @@ class StatusBadge extends StatelessWidget {
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: color),
+          CustomText(
+            text: label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
           ),
         ],
       ),

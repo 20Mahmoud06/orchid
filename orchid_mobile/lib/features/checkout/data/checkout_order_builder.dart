@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import '../../bouquet/cubit/bouquet_cubit.dart';
+import '../../bouquet/utils/bouquet_naming.dart';
 import '../../cart/cubit/cart_cubit.dart';
 import '../../cart/models/cart_item.dart';
 import '../../catalog/cubit/catalog_cubit.dart';
@@ -17,7 +18,7 @@ class CheckoutOrderBuilder {
     if (source == CheckoutSource.cart) {
       return [
         for (final item in CartCubit.instance.items)
-          '${item.quantity} ${item.name.toLowerCase()}'
+          '${item.quantity} ${item.displayName.toLowerCase()}'
               '${item.message != null && item.message!.trim().isNotEmpty ? ' — ${item.message!.trim()}' : ''}',
       ];
     }
@@ -33,8 +34,8 @@ class CheckoutOrderBuilder {
       return [
         for (final item in CartCubit.instance.items)
           CheckoutLineItem(
-            name: item.name,
-            image: item.imagePath,
+            name: item.displayName,
+            image: item.displayImagePath,
             description: _cartItemDescription(item),
             price: item.total,
             quantity: item.quantity,
@@ -51,10 +52,35 @@ class CheckoutOrderBuilder {
         0,
         (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
       );
+      final totalFlowerCount = flowers.fold<int>(
+        0,
+        (sum, flower) => sum + bouquet.getQuantity(flower.id),
+      );
+      final singleFlower = BouquetNaming.singleFlower(
+        flowers.map(
+          (flower) => BouquetFlowerLine(
+            name: flower.name,
+            productId: flower.id,
+            imagePath: flower.imagePath,
+          ),
+        ),
+      );
       items.add(
         CheckoutLineItem(
-          name: 'Custom Bouquet',
-          image: flowers.first.imagePath,
+          name: singleFlower == null
+              ? 'Custom Bouquet'
+              : BouquetNaming.flowerTitle(
+                  singleFlower.name,
+                  quantity: totalFlowerCount,
+                ),
+          image: singleFlower == null
+              ? flowers.first.imagePath
+              : BouquetNaming.singleFlowerImage(
+                  productId: singleFlower.productId,
+                  name: singleFlower.name,
+                  storedImage: singleFlower.imagePath,
+                  fallback: flowers.first.imagePath,
+                ),
           description: bouquet.descriptionText,
           price: flowerSubtotal,
           quantity: 1,
@@ -102,6 +128,9 @@ class CheckoutOrderBuilder {
                   'name': component.name,
                   'quantity': component.quantity,
                   'unit_price': component.unitPrice,
+                  if (component.imagePath != null &&
+                      component.imagePath!.isNotEmpty)
+                    'image_path': component.imagePath,
                 },
             ],
         };
@@ -110,8 +139,8 @@ class CheckoutOrderBuilder {
               ? _bouquetType
               : _productType(item.id),
           'product_id': _uuidOrNull(item.id),
-          'name_snapshot': item.name,
-          'image_snapshot': item.imagePath,
+          'name_snapshot': item.displayName,
+          'image_snapshot': item.displayImagePath,
           'price_snapshot': item.price,
           'quantity': item.quantity,
           'custom_components': components.isEmpty ? null : components,
@@ -129,11 +158,36 @@ class CheckoutOrderBuilder {
         0,
         (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
       );
+      final totalFlowerCount = flowers.fold<int>(
+        0,
+        (sum, flower) => sum + bouquet.getQuantity(flower.id),
+      );
+      final singleFlower = BouquetNaming.singleFlower(
+        flowers.map(
+          (flower) => BouquetFlowerLine(
+            name: flower.name,
+            productId: flower.id,
+            imagePath: flower.imagePath,
+          ),
+        ),
+      );
       items.add({
         'item_type': _bouquetType,
         'product_id': null,
-        'name_snapshot': 'Custom Bouquet',
-        'image_snapshot': flowers.first.imagePath,
+        'name_snapshot': singleFlower == null
+            ? 'Custom Bouquet'
+            : BouquetNaming.flowerTitle(
+                singleFlower.name,
+                quantity: totalFlowerCount,
+              ),
+        'image_snapshot': singleFlower == null
+            ? flowers.first.imagePath
+            : BouquetNaming.singleFlowerImage(
+                productId: singleFlower.productId,
+                name: singleFlower.name,
+                storedImage: singleFlower.imagePath,
+                fallback: flowers.first.imagePath,
+              ),
         'price_snapshot': flowerSubtotal,
         'quantity': 1,
         'custom_components': {
@@ -145,6 +199,7 @@ class CheckoutOrderBuilder {
                 'name': flower.name,
                 'quantity': bouquet.getQuantity(flower.id),
                 'unit_price': flower.price,
+                if (flower.imagePath.isNotEmpty) 'image_path': flower.imagePath,
               },
           ],
         },

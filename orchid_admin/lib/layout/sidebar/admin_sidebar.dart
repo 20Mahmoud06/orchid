@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/router/app_nav.dart';
 import '../../app/router/app_routes.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/custom_text.dart';
 import '../../features/auth/data/auth_service.dart';
 import 'sidebar_item.dart';
 
@@ -23,8 +24,8 @@ class AdminSidebar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Row(
               children: [
-                Text(
-                  'ORCHID',
+                CustomText(
+                  text: 'ORCHID',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w800,
@@ -37,8 +38,8 @@ class AdminSidebar extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text(
-                      'ADMIN',
+                    CustomText(
+                      text: 'ADMIN',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -47,8 +48,8 @@ class AdminSidebar extends StatelessWidget {
                         height: 1.1,
                       ),
                     ),
-                    Text(
-                      'STUDIO',
+                    CustomText(
+                      text: 'STUDIO',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,

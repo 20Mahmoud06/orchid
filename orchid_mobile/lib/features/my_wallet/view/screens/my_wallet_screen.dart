@@ -50,8 +50,10 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
         ..hideCurrentSnackBar()
         ..showSnackBar(
           const SnackBar(
-            content: Text(
-              'Your wallet balance is 0. Add money to your wallet to pay with it.',
+            content: CustomText(
+              text:
+                  'Your wallet balance is 0. Add money to your wallet to pay with it.',
+              textColor: AppColors.white,
             ),
             behavior: SnackBarBehavior.floating,
           ),
@@ -64,10 +66,12 @@ class _MyWalletScreenState extends State<MyWalletScreen> {
         ..hideCurrentSnackBar()
         ..showSnackBar(
           SnackBar(
-            content: Text(
-              'Insufficient wallet balance. Your balance is EGP '
-              '${balance.toStringAsFixed(2)} but this order totals EGP '
-              '${total.toDouble().toStringAsFixed(2)}.',
+            content: CustomText(
+              text:
+                  'Insufficient wallet balance. Your balance is EGP '
+                  '${balance.toStringAsFixed(2)} but this order totals EGP '
+                  '${total.toDouble().toStringAsFixed(2)}.',
+              textColor: AppColors.white,
             ),
             behavior: SnackBarBehavior.floating,
           ),

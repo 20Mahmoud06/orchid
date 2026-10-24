@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
+import '../../../../shared/widgets/custom_text.dart';
 
 enum FavoritesTab { all, bouquets, flowers }
 
@@ -48,18 +49,12 @@ class FavoritesSegmentedTabs extends StatelessWidget {
                   color: isSelected ? AppColors.cardBorder : Colors.transparent,
                   borderRadius: BorderRadius.circular(20.r),
                 ),
-                child: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  style: TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 20.sp,
-                    color: AppColors.black,
-                    fontWeight: FontWeight.w400,
-                  ),
-                  child: Text(
-                    _tabs[tab]!,
-                  ),
+                child: CustomText(
+                  text: _tabs[tab]!,
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 20.sp,
+                  textColor: AppColors.black,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),

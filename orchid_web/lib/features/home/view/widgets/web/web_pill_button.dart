@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Pill button component used in the hero and promotional sections.
 class WebPillButton extends StatefulWidget {
@@ -44,14 +45,12 @@ class _WebPillButtonState extends State<WebPillButton> {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: brandGreen, width: 1.2),
           ),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              fontFamily: AppFonts.inriaSerif,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: widget.filled ? Colors.white : brandGreen,
-            ),
+          child: CustomText(
+            text: widget.label,
+            fontFamily: AppFonts.inriaSerif,
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            textColor: widget.filled ? Colors.white : brandGreen,
           ),
         ),
       ),

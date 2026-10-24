@@ -5,6 +5,7 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../features/bouquet/cubit/bouquet_cubit.dart';
 import '../../../../shared/widgets/app_snack_bar.dart';
+import '../../utils/bouquet_naming.dart';
 import '../../../cart/cubit/cart_cubit.dart';
 import '../../../cart/models/cart_item.dart';
 import '../../../checkout/cubit/checkout_cubit.dart';
@@ -23,14 +24,19 @@ class ViewBouquetScreen extends StatelessWidget {
     final bouquetController = BouquetCubit.instance;
     final selectedFlowers = bouquetController.selectedFlowers;
     final isFromInspiration = bouquet != null;
+    final isSingleFlowerKind =
+        selectedFlowers.length == 1 &&
+        bouquetController.selectedReadyBouquets.isEmpty;
+    final isSingleFlower =
+        isSingleFlowerKind && bouquetController.totalCount == 1;
 
     final title = isFromInspiration
         ? 'your bouquet'
-        : (selectedFlowers.length == 1 ? 'View Your Flower' : 'your bouquet');
+        : (isSingleFlower ? 'View Your Flower' : 'your bouquet');
 
     final imagePath = isFromInspiration
-        ? (bouquet!.imagePath)
-        : (selectedFlowers.length == 1
+        ? bouquet!.displayImagePath
+        : (isSingleFlowerKind
               ? selectedFlowers.first.imagePath
               : AppAssets.bouquetTest);
 
@@ -113,17 +119,40 @@ class ViewBouquetScreen extends StatelessWidget {
         (sum, flower) =>
             sum + flower.price * bouquetController.getQuantity(flower.id),
       );
+      final totalFlowerCount = flowers.fold<int>(
+        0,
+        (sum, flower) => sum + bouquetController.getQuantity(flower.id),
+      );
+      final singleFlower = BouquetNaming.singleFlower(
+        flowers.map(
+          (flower) => BouquetFlowerLine(
+            name: flower.name,
+            productId: flower.id,
+            imagePath: flower.imagePath,
+          ),
+        ),
+      );
       items.add(
         CartItem(
           id: 'custom-${DateTime.now().microsecondsSinceEpoch}',
-          name: 'Custom Bouquet',
+          name: singleFlower == null
+              ? 'Custom Bouquet'
+              : BouquetNaming.flowerTitle(
+                  singleFlower.name,
+                  quantity: totalFlowerCount,
+                ),
           price: flowerTotal,
           // The cart shows the same picture as the view bouquet screen: a
           // single flower keeps its own photo, a mixed arrangement uses the
           // bouquet preview.
-          imagePath: flowers.length == 1
-              ? flowers.first.imagePath
-              : AppAssets.bouquetTest,
+          imagePath: singleFlower == null
+              ? AppAssets.bouquetTest
+              : BouquetNaming.singleFlowerImage(
+                  productId: singleFlower.productId,
+                  name: singleFlower.name,
+                  storedImage: singleFlower.imagePath,
+                  fallback: AppAssets.bouquetTest,
+                ),
           quantity: 1,
           message: occasionMessage,
           components: [
@@ -133,6 +162,7 @@ class ViewBouquetScreen extends StatelessWidget {
                 quantity: bouquetController.getQuantity(flower.id),
                 unitPrice: flower.price,
                 productId: flower.id,
+                imagePath: flower.imagePath,
               ),
           ],
         ),
@@ -180,13 +210,35 @@ class ViewBouquetScreen extends StatelessWidget {
       0,
       (sum, flower) => sum + flower.unitPrice * flower.quantity,
     );
+    final totalFlowerCount = inspiration.flowers.fold<int>(
+      0,
+      (sum, flower) => sum + flower.quantity,
+    );
+    final singleFlower = BouquetNaming.singleFlower(
+      inspiration.flowers.map(
+        (flower) =>
+            BouquetFlowerLine(name: flower.name, productId: flower.productId),
+      ),
+    );
+    final usesUploadedPhoto = inspiration.sourceOrderItemId == null;
 
     CartCubit.instance.addItems([
       CartItem(
         id: 'custom-${DateTime.now().microsecondsSinceEpoch}',
-        name: 'Custom Bouquet',
+        name: singleFlower == null
+            ? 'Custom Bouquet'
+            : BouquetNaming.flowerTitle(
+                singleFlower.name,
+                quantity: totalFlowerCount,
+              ),
         price: total,
-        imagePath: inspiration.imagePath,
+        imagePath: usesUploadedPhoto || singleFlower == null
+            ? inspiration.imagePath
+            : BouquetNaming.singleFlowerImage(
+                productId: singleFlower.productId,
+                name: singleFlower.name,
+                fallback: inspiration.imagePath,
+              ),
         quantity: 1,
         message: _pendingOccasionMessage(),
         components: [
@@ -196,6 +248,12 @@ class ViewBouquetScreen extends StatelessWidget {
               quantity: flower.quantity,
               unitPrice: flower.unitPrice,
               productId: flower.productId,
+              imagePath: usesUploadedPhoto
+                  ? inspiration.imagePath
+                  : BouquetNaming.catalogFlowerImage(
+                      flower.productId,
+                      flower.name,
+                    ),
             ),
         ],
       ),

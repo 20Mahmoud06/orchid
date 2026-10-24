@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// "More than flowers / It is a feeling" closing card (About page).
 class WebAboutFooter extends StatelessWidget {
@@ -42,8 +43,8 @@ class WebAboutFooter extends StatelessWidget {
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    titleText,
+                  CustomText(
+                    text: titleText,
                     textAlign: TextAlign.center,
                     style: titleStyle.copyWith(color: AppColors.thanksYouText),
                   ),
@@ -60,14 +61,12 @@ class WebAboutFooter extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        const Text(
-                          'It is a feeling',
-                          style: TextStyle(
-                            fontFamily: AppFonts.goudyOldStyle,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.black,
-                          ),
+                        const CustomText(
+                          text: 'It is a feeling',
+                          fontFamily: AppFonts.goudyOldStyle,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          textColor: AppColors.black,
                         ),
                         const SizedBox(width: 8),
                         const Expanded(

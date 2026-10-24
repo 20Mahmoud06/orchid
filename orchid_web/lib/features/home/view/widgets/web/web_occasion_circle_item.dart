@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Circular occasion avatar with hover and selected states.
 class WebOccasionCircleItem extends StatefulWidget {
@@ -71,18 +72,14 @@ class _WebOccasionCircleItemState extends State<WebOccasionCircleItem> {
               ),
             ),
             const SizedBox(height: 10),
-            Text(
-              widget.name,
-              style: TextStyle(
-                fontFamily: AppFonts.inriaSerif,
-                fontSize: 14,
-                fontWeight: widget.isSelected
-                    ? FontWeight.bold
-                    : FontWeight.w500,
-                color: widget.isSelected
-                    ? AppColors.storeRose
-                    : AppColors.storeLabel,
-              ),
+            CustomText(
+              text: widget.name,
+              fontFamily: AppFonts.inriaSerif,
+              fontSize: 14,
+              fontWeight: widget.isSelected ? FontWeight.bold : FontWeight.w500,
+              textColor: widget.isSelected
+                  ? AppColors.storeRose
+                  : AppColors.storeLabel,
             ),
           ],
         ),

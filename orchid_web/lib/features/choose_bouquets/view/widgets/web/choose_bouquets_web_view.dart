@@ -9,6 +9,7 @@ import '../../../../catalog/cubit/catalog_cubit.dart';
 import '../../../../catalog/cubit/catalog_state.dart';
 import '../../../../choose_flowers/view/widgets/web/web_choose_flowers_widgets.dart';
 import '../bouquet_catalog_body.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first choose bouquets page (>= 768px). Same colors, copy and
 /// behaviour as the mobile screen — heading, search, category tabs and a
@@ -55,14 +56,12 @@ class ChooseBouquetsWebView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'choose bouquets',
-                        style: TextStyle(
-                          fontFamily: AppFonts.goudyOldStyle,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.black,
-                        ),
+                      const CustomText(
+                        text: 'choose bouquets',
+                        fontFamily: AppFonts.goudyOldStyle,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w400,
+                        textColor: AppColors.black,
                       ),
                       const SizedBox(height: 20),
                       Expanded(child: _buildCatalog(context)),

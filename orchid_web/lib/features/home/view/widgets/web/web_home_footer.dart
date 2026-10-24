@@ -5,6 +5,7 @@ import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
 import 'package:ORCHID/core/router/app_routes.dart';
 import 'package:ORCHID/features/home/view/widgets/web/web_store_section.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Storefront footer matching the reference design layout:
 /// - Brand info & social media channels
@@ -72,13 +73,11 @@ class WebHomeFooter extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '© 2026 ORCHID. All rights reserved.',
-                  style: TextStyle(
-                    fontFamily: AppFonts.inriaSerif,
-                    fontSize: 12,
-                    color: Color(0xFF8C9B94),
-                  ),
+                const CustomText(
+                  text: '© 2026 ORCHID. All rights reserved.',
+                  fontFamily: AppFonts.inriaSerif,
+                  fontSize: 12,
+                  textColor: Color(0xFF8C9B94),
                 ),
                 Row(
                   mainAxisSize: MainAxisSize.min,
@@ -96,13 +95,11 @@ class WebHomeFooter extends StatelessWidget {
                       color: const Color(0xFFE2D4D2),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Made with care, for life\'s little moments.',
-                      style: TextStyle(
-                        fontFamily: AppFonts.inriaSerif,
-                        fontSize: 12,
-                        color: Color(0xFF8C9B94),
-                      ),
+                    const CustomText(
+                      text: 'Made with care, for life\'s little moments.',
+                      fontFamily: AppFonts.inriaSerif,
+                      fontSize: 12,
+                      textColor: Color(0xFF8C9B94),
                     ),
                   ],
                 ),
@@ -119,14 +116,12 @@ class WebHomeFooter extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1E352D),
-          ),
+        CustomText(
+          text: title,
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          textColor: Color(0xFF1E352D),
         ),
         const SizedBox(height: 6),
         Container(width: 24, height: 1.5, color: const Color(0xFFE8D7D5)),
@@ -148,27 +143,23 @@ class WebHomeFooter extends StatelessWidget {
               width: 28,
             ),
             const SizedBox(width: 10),
-            const Text(
-              'ORCHID',
-              style: TextStyle(
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.8,
-                color: Color(0xFF1E352D),
-              ),
+            const CustomText(
+              text: 'ORCHID',
+              fontFamily: AppFonts.goudyOldStyle,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.8,
+              textColor: Color(0xFF1E352D),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        const Text(
-          'Thoughtful flowers for a\nbrighter tomorrow.',
-          style: TextStyle(
-            fontFamily: AppFonts.inriaSerif,
-            fontSize: 13,
-            color: Color(0xFF4A5C54),
-            height: 1.45,
-          ),
+        const CustomText(
+          text: 'Thoughtful flowers for a\nbrighter tomorrow.',
+          fontFamily: AppFonts.inriaSerif,
+          fontSize: 13,
+          textColor: Color(0xFF4A5C54),
+          height: 1.45,
         ),
         const SizedBox(height: 18),
         Row(
@@ -293,13 +284,11 @@ class _FooterLinkState extends State<_FooterLink> {
       child: GestureDetector(
         onTap: widget.onTap,
         behavior: HitTestBehavior.opaque,
-        child: Text(
-          widget.label,
-          style: TextStyle(
-            fontFamily: AppFonts.inriaSerif,
-            fontSize: 13,
-            color: _hovered ? AppColors.storeRose : AppColors.storeFooterText,
-          ),
+        child: CustomText(
+          text: widget.label,
+          fontFamily: AppFonts.inriaSerif,
+          fontSize: 13,
+          textColor: _hovered ? AppColors.storeRose : AppColors.storeFooterText,
         ),
       ),
     );

@@ -16,6 +16,11 @@ class ProductsRepository {
     return rows.map(Product.fromRow).toList();
   }
 
+  /// Counts the catalog without downloading every product row.
+  Future<int> countProducts() async {
+    return supabase.from('products').count(CountOption.exact);
+  }
+
   Future<Product?> getProductById(String id) async {
     final row = await supabase
         .from('products')
@@ -84,9 +89,10 @@ class ProductsRepository {
     required String filename,
   }) async {
     final extension = _extensionOf(filename);
-    final path =
-        'products/${DateTime.now().millisecondsSinceEpoch}.$extension';
-    await supabase.storage.from(_bucket).uploadBinary(
+    final path = 'products/${DateTime.now().millisecondsSinceEpoch}.$extension';
+    await supabase.storage
+        .from(_bucket)
+        .uploadBinary(
           path,
           bytes,
           fileOptions: FileOptions(
@@ -109,8 +115,9 @@ class ProductsRepository {
 
   static String _extensionOf(String filename) {
     final dot = filename.lastIndexOf('.');
-    final extension =
-        dot == -1 ? '' : filename.substring(dot + 1).toLowerCase();
+    final extension = dot == -1
+        ? ''
+        : filename.substring(dot + 1).toLowerCase();
     return switch (extension) {
       'jpg' || 'jpeg' || 'png' || 'webp' || 'gif' => extension,
       _ => 'jpg',
@@ -118,9 +125,9 @@ class ProductsRepository {
   }
 
   static String _mimeTypeOf(String extension) => switch (extension) {
-        'png' => 'image/png',
-        'webp' => 'image/webp',
-        'gif' => 'image/gif',
-        _ => 'image/jpeg',
-      };
+    'png' => 'image/png',
+    'webp' => 'image/webp',
+    'gif' => 'image/gif',
+    _ => 'image/jpeg',
+  };
 }

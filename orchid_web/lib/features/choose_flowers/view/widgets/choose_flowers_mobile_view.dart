@@ -16,6 +16,7 @@ import '../../../../shared/widgets/flower_category_tabs.dart';
 import 'flower_grid_card.dart';
 import 'flower_search_bar.dart';
 import 'view_bouquet_bar.dart';
+import '../../../../shared/widgets/custom_text.dart';
 
 /// Mobile layout of the choose-flowers screen (unchanged presentation).
 class ChooseFlowersMobileView extends StatelessWidget {
@@ -134,15 +135,13 @@ class ChooseFlowersMobileView extends StatelessWidget {
 
                                       if (filteredFlowers.isEmpty) {
                                         return Center(
-                                          child: Text(
-                                            query.isEmpty
+                                          child: CustomText(
+                                            text: query.isEmpty
                                                 ? 'No flowers in this category yet'
                                                 : 'No flowers found with this name',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: AppColors.black,
-                                            ),
+                                            fontSize: 14.sp,
+                                            textColor: AppColors.black,
                                           ),
                                         );
                                       }
@@ -203,6 +202,10 @@ class ChooseFlowersMobileView extends StatelessWidget {
                   child: ViewBouquetBar(
                     totalCount: bouquetController.totalCount,
                     totalPrice: bouquetController.totalPrice,
+                    isSingleFlower:
+                        bouquetController.selectedFlowers.length == 1 &&
+                        bouquetController.selectedReadyBouquets.isEmpty &&
+                        bouquetController.totalCount == 1,
                     onTap: hasItems
                         ? () {
                             Navigator.pushNamed(context, AppRoutes.viewBouquet);

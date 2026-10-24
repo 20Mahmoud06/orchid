@@ -11,6 +11,7 @@ import '../../../../catalog/cubit/catalog_state.dart';
 import '../../../../favorites/cubit/favorites_cubit.dart';
 import '../../../../favorites/cubit/favorites_state.dart';
 import 'web_choose_flowers_widgets.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first choose flowers page (>= 768px): heading, search, category
 /// tabs and a responsive flower grid with the floating view-bouquet bar.
@@ -45,14 +46,12 @@ class ChooseFlowersWebView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'choose flowers',
-                        style: TextStyle(
-                          fontFamily: AppFonts.goudyOldStyle,
-                          fontSize: 30,
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.black,
-                        ),
+                      const CustomText(
+                        text: 'choose flowers',
+                        fontFamily: AppFonts.goudyOldStyle,
+                        fontSize: 30,
+                        fontWeight: FontWeight.w400,
+                        textColor: AppColors.black,
                       ),
                       const SizedBox(height: 20),
                       Expanded(
@@ -86,6 +85,13 @@ class ChooseFlowersWebView extends StatelessWidget {
                             child: WebViewBouquetBar(
                               totalCount: bouquetController.totalCount,
                               totalPrice: bouquetController.totalPrice,
+                              isSingleFlower:
+                                  bouquetController.selectedFlowers.length ==
+                                      1 &&
+                                  bouquetController
+                                      .selectedReadyBouquets
+                                      .isEmpty &&
+                                  bouquetController.totalCount == 1,
                               onTap: hasItems
                                   ? () => Navigator.pushNamed(
                                       context,

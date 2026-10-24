@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../domain/models/order_model.dart';
 
 class OrderStatusBadge extends StatelessWidget {
@@ -17,8 +18,8 @@ class OrderStatusBadge extends StatelessWidget {
         color: style.bg,
         borderRadius: BorderRadius.circular(999),
       ),
-      child: Text(
-        status.label,
+      child: CustomText(
+        text: status.label,
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,

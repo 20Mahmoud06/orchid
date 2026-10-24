@@ -1,3 +1,5 @@
+import '../../bouquet/utils/bouquet_naming.dart';
+
 /// One flower line inside a custom bouquet held in the cart.
 class CartItemComponent {
   const CartItemComponent({
@@ -5,19 +7,22 @@ class CartItemComponent {
     required this.quantity,
     required this.unitPrice,
     this.productId,
+    this.imagePath,
   });
 
   final String name;
   final int quantity;
   final int unitPrice;
   final String? productId;
+  final String? imagePath;
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'quantity': quantity,
-        'unit_price': unitPrice,
-        if (productId != null) 'product_id': productId,
-      };
+    'name': name,
+    'quantity': quantity,
+    'unit_price': unitPrice,
+    if (productId != null) 'product_id': productId,
+    if (imagePath != null) 'image_path': imagePath,
+  };
 
   factory CartItemComponent.fromJson(Map<String, dynamic> json) {
     return CartItemComponent(
@@ -25,6 +30,7 @@ class CartItemComponent {
       quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       unitPrice: (json['unit_price'] as num?)?.toInt() ?? 0,
       productId: json['product_id'] as String?,
+      imagePath: json['image_path'] as String?,
     );
   }
 }
@@ -56,6 +62,44 @@ class CartItem {
 
   bool get isCustomBouquet => components != null && components!.isNotEmpty;
 
+  BouquetFlowerLine? get singleFlowerLine {
+    if (!isCustomBouquet) return null;
+    return BouquetNaming.singleFlower(
+      components!.map(
+        (component) => BouquetFlowerLine(
+          name: component.name,
+          productId: component.productId,
+          imagePath: component.imagePath,
+        ),
+      ),
+    );
+  }
+
+  bool get isSingleFlowerBouquet => singleFlowerLine != null;
+
+  String? get singleFlowerName => singleFlowerLine?.name;
+
+  String get displayName {
+    final flower = singleFlowerLine;
+    if (flower == null) return name;
+    final quantity = components!.fold<int>(
+      0,
+      (sum, component) => sum + component.quantity,
+    );
+    return BouquetNaming.flowerTitle(flower.name, quantity: quantity);
+  }
+
+  String get displayImagePath {
+    final flower = singleFlowerLine;
+    if (flower == null) return imagePath;
+    return BouquetNaming.singleFlowerImage(
+      productId: flower.productId,
+      name: flower.name,
+      storedImage: flower.imagePath,
+      fallback: imagePath,
+    );
+  }
+
   /// Line total for this item (unit price x quantity).
   int get total => price * quantity;
 
@@ -79,16 +123,15 @@ class CartItem {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'price': price,
-        'imagePath': imagePath,
-        'quantity': quantity,
-        if (message != null && message!.trim().isNotEmpty)
-          'message': message,
-        if (components != null)
-          'components': components!.map((c) => c.toJson()).toList(),
-      };
+    'id': id,
+    'name': name,
+    'price': price,
+    'imagePath': imagePath,
+    'quantity': quantity,
+    if (message != null && message!.trim().isNotEmpty) 'message': message,
+    if (components != null)
+      'components': components!.map((c) => c.toJson()).toList(),
+  };
 
   factory CartItem.fromJson(Map<String, dynamic> json) {
     final rawComponents = json['components'];
@@ -101,9 +144,12 @@ class CartItem {
       message: json['message'] as String?,
       components: rawComponents is List
           ? rawComponents
-              .whereType<Map>()
-              .map((c) => CartItemComponent.fromJson(Map<String, dynamic>.from(c)))
-              .toList()
+                .whereType<Map>()
+                .map(
+                  (c) =>
+                      CartItemComponent.fromJson(Map<String, dynamic>.from(c)),
+                )
+                .toList()
           : null,
     );
   }

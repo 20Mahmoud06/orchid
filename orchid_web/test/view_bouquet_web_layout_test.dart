@@ -215,7 +215,78 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(CartCubit.instance.items, hasLength(1));
+    expect(CartCubit.instance.items.first.name, 'Rose');
     expect(CartCubit.instance.items.first.imagePath, 'assets/images/rose.png');
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('Admin inspiration keeps its uploaded photo in the cart', (
+    tester,
+  ) async {
+    seedCatalog();
+    const item = InspirationItem(
+      id: 'i2',
+      username: 'orchid',
+      imagePath: AppAssets.bouquetTest,
+      ingredients: ['10 tulips'],
+      description: 'admin pick',
+      flowers: [
+        InspirationFlower(
+          productId: 'f2',
+          name: 'Tulip',
+          unitPrice: 40,
+          quantity: 10,
+        ),
+      ],
+    );
+    addTearDown(CartCubit.instance.clearCart);
+
+    await pumpRoutedAt(
+      tester,
+      const Size(1440, 900),
+      const ViewBouquetScreen(bouquet: item),
+    );
+    await tester.tap(find.text('Looks Good'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+
+    final cartItem = CartCubit.instance.items.single;
+    expect(cartItem.name, 'Tulip Bouquet');
+    expect(cartItem.imagePath, AppAssets.bouquetTest);
+    expect(cartItem.displayImagePath, AppAssets.bouquetTest);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'A bunch of one flower kind is named after that flower plus Bouquet',
+    (tester) async {
+      seedCatalog();
+      for (var i = 0; i < 10; i++) {
+        BouquetCubit.instance.incrementQuantity('f2');
+      }
+      addTearDown(() {
+        BouquetCubit.instance.clear();
+        CartCubit.instance.clearCart();
+      });
+
+      await pumpRoutedAt(
+        tester,
+        const Size(1440, 900),
+        const ViewBouquetScreen(),
+      );
+      expect(find.text('View Your Flower'), findsNothing);
+      expect(find.text('your bouquet'), findsOneWidget);
+      await tester.tap(find.text('Looks Good'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+
+      final item = CartCubit.instance.items.single;
+      expect(item.name, 'Tulip Bouquet');
+      expect(item.imagePath, 'assets/images/tulip.png');
+      expect(item.displayName, 'Tulip Bouquet');
+      expect(item.displayImagePath, 'assets/images/tulip.png');
+      expect(find.text('Tulip Bouquet'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

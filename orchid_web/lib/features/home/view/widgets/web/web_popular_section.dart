@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
 import 'web_popular_product_card.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 typedef WebPopularItem = ({String id, String name, String price, String image});
 
@@ -32,14 +33,12 @@ class WebPopularSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontFamily: AppFonts.goudyOldStyle,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.storeDeepGreen,
-                ),
+              child: CustomText(
+                text: title,
+                fontFamily: AppFonts.goudyOldStyle,
+                fontSize: 26,
+                fontWeight: FontWeight.w600,
+                textColor: AppColors.storeDeepGreen,
               ),
             ),
             MouseRegion(
@@ -50,14 +49,12 @@ class WebPopularSection extends StatelessWidget {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      'View all',
-                      style: TextStyle(
-                        fontFamily: AppFonts.inriaSerif,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.storeDeepGreen,
-                      ),
+                    CustomText(
+                      text: 'View all',
+                      fontFamily: AppFonts.inriaSerif,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      textColor: AppColors.storeDeepGreen,
                     ),
                     SizedBox(width: 4),
                     Icon(

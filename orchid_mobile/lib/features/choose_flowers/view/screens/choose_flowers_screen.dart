@@ -11,6 +11,7 @@ import '../../../../features/favorites/cubit/favorites_state.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/catalog_error_view.dart';
+import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/flower_category_tabs.dart';
 import '../widgets/flower_grid_card.dart';
 import '../widgets/flower_search_bar.dart';
@@ -150,15 +151,13 @@ class _ChooseFlowersScreenState extends State<ChooseFlowersScreen> {
 
                                       if (filteredFlowers.isEmpty) {
                                         return Center(
-                                          child: Text(
-                                            searchQuery.isEmpty
+                                          child: CustomText(
+                                            text: searchQuery.isEmpty
                                                 ? 'No flowers in this category yet'
                                                 : 'No flowers found with this name',
                                             textAlign: TextAlign.center,
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              color: AppColors.black,
-                                            ),
+                                            fontSize: 14.sp,
+                                            textColor: AppColors.black,
                                           ),
                                         );
                                       }
@@ -221,6 +220,10 @@ class _ChooseFlowersScreenState extends State<ChooseFlowersScreen> {
                   child: ViewBouquetBar(
                     totalCount: _bouquetController.totalCount,
                     totalPrice: _bouquetController.totalPrice,
+                    isSingleFlower:
+                        _bouquetController.selectedFlowers.length == 1 &&
+                        _bouquetController.selectedReadyBouquets.isEmpty &&
+                        _bouquetController.totalCount == 1,
                     onTap: hasItems
                         ? () {
                             Navigator.pushNamed(

@@ -22,14 +22,19 @@ class ViewBouquetScreen extends StatelessWidget {
     final bouquetController = BouquetCubit.instance;
     final selectedFlowers = bouquetController.selectedFlowers;
     final isFromInspiration = bouquet != null;
+    final isSingleFlowerKind =
+        selectedFlowers.length == 1 &&
+        bouquetController.selectedReadyBouquets.isEmpty;
+    final isSingleFlower =
+        isSingleFlowerKind && bouquetController.totalCount == 1;
 
     final title = isFromInspiration
         ? 'your bouquet'
-        : (selectedFlowers.length == 1 ? 'View Your Flower' : 'your bouquet');
+        : (isSingleFlower ? 'View Your Flower' : 'your bouquet');
 
     final imagePath = isFromInspiration
-        ? (bouquet!.imagePath)
-        : (selectedFlowers.length == 1
+        ? bouquet!.displayImagePath
+        : (isSingleFlowerKind
               ? selectedFlowers.first.imagePath
               : AppAssets.bouquetTest);
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/custom_text.dart';
 
 class OrderSummary extends StatelessWidget {
   const OrderSummary({
@@ -39,8 +40,8 @@ class OrderSummary extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                'Total: ${total.toStringAsFixed(0)} EGP',
+              child: CustomText(
+                text: 'Total: ${total.toStringAsFixed(0)} EGP',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
@@ -54,12 +55,16 @@ class OrderSummary extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.payments_outlined,
-                  size: 18, color: AppColors.primary),
+              const Icon(
+                Icons.payments_outlined,
+                size: 18,
+                color: AppColors.primary,
+              ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  'Payment method: ${_formatPaymentMethod(paymentMethod!)}',
+                child: CustomText(
+                  text:
+                      'Payment method: ${_formatPaymentMethod(paymentMethod!)}',
                   style: AppTextStyles.body.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
@@ -83,9 +88,9 @@ class OrderSummary extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: AppTextStyles.bodySecondary),
-        Text(
-          value,
+        CustomText(text: label, style: AppTextStyles.bodySecondary),
+        CustomText(
+          text: value,
           style: AppTextStyles.body.copyWith(
             fontWeight: FontWeight.w600,
             color: valueColor ?? AppColors.textPrimary,

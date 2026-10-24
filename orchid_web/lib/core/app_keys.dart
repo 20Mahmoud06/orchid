@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'storage/local_storage.dart';
 
 /// Global navigator key so auth events (e.g. password recovery deep links) can

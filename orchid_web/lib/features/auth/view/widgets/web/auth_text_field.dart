@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Labeled text input with an optional password visibility toggle and inline
 /// validation message.
@@ -58,15 +59,13 @@ class _AuthTextFieldState extends State<AuthTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: const TextStyle(
-            fontFamily: AppFonts.inriaSerif,
-            fontSize: 13.5,
-            fontWeight: FontWeight.w600,
-            color: AppColors.darkGreen,
-            letterSpacing: 0.1,
-          ),
+        CustomText(
+          text: widget.label,
+          fontFamily: AppFonts.inriaSerif,
+          fontSize: 13.5,
+          fontWeight: FontWeight.w600,
+          textColor: AppColors.darkGreen,
+          letterSpacing: 0.1,
         ),
         const SizedBox(height: 8),
         TextField(
@@ -132,14 +131,12 @@ class _AuthTextFieldState extends State<AuthTextField> {
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.only(left: 2),
-            child: Text(
-              widget.errorText!,
-              style: const TextStyle(
-                fontFamily: AppFonts.inriaSerif,
-                fontSize: 12.5,
-                height: 1.3,
-                color: AppColors.error,
-              ),
+            child: CustomText(
+              text: widget.errorText!,
+              fontFamily: AppFonts.inriaSerif,
+              fontSize: 12.5,
+              height: 1.3,
+              textColor: AppColors.error,
             ),
           ),
         ],

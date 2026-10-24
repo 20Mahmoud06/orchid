@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/router/app_nav.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/app_card.dart';
 import '../../data/repositories/categories_repository.dart';
 import '../../data/repositories/products_repository.dart';
 import '../../domain/models/category_model.dart';
 import '../../domain/models/product_model.dart';
+import '../models/product_form_data.dart';
+import '../widgets/edit_product_error_state.dart';
+import '../widgets/edit_product_header.dart';
 import '../widgets/product_form.dart';
 
 class EditProductPage extends StatefulWidget {
@@ -134,40 +137,10 @@ class _EditProductPageState extends State<EditProductPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                TextButton.icon(
-                  onPressed: () => AppNav.pop(context),
-                  icon: const Icon(Icons.arrow_back,
-                      size: 18, color: AppColors.textSecondary),
-                  label: const Text('Back to Products'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _isLoading
-                      ? 'Edit Product'
-                      : _product == null
-                          ? 'Product Not Found'
-                          : 'Edit Product',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textPrimary,
-                      ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  _product == null && !_isLoading
-                      ? 'The product you are looking for could not be found.'
-                      : 'Update product details and settings.',
-                  style: AppTextStyles.bodySecondary,
-                ),
-              ],
+            EditProductHeader(
+              isLoading: _isLoading,
+              hasProduct: _product != null,
+              onBack: () => AppNav.pop(context),
             ),
             const SizedBox(height: 24),
             if (_isLoading)
@@ -178,42 +151,11 @@ class _EditProductPageState extends State<EditProductPage> {
                 ),
               )
             else if (_errorMessage != null)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(48),
-                  child: Column(
-                    children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
-                      const SizedBox(height: 16),
-                      Text(_errorMessage!,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.bodySecondary),
-                      const SizedBox(height: 16),
-                      TextButton(
-                        onPressed: _load,
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
-              )
+              EditProductErrorState(message: _errorMessage!, onRetry: _load)
             else if (_product != null && _categories != null)
-              Container(
+              AppCard(
                 width: double.infinity,
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
                 child: ProductForm(
                   product: _product,
                   categories: _categories!,

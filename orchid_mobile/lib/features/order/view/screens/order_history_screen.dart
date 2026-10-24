@@ -7,6 +7,7 @@ import '../../../../core/app_keys.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../shared/widgets/custom_app_bar.dart';
+import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../shared/widgets/flower_category_tabs.dart';
 import '../../../../shared/widgets/slider_direction.dart';
@@ -86,10 +87,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       messenger?.hideCurrentSnackBar();
       messenger?.showSnackBar(
         SnackBar(
-          content: Text(
-            isCompleted
+          content: CustomText(
+            text: isCompleted
                 ? 'Could not remove this order'
                 : 'Could not cancel this order',
+            textColor: AppColors.white,
           ),
           behavior: SnackBarBehavior.floating,
         ),
@@ -113,7 +115,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
         messenger?.hideCurrentSnackBar();
         messenger?.showSnackBar(
           const SnackBar(
-            content: Text('Could not cancel your orders'),
+            content: CustomText(
+              text: 'Could not cancel your orders',
+              textColor: AppColors.white,
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );

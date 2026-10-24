@@ -48,7 +48,7 @@ class WebCartItemCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: SkeletonImage(
-              path: item.imagePath,
+              path: item.displayImagePath,
               width: 100,
               height: 100,
               fit: BoxFit.cover,
@@ -69,7 +69,7 @@ class WebCartItemCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CustomText(
-                        text: item.name,
+                        text: item.displayName,
                         fontFamily: AppFonts.goudyOldStyle,
                         fontSize: 20,
                         fontWeight: FontWeight.w600,

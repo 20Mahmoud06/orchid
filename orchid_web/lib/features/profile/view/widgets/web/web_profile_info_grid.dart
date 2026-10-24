@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Two-column field grid that collapses to a single column on narrow cards.
 class WebProfileInfoGrid extends StatelessWidget {
@@ -74,14 +75,12 @@ class WebProfileInfoField extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Flexible(
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontFamily: AppFonts.inriaSerif,
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.darkGreen,
-                ),
+              child: CustomText(
+                text: label,
+                fontFamily: AppFonts.inriaSerif,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                textColor: AppColors.darkGreen,
               ),
             ),
             if (showArrow) ...[
@@ -95,13 +94,11 @@ class WebProfileInfoField extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 5),
-        Text(
-          value,
-          style: TextStyle(
-            fontFamily: AppFonts.inriaSerif,
-            fontSize: 15,
-            color: Colors.black.withValues(alpha: 0.8),
-          ),
+        CustomText(
+          text: value,
+          fontFamily: AppFonts.inriaSerif,
+          fontSize: 15,
+          textColor: Colors.black.withValues(alpha: 0.8),
         ),
       ],
     );

@@ -12,3 +12,24 @@ void initTimeZones() => tzdata.initializeTimeZones();
 /// Converts a timestamp as returned by Supabase (UTC, `timestamptz`) into its
 /// Cairo wall-clock time.
 DateTime toEgyptTime(DateTime utc) => tz.TZDateTime.from(utc, _cairo);
+
+/// Current Cairo wall-clock time, independent of the browser's timezone.
+DateTime nowInEgypt() => tz.TZDateTime.now(_cairo);
+
+/// Converts a Cairo wall-clock [DateTime] into the matching UTC instant.
+///
+/// Used to build inclusive/exclusive query boundaries for `timestamptz`
+/// columns without depending on the machine's local timezone.
+DateTime egyptWallClockToUtc(DateTime wallClock) {
+  return tz.TZDateTime(
+    _cairo,
+    wallClock.year,
+    wallClock.month,
+    wallClock.day,
+    wallClock.hour,
+    wallClock.minute,
+    wallClock.second,
+    wallClock.millisecond,
+    wallClock.microsecond,
+  ).toUtc();
+}

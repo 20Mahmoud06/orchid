@@ -16,6 +16,8 @@ class CustomText extends StatelessWidget {
     this.height,
     this.fontFamily,
     this.shadows,
+    this.style,
+    this.inheritStyle = false,
   });
 
   final String text;
@@ -31,19 +33,34 @@ class CustomText extends StatelessWidget {
   final TextDirection? textDirection;
   final String? fontFamily;
   final List<Shadow>? shadows;
+  final TextStyle? style;
+  final bool inheritStyle;
 
   @override
   Widget build(BuildContext context) {
+    final defaultStyle = DefaultTextStyle.of(context);
+    final baseStyle =
+        style ??
+        (inheritStyle
+            ? defaultStyle.style
+            : const TextStyle(
+                color: Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ));
     return Text(
       text,
       textDirection: textDirection,
-      textAlign: textAlign ?? TextAlign.start,
-      maxLines: maxLines,
-      overflow: overflow,
-      style: TextStyle(
-        color: textColor ?? Colors.black,
-        fontSize: fontSize ?? 14,
-        fontWeight: fontWeight ?? FontWeight.normal,
+      textAlign:
+          textAlign ??
+          (inheritStyle ? defaultStyle.textAlign : TextAlign.start),
+      maxLines: maxLines ?? (inheritStyle ? defaultStyle.maxLines : null),
+      overflow: overflow ?? (inheritStyle ? defaultStyle.overflow : null),
+      softWrap: inheritStyle ? defaultStyle.softWrap : null,
+      style: baseStyle.copyWith(
+        color: textColor,
+        fontSize: fontSize,
+        fontWeight: fontWeight,
         fontStyle: fontStyle,
         fontFamily: fontFamily,
         letterSpacing: letterSpacing,

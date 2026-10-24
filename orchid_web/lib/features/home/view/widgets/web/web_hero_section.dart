@@ -4,6 +4,7 @@ import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
 import 'package:ORCHID/core/router/app_routes.dart';
 import 'package:ORCHID/features/home/view/widgets/web/web_pill_button.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Large Hero section with soft blush pink card, balanced 2-column layout,
 /// prominent headline, supporting description, two CTA buttons, and floral imagery.
@@ -43,36 +44,31 @@ class WebHeroSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'FLOWERS FOR EVERY MOMENT',
-                  style: TextStyle(
-                    fontFamily: AppFonts.inriaSerif,
-                    fontSize: 11,
-                    letterSpacing: 1.5,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.storeEyebrow,
-                  ),
+                const CustomText(
+                  text: 'FLOWERS FOR EVERY MOMENT',
+                  fontFamily: AppFonts.inriaSerif,
+                  fontSize: 11,
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w600,
+                  textColor: AppColors.storeEyebrow,
                 ),
                 const SizedBox(height: 14),
-                const Text(
-                  'Make someone’s\nday bloom.',
-                  style: TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 44,
-                    height: 1.15,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.storeDeepGreen,
-                  ),
+                const CustomText(
+                  text: 'Make someone’s\nday bloom.',
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 44,
+                  height: 1.15,
+                  fontWeight: FontWeight.bold,
+                  textColor: AppColors.storeDeepGreen,
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Fresh flowers, thoughtful bouquets, and little\nmoments of happiness — delivered to their door.',
-                  style: TextStyle(
-                    fontFamily: AppFonts.inriaSerif,
-                    fontSize: 15,
-                    height: 1.45,
-                    color: AppColors.storeBodyText,
-                  ),
+                const CustomText(
+                  text:
+                      'Fresh flowers, thoughtful bouquets, and little\nmoments of happiness — delivered to their door.',
+                  fontFamily: AppFonts.inriaSerif,
+                  fontSize: 15,
+                  height: 1.45,
+                  textColor: AppColors.storeBodyText,
                 ),
                 const SizedBox(height: 28),
                 Row(
@@ -123,36 +119,31 @@ class WebHeroSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'FLOWERS FOR EVERY MOMENT',
-            style: TextStyle(
-              fontFamily: AppFonts.inriaSerif,
-              fontSize: 11,
-              letterSpacing: 1.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.storeEyebrow,
-            ),
+          const CustomText(
+            text: 'FLOWERS FOR EVERY MOMENT',
+            fontFamily: AppFonts.inriaSerif,
+            fontSize: 11,
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w600,
+            textColor: AppColors.storeEyebrow,
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Make someone’s day bloom.',
-            style: TextStyle(
-              fontFamily: AppFonts.goudyOldStyle,
-              fontSize: 32,
-              height: 1.2,
-              fontWeight: FontWeight.bold,
-              color: AppColors.storeDeepGreen,
-            ),
+          const CustomText(
+            text: 'Make someone’s day bloom.',
+            fontFamily: AppFonts.goudyOldStyle,
+            fontSize: 32,
+            height: 1.2,
+            fontWeight: FontWeight.bold,
+            textColor: AppColors.storeDeepGreen,
           ),
           const SizedBox(height: 12),
-          const Text(
-            'Fresh flowers, thoughtful bouquets, and little moments of happiness — delivered to their door.',
-            style: TextStyle(
-              fontFamily: AppFonts.inriaSerif,
-              fontSize: 14,
-              height: 1.4,
-              color: AppColors.storeBodyText,
-            ),
+          const CustomText(
+            text:
+                'Fresh flowers, thoughtful bouquets, and little moments of happiness — delivered to their door.',
+            fontFamily: AppFonts.inriaSerif,
+            fontSize: 14,
+            height: 1.4,
+            textColor: AppColors.storeBodyText,
           ),
           const SizedBox(height: 20),
           Center(

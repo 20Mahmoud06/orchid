@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/router/app_nav.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../data/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -76,20 +77,24 @@ class _LoginPageState extends State<LoginPage> {
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(18),
                   ),
-                  child: const Icon(Icons.local_florist_rounded, size: 36, color: AppColors.white),
+                  child: const Icon(
+                    Icons.local_florist_rounded,
+                    size: 36,
+                    color: AppColors.white,
+                  ),
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  'Orchid Admin',
+                CustomText(
+                  text: 'Orchid Admin',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  'Sign in to manage your store',
+                CustomText(
+                  text: 'Sign in to manage your store',
                   style: AppTextStyles.bodySecondary,
                 ),
                 const SizedBox(height: 32),
@@ -113,8 +118,9 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (value) {
                             final email = value?.trim() ?? '';
                             if (email.isEmpty) return 'Email is required';
-                            if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                                .hasMatch(email)) {
+                            if (!RegExp(
+                              r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
+                            ).hasMatch(email)) {
                               return 'Enter a valid email address';
                             }
                             return null;
@@ -158,14 +164,18 @@ class _LoginPageState extends State<LoginPage> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.error_outline,
-                                    size: 16, color: AppColors.error),
+                                const Icon(
+                                  Icons.error_outline,
+                                  size: 16,
+                                  color: AppColors.error,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: Text(
-                                    _errorMessage!,
-                                    style: AppTextStyles.caption
-                                        .copyWith(color: AppColors.error),
+                                  child: CustomText(
+                                    text: _errorMessage!,
+                                    style: AppTextStyles.caption.copyWith(
+                                      color: AppColors.error,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -178,7 +188,8 @@ class _LoginPageState extends State<LoginPage> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primary,
                             foregroundColor: AppColors.white,
-                            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.6),
+                            disabledBackgroundColor: AppColors.primary
+                                .withValues(alpha: 0.6),
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           child: _isSubmitting

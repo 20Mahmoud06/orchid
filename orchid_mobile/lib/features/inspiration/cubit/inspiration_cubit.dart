@@ -14,8 +14,8 @@ class InspirationCubit extends Cubit<InspirationState> {
 
   static const String _bucket = 'product-images';
 
-  /// How many featured bouquets the tab shows (the newest ones).
-  static const int maxItems = 5;
+  /// How many live featured bouquets the tab shows (the newest ones).
+  // No hard limit - show all added from dashboard
 
   List<InspirationItem> get items => state is InspirationLoaded
       ? (state as InspirationLoaded).items
@@ -56,7 +56,6 @@ class InspirationCubit extends Cubit<InspirationState> {
       // bouquets back to them.
       final featured = <InspirationItem>[];
       for (final row in rows) {
-        if (featured.length >= maxItems) break;
         final source = row['source_order_item_id'];
         if (source is String && ownSourceIds.contains(source)) continue;
         featured.add(_map(row));
@@ -148,6 +147,7 @@ class InspirationCubit extends Cubit<InspirationState> {
       description: row['description'] as String? ?? '',
       avatarUrl: profileImage.isEmpty ? null : _profileImageUrl(profileImage),
       flowers: flowers,
+      sourceOrderItemId: row['source_order_item_id'] as String?,
     );
   }
 

@@ -43,14 +43,12 @@ class FavoritesWebView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'favorites',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.black,
-                    ),
+                  const CustomText(
+                    text: 'favorites',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w400,
+                    textColor: AppColors.black,
                   ),
                   const SizedBox(height: 6),
                   CustomText(

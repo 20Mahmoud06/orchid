@@ -8,6 +8,8 @@ import '../../../../shared/widgets/custom_app_bar.dart';
 import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../shared/widgets/slider_direction.dart';
+import '../../../catalog/cubit/catalog_cubit.dart';
+import '../../../catalog/cubit/catalog_state.dart';
 import '../../cubit/inspiration_cubit.dart';
 import '../../cubit/inspiration_state.dart';
 import '../widgets/inspiration_card.dart';
@@ -15,10 +17,7 @@ import '../widgets/inspiration_card.dart';
 class InspirationScreen extends StatefulWidget {
   final VoidCallback? onBackPressed;
 
-  const InspirationScreen({
-    super.key,
-    this.onBackPressed,
-  });
+  const InspirationScreen({super.key, this.onBackPressed});
 
   @override
   State<InspirationScreen> createState() => _InspirationScreenState();
@@ -35,6 +34,7 @@ class _InspirationScreenState extends State<InspirationScreen>
   @override
   void initState() {
     super.initState();
+    CatalogCubit.instance.load();
     InspirationCubit.instance.load();
     _controller = AnimationController(
       vsync: this,
@@ -107,53 +107,58 @@ class _InspirationScreenState extends State<InspirationScreen>
                 animation: _animFor(3),
                 direction: _direction,
                 distance: _slideDistance,
-                child: BlocBuilder<InspirationCubit, InspirationState>(
-                  bloc: InspirationCubit.instance,
-                  builder: (context, state) {
-                    final controller = InspirationCubit.instance;
-                    final items = controller.items;
+                child: BlocBuilder<CatalogCubit, CatalogState>(
+                  bloc: CatalogCubit.instance,
+                  builder: (context, _) =>
+                      BlocBuilder<InspirationCubit, InspirationState>(
+                        bloc: InspirationCubit.instance,
+                        builder: (context, state) {
+                          final controller = InspirationCubit.instance;
+                          final items = controller.items;
 
-                    if (controller.isLoading && items.isEmpty) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (controller.error != null && items.isEmpty) {
-                      return _CenteredMessage(
-                        message:
-                            'could not load inspiration right now.\ncheck your connection and try again.',
-                        onRetry: () =>
-                            controller.load(force: true),
-                      );
-                    }
-                    if (items.isEmpty) {
-                      return const _CenteredMessage(
-                        message:
-                            'no inspiration yet —\nbe the first to create a bouquet!',
-                      );
-                    }
-
-                    return ListView.separated(
-                      padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
-                      itemCount: items.length,
-                      separatorBuilder: (context, index) =>
-                          SizedBox(height: 16.h),
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        return InspirationCard(
-                          username: item.username,
-                          imagePath: item.imagePath,
-                          ingredients: item.ingredients,
-                          avatarUrl: item.avatarUrl,
-                          onChoose: () {
-                            Navigator.pushNamed(
-                              context,
-                              AppRoutes.viewBouquet,
-                              arguments: item,
+                          if (controller.isLoading && items.isEmpty) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
                             );
-                          },
-                        );
-                      },
-                    );
-                  },
+                          }
+                          if (controller.error != null && items.isEmpty) {
+                            return _CenteredMessage(
+                              message:
+                                  'could not load inspiration right now.\ncheck your connection and try again.',
+                              onRetry: () => controller.load(force: true),
+                            );
+                          }
+                          if (items.isEmpty) {
+                            return const _CenteredMessage(
+                              message:
+                                  'no inspiration yet —\nbe the first to create a bouquet!',
+                            );
+                          }
+
+                          return ListView.separated(
+                            padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 24.h),
+                            itemCount: items.length,
+                            separatorBuilder: (context, index) =>
+                                SizedBox(height: 16.h),
+                            itemBuilder: (context, index) {
+                              final item = items[index];
+                              return InspirationCard(
+                                username: item.username,
+                                imagePath: item.displayImagePath,
+                                ingredients: item.ingredients,
+                                avatarUrl: item.avatarUrl,
+                                onChoose: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.viewBouquet,
+                                    arguments: item,
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
                 ),
               ),
             ),

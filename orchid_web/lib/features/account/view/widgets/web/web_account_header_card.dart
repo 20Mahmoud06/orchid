@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Soft blush heading panel with a title and supporting sentence.
 class WebAccountHeaderCard extends StatelessWidget {
@@ -25,27 +26,23 @@ class WebAccountHeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(
-            title,
+          CustomText(
+            text: title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: AppFonts.goudyOldStyle,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-              color: AppColors.darkGreen,
-            ),
+            fontFamily: AppFonts.goudyOldStyle,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            textColor: AppColors.darkGreen,
           ),
           const SizedBox(height: 6),
-          Text(
-            body,
+          CustomText(
+            text: body,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: AppFonts.goudyOldStyle,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              height: 1.5,
-              color: AppColors.darkGreen,
-            ),
+            fontFamily: AppFonts.goudyOldStyle,
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            height: 1.5,
+            textColor: AppColors.darkGreen,
           ),
         ],
       ),

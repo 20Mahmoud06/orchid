@@ -9,9 +9,9 @@ enum ProductType {
   final String label;
 
   String get dbValue => switch (this) {
-        ProductType.flower => 'flower',
-        ProductType.readyBouquet => 'ready_bouquet',
-      };
+    ProductType.flower => 'flower',
+    ProductType.readyBouquet => 'ready_bouquet',
+  };
 
   static ProductType fromDb(String? value) =>
       value == 'ready_bouquet' ? ProductType.readyBouquet : ProductType.flower;
@@ -55,20 +55,12 @@ class Product {
       imagePath: row['image_path'] as String? ?? '',
       categoryId: row['category_id'] as String?,
       categoryName: category is Map ? category['name'] as String? : null,
-      createdAt: DateTime.tryParse(row['created_at'] as String? ?? '') ??
+      createdAt:
+          DateTime.tryParse(row['created_at'] as String? ?? '') ??
           DateTime.now(),
       updatedAt: DateTime.tryParse(row['updated_at'] as String? ?? ''),
     );
   }
-
-  Map<String, dynamic> toRow() => {
-        'name': name,
-        'price': price,
-        'type': type.dbValue,
-        'category_id': categoryId,
-        'is_active': isActive,
-        'image_path': imagePath,
-      };
 }
 
 String productImageUrl(String path) {

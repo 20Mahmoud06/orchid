@@ -47,14 +47,12 @@ class WebCartView extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          const Text(
-                            'my cart',
-                            style: TextStyle(
-                              fontFamily: AppFonts.goudyOldStyle,
-                              fontSize: 30,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.black,
-                            ),
+                          const CustomText(
+                            text: 'my cart',
+                            fontFamily: AppFonts.goudyOldStyle,
+                            fontSize: 30,
+                            fontWeight: FontWeight.w400,
+                            textColor: AppColors.black,
                           ),
                           const Spacer(),
                           if (items.isNotEmpty)

@@ -172,7 +172,12 @@ class CatalogCubit extends Cubit<CatalogState> {
         categories.add(category);
       }
     }
-    categories.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
-    return <String>[allLabel, ...categories];
+    final more = categories
+        .where((category) => category.toLowerCase() == _uncategorised)
+        .toList();
+    categories
+      ..removeWhere((category) => category.toLowerCase() == _uncategorised)
+      ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+    return <String>[allLabel, ...categories, ...more];
   }
 }

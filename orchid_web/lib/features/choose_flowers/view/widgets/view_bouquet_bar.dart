@@ -10,12 +10,14 @@ class ViewBouquetBar extends StatelessWidget {
   final int totalCount;
   final int totalPrice;
   final VoidCallback? onTap;
+  final bool isSingleFlower;
 
   const ViewBouquetBar({
     super.key,
     required this.totalCount,
     required this.totalPrice,
     this.onTap,
+    this.isSingleFlower = false,
   });
 
   @override
@@ -40,7 +42,9 @@ class ViewBouquetBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             CustomText(
-              text: 'view bouquet ($totalCount) >',
+              text:
+                  '${isSingleFlower ? 'view flower' : 'view bouquet'} '
+                  '($totalCount) >',
               fontFamily: AppFonts.goudyOldStyle,
               fontSize: 20.sp,
               fontWeight: FontWeight.bold,

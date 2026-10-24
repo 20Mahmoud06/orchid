@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/custom_text.dart';
 
 class SummaryCard extends StatelessWidget {
   const SummaryCard({
@@ -47,29 +48,38 @@ class SummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  label,
+                CustomText(
+                  text: label,
                   style: AppTextStyles.caption.copyWith(
                     color: AppColors.textSecondary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  value,
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                    height: 1.1,
+                SizedBox(
+                  width: double.infinity,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: CustomText(
+                      text: value,
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                        height: 1.1,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  subtitle,
+                CustomText(
+                  text: subtitle,
                   style: AppTextStyles.caption.copyWith(
                     color: subtitleColor ?? AppColors.textSecondary,
-                    fontWeight: subtitleColor != null ? FontWeight.w600 : FontWeight.w400,
+                    fontWeight: subtitleColor != null
+                        ? FontWeight.w600
+                        : FontWeight.w400,
                   ),
                 ),
               ],

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/app_keys.dart';
+import '../../core/constants/app_colors.dart';
 import '../../core/router/app_routes.dart';
+import '../../shared/widgets/custom_text.dart';
 import '../order/cubit/orders_cubit.dart';
 import 'cubit/checkout_cubit.dart';
 
@@ -42,7 +44,7 @@ Future<void> submitCheckoutAndConfirm(
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       SnackBar(
-        content: Text(error.message),
+        content: CustomText(text: error.message, textColor: AppColors.white),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -51,8 +53,10 @@ Future<void> submitCheckoutAndConfirm(
     messenger?.hideCurrentSnackBar();
     messenger?.showSnackBar(
       const SnackBar(
-        content: Text(
-          'Could not place your order. Check your connection and try again.',
+        content: CustomText(
+          text:
+              'Could not place your order. Check your connection and try again.',
+          textColor: AppColors.white,
         ),
         behavior: SnackBarBehavior.floating,
       ),

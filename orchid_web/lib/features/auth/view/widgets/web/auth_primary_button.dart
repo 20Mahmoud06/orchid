@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Full-width primary call-to-action button.
 class AuthPrimaryButton extends StatelessWidget {
@@ -51,14 +52,12 @@ class AuthPrimaryButton extends StatelessWidget {
                         ),
                       ),
                     )
-                  : Text(
-                      label,
-                      style: const TextStyle(
-                        fontFamily: AppFonts.inriaSerif,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.darkGreen,
-                      ),
+                  : CustomText(
+                      text: label,
+                      fontFamily: AppFonts.inriaSerif,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w400,
+                      textColor: AppColors.darkGreen,
                     ),
             ),
           ),

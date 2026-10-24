@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Inline text link (e.g. "Forgot password?").
 class AuthLink extends StatelessWidget {
@@ -19,14 +20,12 @@ class AuthLink extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: Text(
-          text,
-          style: TextStyle(
-            fontFamily: AppFonts.inriaSerif,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: linkColor,
-          ),
+        child: CustomText(
+          text: text,
+          fontFamily: AppFonts.inriaSerif,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          textColor: linkColor,
         ),
       ),
     );

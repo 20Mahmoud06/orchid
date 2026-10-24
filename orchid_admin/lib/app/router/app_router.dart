@@ -1,10 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'app_routes.dart';
+import 'browser_back.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/custom_text.dart';
 import '../../features/auth/data/auth_service.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/inspiration/presentation/pages/add_inspiration_page.dart';
 import '../../features/inspiration/presentation/pages/inspiration_page.dart';
 import '../../features/orders/presentation/pages/order_details_page.dart';
 import '../../features/orders/presentation/pages/orders_page.dart';
@@ -12,8 +16,6 @@ import '../../features/products/presentation/pages/add_product_page.dart';
 import '../../features/products/presentation/pages/edit_product_page.dart';
 import '../../features/products/presentation/pages/products_page.dart';
 import '../../layout/admin_shell.dart';
-import 'app_routes.dart';
-import 'browser_back.dart';
 
 class AppRouter {
   AppRouter._();
@@ -26,6 +28,9 @@ class AppRouter {
     }
     if (location.startsWith('${AppRoutes.orders}/')) {
       return AppRoutes.orders;
+    }
+    if (location.startsWith('${AppRoutes.inspiration}/')) {
+      return AppRoutes.inspiration;
     }
     return null;
   }
@@ -192,8 +197,7 @@ class AppRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
   @override
   Widget build(BuildContext context) {
     final signedIn = AuthService.isSignedIn;
-    final location =
-        AppRouter.contentLocation(_location, signedIn: signedIn);
+    final location = AppRouter.contentLocation(_location, signedIn: signedIn);
 
     final Widget child;
     if (!signedIn || location == AppRoutes.login) {
@@ -204,10 +208,7 @@ class AppRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
 
     return Navigator(
       pages: <Page<Object?>>[
-        MaterialPage<void>(
-          key: const ValueKey<String>('root'),
-          child: child,
-        ),
+        MaterialPage<void>(key: const ValueKey<String>('root'), child: child),
       ],
       onDidRemovePage: (_) {},
     );
@@ -219,6 +220,9 @@ class AppRouterDelegate extends RouterDelegate<String> with ChangeNotifier {
     if (location == AppRoutes.addProduct) return const AddProductPage();
     if (location == AppRoutes.orders) return const OrdersPage();
     if (location == AppRoutes.inspiration) return const InspirationPage();
+    if (location == AppRoutes.addInspiration) {
+      return const AddInspirationPage();
+    }
 
     final edit = RegExp(r'^/products/([^/]+)/edit$').firstMatch(location);
     if (edit != null) return EditProductPage(productId: edit.group(1));
@@ -249,11 +253,14 @@ class _NotFoundPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.explore_off_outlined,
-                size: 48, color: AppColors.textSecondary),
+            const Icon(
+              Icons.explore_off_outlined,
+              size: 48,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(height: 12),
-            Text(
-              'Page not found: $location',
+            CustomText(
+              text: 'Page not found: $location',
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,

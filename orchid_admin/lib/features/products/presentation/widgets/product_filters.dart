@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../domain/models/product_model.dart';
 
 class ProductFilters extends StatelessWidget {
@@ -34,13 +35,26 @@ class ProductFilters extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _SearchField(controller: searchController, onChanged: onSearchChanged),
+              _SearchField(
+                controller: searchController,
+                onChanged: onSearchChanged,
+              ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(child: _TypeDropdown(value: typeValue, onChanged: onTypeChanged)),
+                  Expanded(
+                    child: _TypeDropdown(
+                      value: typeValue,
+                      onChanged: onTypeChanged,
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: _ActiveDropdown(value: activeValue, onChanged: onActiveChanged)),
+                  Expanded(
+                    child: _ActiveDropdown(
+                      value: activeValue,
+                      onChanged: onActiveChanged,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -54,7 +68,12 @@ class ProductFilters extends StatelessWidget {
 
         return Row(
           children: [
-            Expanded(child: _SearchField(controller: searchController, onChanged: onSearchChanged)),
+            Expanded(
+              child: _SearchField(
+                controller: searchController,
+                onChanged: onSearchChanged,
+              ),
+            ),
             const SizedBox(width: 12),
             SizedBox(
               width: 180,
@@ -63,7 +82,10 @@ class ProductFilters extends StatelessWidget {
             const SizedBox(width: 12),
             SizedBox(
               width: 160,
-              child: _ActiveDropdown(value: activeValue, onChanged: onActiveChanged),
+              child: _ActiveDropdown(
+                value: activeValue,
+                onChanged: onActiveChanged,
+              ),
             ),
             const SizedBox(width: 8),
             _ResetButton(onPressed: onReset),
@@ -96,7 +118,11 @@ class _SearchField extends StatelessWidget {
         decoration: const InputDecoration(
           hintText: 'Search products by name or category...',
           hintStyle: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-          prefixIcon: Icon(Icons.search, size: 18, color: AppColors.textSecondary),
+          prefixIcon: Icon(
+            Icons.search,
+            size: 18,
+            color: AppColors.textSecondary,
+          ),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -177,12 +203,15 @@ class _FilterDropdown<T> extends StatelessWidget {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(
           value: value,
-          hint: Text(hint, style: AppTextStyles.body),
+          hint: CustomText(text: hint, style: AppTextStyles.body),
           onChanged: onChanged,
           isDense: true,
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down_rounded,
-              size: 18, color: AppColors.textSecondary),
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            size: 18,
+            color: AppColors.textSecondary,
+          ),
           style: AppTextStyles.body,
           items: items,
         ),

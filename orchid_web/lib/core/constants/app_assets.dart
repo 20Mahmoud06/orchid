@@ -8,7 +8,7 @@ abstract class AppAssets {
   static const String emailImage = 'assets/icons/email.png';
   static const String placeholderProfile =
       'assets/images/placeholder_profile.png';
-  static const String buildFlower = 'assets/images/buildFlower.jpg';
+  static const String buildFlower = 'assets/images/buildFlower.png';
   static const String bouquetTest = 'assets/images/bouquet_test.png';
   static const String payment = 'assets/images/payment.png';
   static const String completed = 'assets/images/completed.png';

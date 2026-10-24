@@ -8,6 +8,7 @@ import '../../../features/cart/cubit/cart_cubit.dart';
 import '../../../features/cart/models/cart_item.dart';
 import '../../../features/catalog/cubit/catalog_cubit.dart';
 import '../../bouquet/cubit/bouquet_cubit.dart';
+import '../../bouquet/utils/bouquet_naming.dart';
 import 'checkout_state.dart';
 
 /// Raised when an order cannot be placed; [message] is safe to show to the
@@ -190,13 +191,16 @@ class CheckoutCubit extends Cubit<CheckoutState> {
                   'name': component.name,
                   'quantity': component.quantity,
                   'unit_price': component.unitPrice,
+                  if (component.imagePath != null &&
+                      component.imagePath!.isNotEmpty)
+                    'image_path': component.imagePath,
                 },
             ],
         };
         items.add(
           _CheckoutDraftItem(
-            name: item.name,
-            image: item.imagePath,
+            name: item.displayName,
+            image: item.displayImagePath,
             description: _cartItemDescription(item),
             unitPrice: item.price,
             quantity: item.quantity,
@@ -220,10 +224,35 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         0,
         (sum, flower) => sum + flower.price * bouquet.getQuantity(flower.id),
       );
+      final totalFlowerCount = flowers.fold<int>(
+        0,
+        (sum, flower) => sum + bouquet.getQuantity(flower.id),
+      );
+      final singleFlower = BouquetNaming.singleFlower(
+        flowers.map(
+          (flower) => BouquetFlowerLine(
+            name: flower.name,
+            productId: flower.id,
+            imagePath: flower.imagePath,
+          ),
+        ),
+      );
       items.add(
         _CheckoutDraftItem(
-          name: 'Custom Bouquet',
-          image: flowers.first.imagePath,
+          name: singleFlower == null
+              ? 'Custom Bouquet'
+              : BouquetNaming.flowerTitle(
+                  singleFlower.name,
+                  quantity: totalFlowerCount,
+                ),
+          image: singleFlower == null
+              ? flowers.first.imagePath
+              : BouquetNaming.singleFlowerImage(
+                  productId: singleFlower.productId,
+                  name: singleFlower.name,
+                  storedImage: singleFlower.imagePath,
+                  fallback: flowers.first.imagePath,
+                ),
           description: bouquet.descriptionText,
           unitPrice: flowerSubtotal,
           quantity: 1,
@@ -237,6 +266,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
                   'name': flower.name,
                   'quantity': bouquet.getQuantity(flower.id),
                   'unit_price': flower.price,
+                  if (flower.imagePath.isNotEmpty)
+                    'image_path': flower.imagePath,
                 },
             ],
           },

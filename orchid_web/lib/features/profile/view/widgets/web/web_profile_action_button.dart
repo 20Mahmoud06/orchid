@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Full-width desktop action button (Log Out / Delete Account).
 class WebProfileActionButton extends StatelessWidget {
@@ -36,14 +37,12 @@ class WebProfileActionButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[icon!, const SizedBox(width: 8)],
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontFamily: AppFonts.inriaSerif,
-                    fontSize: 17,
-                    fontWeight: FontWeight.w700,
-                    color: textColor,
-                  ),
+                CustomText(
+                  text: label,
+                  fontFamily: AppFonts.inriaSerif,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  textColor: textColor,
                 ),
               ],
             ),

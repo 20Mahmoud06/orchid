@@ -25,7 +25,6 @@ class ProfileAvatarImage extends StatelessWidget {
 
     return SkeletonImage(
       path: url,
-      source: SkeletonImageSource.network,
       fit: fit,
       errorWidget: SkeletonImage(
         path: AppAssets.placeholderProfile,

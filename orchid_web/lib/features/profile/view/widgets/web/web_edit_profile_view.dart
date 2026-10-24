@@ -7,6 +7,7 @@ import '../../../../../core/constants/app_fonts.dart';
 import '../../../../../core/utils/phone_formatter.dart';
 import '../../../../auth/view/widgets/auth_web_ui.dart';
 import 'web_profile_avatars.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first "edit profile" page (>= 768px): a wide rectangular panel the
 /// same width as the profile screen. Mirrors the mobile fields, labels and
@@ -78,14 +79,12 @@ class EditProfileWebView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
-                    'Edit Profile',
-                    style: TextStyle(
-                      fontFamily: AppFonts.goudyOldStyle,
-                      fontSize: 34,
-                      fontWeight: FontWeight.w400,
-                      color: AppColors.darkGreen,
-                    ),
+                  const CustomText(
+                    text: 'Edit Profile',
+                    fontFamily: AppFonts.goudyOldStyle,
+                    fontSize: 34,
+                    fontWeight: FontWeight.w400,
+                    textColor: AppColors.darkGreen,
                   ),
                   const SizedBox(height: 28),
                   _buildCard(),
@@ -216,14 +215,12 @@ class _WebSectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: const TextStyle(
-        fontFamily: AppFonts.goudyOldStyle,
-        fontSize: 18,
-        fontWeight: FontWeight.w400,
-        color: AppColors.black,
-      ),
+    return CustomText(
+      text: text,
+      fontFamily: AppFonts.goudyOldStyle,
+      fontSize: 18,
+      fontWeight: FontWeight.w400,
+      textColor: AppColors.black,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:ORCHID/features/auth/data/models/user_profile_model.dart';
 
 import 'web_profile_card_avatar.dart';
 import 'web_profile_info_grid.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// The rounded profile card: avatar, name/email, an Edit button and the info
 /// fields laid out as a two-column grid on wide screens.
@@ -57,23 +58,19 @@ class WebProfileCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      displayName,
-                      style: const TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
-                      ),
+                    CustomText(
+                      text: displayName,
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      textColor: AppColors.black,
                     ),
                     const SizedBox(height: 2),
-                    Text(
-                      displayEmail,
-                      style: TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 13,
-                        color: Colors.black.withValues(alpha: 0.75),
-                      ),
+                    CustomText(
+                      text: displayEmail,
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 13,
+                      textColor: Colors.black.withValues(alpha: 0.75),
                     ),
                     const SizedBox(height: 10),
                     _WebProfileEditButton(onTap: onEdit),
@@ -130,14 +127,12 @@ class _WebProfileEditButton extends StatelessWidget {
             color: AppColors.cardBorder,
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Text(
-            'Edit',
-            style: TextStyle(
-              fontFamily: AppFonts.goudyOldStyle,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
-              color: AppColors.black,
-            ),
+          child: const CustomText(
+            text: 'Edit',
+            fontFamily: AppFonts.goudyOldStyle,
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            textColor: AppColors.black,
           ),
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/widgets/catalog_error_view.dart';
+import '../../../../shared/widgets/custom_text.dart';
 import '../../../bouquet/cubit/bouquet_cubit.dart';
 import '../../../bouquet/cubit/bouquet_state.dart';
 import '../../../catalog/cubit/catalog_cubit.dart';
@@ -65,12 +66,13 @@ class BouquetCatalogBody extends StatelessWidget {
 
             if (filteredBouquets.isEmpty) {
               return Center(
-                child: Text(
-                  query.isEmpty
+                child: CustomText(
+                  text: query.isEmpty
                       ? 'No bouquets in this category yet'
                       : 'No bouquets found with this name',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 14.sp, color: AppColors.black),
+                  fontSize: 14.sp,
+                  textColor: AppColors.black,
                 ),
               );
             }

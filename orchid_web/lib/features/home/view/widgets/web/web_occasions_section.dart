@@ -9,6 +9,7 @@ import 'package:ORCHID/features/checkout/cubit/checkout_cubit.dart';
 import 'web_bouquet_options_dialog.dart';
 import 'web_occasion_circle_item.dart';
 import 'web_occasion_message_input.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// 'Shop by occasion' section with centered divider title and 5 circular occasion items.
 /// When an occasion is selected, shows a message input field and send action just like mobile.
@@ -110,14 +111,12 @@ class _WebOccasionsSectionState extends State<WebOccasionsSection> {
           children: [
             Container(width: 44, height: 1, color: AppColors.storeDivider),
             const SizedBox(width: 14),
-            const Text(
-              'Shop by occasion',
-              style: TextStyle(
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: AppColors.storeDeepGreen,
-              ),
+            const CustomText(
+              text: 'Shop by occasion',
+              fontFamily: AppFonts.goudyOldStyle,
+              fontSize: 24,
+              fontWeight: FontWeight.w600,
+              textColor: AppColors.storeDeepGreen,
             ),
             const SizedBox(width: 14),
             Container(width: 44, height: 1, color: AppColors.storeDivider),

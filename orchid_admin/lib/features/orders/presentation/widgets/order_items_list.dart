@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../products/domain/models/product_model.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../domain/models/order_model.dart';
+import '../../../products/domain/models/product_model.dart';
 
 class OrderItemsList extends StatelessWidget {
   const OrderItemsList({super.key, required this.items});
@@ -16,8 +17,10 @@ class OrderItemsList extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Center(
-          child: Text('No items recorded for this order.',
-              style: AppTextStyles.bodySecondary),
+          child: CustomText(
+            text: 'No items recorded for this order.',
+            style: AppTextStyles.bodySecondary,
+          ),
         ),
       );
     }
@@ -66,15 +69,19 @@ class _OrderItemRow extends StatelessWidget {
             ),
             clipBehavior: Clip.antiAlias,
             child: url == null
-                ? const Icon(Icons.local_florist_outlined,
-                    size: 22, color: AppColors.orchidStrong)
+                ? const Icon(
+                    Icons.local_florist_outlined,
+                    size: 22,
+                    color: AppColors.orchidStrong,
+                  )
                 : Image.network(
                     url,
                     fit: BoxFit.cover,
                     errorBuilder: (_, _, _) => const Icon(
-                        Icons.local_florist_outlined,
-                        size: 22,
-                        color: AppColors.orchidStrong),
+                      Icons.local_florist_outlined,
+                      size: 22,
+                      color: AppColors.orchidStrong,
+                    ),
                   ),
           ),
           const SizedBox(width: 12),
@@ -82,16 +89,21 @@ class _OrderItemRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.name,
-                  style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
+                CustomText(
+                  text: item.name,
+                  style: AppTextStyles.body.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 2),
-                Text('Qty: ${item.quantity}', style: AppTextStyles.caption),
+                CustomText(
+                  text: 'Qty: ${item.quantity}',
+                  style: AppTextStyles.caption,
+                ),
                 if (arrangement != null && arrangement.isNotEmpty) ...[
                   const SizedBox(height: 2),
-                  Text(
-                    'Custom arrangement: $arrangement',
+                  CustomText(
+                    text: 'Custom arrangement: $arrangement',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,
@@ -100,8 +112,8 @@ class _OrderItemRow extends StatelessWidget {
                 ],
                 if (message != null && message.isNotEmpty) ...[
                   const SizedBox(height: 2),
-                  Text(
-                    'Message: $message',
+                  CustomText(
+                    text: 'Message: $message',
                     style: AppTextStyles.caption.copyWith(
                       color: AppColors.primary,
                       fontStyle: FontStyle.italic,
@@ -111,8 +123,8 @@ class _OrderItemRow extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            '${item.total.toStringAsFixed(0)} EGP',
+          CustomText(
+            text: '${item.total.toStringAsFixed(0)} EGP',
             style: AppTextStyles.body.copyWith(
               fontWeight: FontWeight.w700,
               color: AppColors.primary,

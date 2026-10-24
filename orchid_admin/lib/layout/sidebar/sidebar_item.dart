@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/router/app_nav.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/custom_text.dart';
 
 class SidebarItem extends StatelessWidget {
   const SidebarItem({
@@ -23,7 +24,8 @@ class SidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isActive = !isDestructive &&
+    final isActive =
+        !isDestructive &&
         route != null &&
         (currentRoute == route ||
             (route != '/' && currentRoute.startsWith('$route/')));
@@ -31,8 +33,8 @@ class SidebarItem extends StatelessWidget {
     final Color foreground = isDestructive
         ? AppColors.error
         : isActive
-            ? AppColors.primary
-            : AppColors.textSecondary;
+        ? AppColors.primary
+        : AppColors.textSecondary;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -74,8 +76,8 @@ class SidebarItem extends StatelessWidget {
                 Icon(icon, size: 20, color: foreground),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    label,
+                  child: CustomText(
+                    text: label,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,

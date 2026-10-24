@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Full-width "label : value" info row (About page).
 class WebAboutInfoRow extends StatelessWidget {
@@ -31,24 +32,20 @@ class WebAboutInfoRow extends StatelessWidget {
           Image.asset(iconAsset, width: 32, height: 32, fit: BoxFit.contain),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: AppColors.sideBarIcons,
-              ),
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
+            child: CustomText(
+              text: label,
               fontFamily: AppFonts.goudyOldStyle,
               fontSize: 16,
-              fontWeight: FontWeight.w400,
-              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w700,
+              textColor: AppColors.sideBarIcons,
             ),
+          ),
+          CustomText(
+            text: value,
+            fontFamily: AppFonts.goudyOldStyle,
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            textColor: AppColors.textPrimary,
           ),
         ],
       ),

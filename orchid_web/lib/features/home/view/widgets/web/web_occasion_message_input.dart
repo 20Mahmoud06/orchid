@@ -3,6 +3,7 @@ import 'package:ionicons/ionicons.dart';
 
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Message field and send action shown after an occasion is selected.
 class WebOccasionMessageInput extends StatelessWidget {
@@ -80,14 +81,12 @@ class WebOccasionMessageInput extends StatelessWidget {
                       color: AppColors.textFieldDarkerPink,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text(
-                      'Send',
-                      style: TextStyle(
-                        fontFamily: AppFonts.inriaSerif,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkGreen,
-                      ),
+                    child: const CustomText(
+                      text: 'Send',
+                      fontFamily: AppFonts.inriaSerif,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      textColor: AppColors.darkGreen,
                     ),
                   ),
                 ),

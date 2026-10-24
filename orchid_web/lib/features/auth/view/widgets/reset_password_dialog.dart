@@ -4,6 +4,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_fonts.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../widgets/auth_web_ui.dart';
+import '../../../../shared/widgets/custom_text.dart';
 
 /// Modal shown while the user is in password recovery mode.
 ///
@@ -134,26 +135,22 @@ class _ResetPasswordDialogState extends State<ResetPasswordDialog> {
                   ),
                 ),
                 const SizedBox(height: 18),
-                const Text(
-                  'Create New Password',
+                const CustomText(
+                  text: 'Create New Password',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 24,
-                    height: 1.1,
-                    color: AppColors.deepGreen,
-                  ),
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 24,
+                  height: 1.1,
+                  textColor: AppColors.deepGreen,
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'enter your new password and confirm it below',
+                const CustomText(
+                  text: 'enter your new password and confirm it below',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: AppFonts.inriaSerif,
-                    fontSize: 14,
-                    height: 1.35,
-                    color: AppColors.textPrimary,
-                  ),
+                  fontFamily: AppFonts.inriaSerif,
+                  fontSize: 14,
+                  height: 1.35,
+                  textColor: AppColors.textPrimary,
                 ),
                 const SizedBox(height: 24),
                 AuthTextField(

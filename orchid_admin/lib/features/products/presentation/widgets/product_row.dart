@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/time/date_formatter.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/status_badge.dart';
 import '../../domain/models/product_model.dart';
 
@@ -60,8 +62,8 @@ class ProductRow extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
-                      product.name,
+                    child: CustomText(
+                      text: product.name,
                       style: AppTextStyles.body.copyWith(
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -81,13 +83,16 @@ class ProductRow extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: typeStyle.bg,
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text(
-                    product.type.label,
+                  child: CustomText(
+                    text: product.type.label,
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
@@ -102,8 +107,8 @@ class ProductRow extends StatelessWidget {
             flex: 2,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-              child: Text(
-                product.categoryName ?? 'Uncategorized',
+              child: CustomText(
+                text: product.categoryName ?? 'Uncategorized',
                 style: product.categoryName == null
                     ? AppTextStyles.bodySecondary
                     : AppTextStyles.body,
@@ -146,7 +151,9 @@ class ProductRow extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
               child: StatusBadge(
                 label: product.isActive ? 'Active' : 'Inactive',
-                color: product.isActive ? AppColors.primary : AppColors.textSecondary,
+                color: product.isActive
+                    ? AppColors.primary
+                    : AppColors.textSecondary,
               ),
             ),
           ),
@@ -154,8 +161,8 @@ class ProductRow extends StatelessWidget {
             flex: 2,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-              child: Text(
-                _formatDate(product.createdAt),
+              child: CustomText(
+                text: formatShortDate(product.createdAt),
                 style: AppTextStyles.bodySecondary,
               ),
             ),
@@ -169,15 +176,21 @@ class ProductRow extends StatelessWidget {
                 children: [
                   IconButton(
                     onPressed: onEdit,
-                    icon: const Icon(Icons.edit_outlined,
-                        size: 18, color: AppColors.textSecondary),
+                    icon: const Icon(
+                      Icons.edit_outlined,
+                      size: 18,
+                      color: AppColors.textSecondary,
+                    ),
                     tooltip: 'Edit',
                     visualDensity: VisualDensity.compact,
                   ),
                   IconButton(
                     onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline,
-                        size: 18, color: AppColors.error),
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      size: 18,
+                      color: AppColors.error,
+                    ),
                     tooltip: 'Delete',
                     visualDensity: VisualDensity.compact,
                   ),
@@ -197,13 +210,5 @@ class ProductRow extends StatelessWidget {
       case ProductType.readyBouquet:
         return (bg: AppColors.surfaceMuted, fg: AppColors.textSecondary);
     }
-  }
-
-  String _formatDate(DateTime date) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }

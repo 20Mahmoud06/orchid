@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
 import '../../data/repositories/categories_repository.dart';
 import '../../domain/models/category_model.dart';
+import 'categories_list.dart';
+import 'category_add_field.dart';
+import 'delete_category_dialog.dart';
+import 'rename_category_dialog.dart';
 
 class CategoriesManagerDialog extends StatefulWidget {
   const CategoriesManagerDialog({super.key, required this.categories});
@@ -64,44 +67,19 @@ class _CategoriesManagerDialogState extends State<CategoriesManagerDialog> {
   Future<void> _addCategory() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
-    await _run(
-      () async {
-        final category = await _repository.createCategory(name);
-        if (!mounted) return;
-        setState(() {
-          _categories = [..._categories, category]
-            ..sort((a, b) => a.name.compareTo(b.name));
-          _nameController.clear();
-        });
-      },
-      closeOnSuccess: false,
-    );
+    await _run(() async {
+      final category = await _repository.createCategory(name);
+      if (!mounted) return;
+      setState(() {
+        _categories = [..._categories, category]
+          ..sort((a, b) => a.name.compareTo(b.name));
+        _nameController.clear();
+      });
+    }, closeOnSuccess: false);
   }
 
   Future<void> _renameCategory(Category category) async {
-    final controller = TextEditingController(text: category.name);
-    final name = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Rename category'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(labelText: 'Category name'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () =>
-                Navigator.of(dialogContext).pop(controller.text.trim()),
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
+    final name = await showRenameCategoryDialog(context, category);
     if (name == null || name.isEmpty || name == category.name) return;
 
     await _run(() async {
@@ -120,26 +98,7 @@ class _CategoriesManagerDialogState extends State<CategoriesManagerDialog> {
   }
 
   Future<void> _deleteCategory(Category category) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete category?'),
-        content: Text(
-          'Products using "${category.name}" will become uncategorized.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await showDeleteCategoryDialog(context, category);
     if (confirmed != true) return;
 
     await _run(() async {
@@ -161,76 +120,18 @@ class _CategoriesManagerDialogState extends State<CategoriesManagerDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameController,
-                    enabled: !_busy,
-                    onSubmitted: (_) => _addCategory(),
-                    decoration: const InputDecoration(
-                      labelText: 'New category name',
-                      hintText: 'e.g. Orchids',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: _busy ? null : _addCategory,
-                  icon: const Icon(Icons.add_circle_outline),
-                  tooltip: 'Add category',
-                  color: AppColors.primary,
-                ),
-              ],
+            CategoryAddField(
+              controller: _nameController,
+              enabled: !_busy,
+              onAdd: _addCategory,
             ),
             const SizedBox(height: 16),
-            if (_categories.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  'No categories yet. Add one above.',
-                  style: AppTextStyles.bodySecondary,
-                ),
-              )
-            else
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 300),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: _categories.length,
-                  separatorBuilder: (_, _) =>
-                      const Divider(height: 1, color: AppColors.border),
-                  itemBuilder: (context, index) {
-                    final category = _categories[index];
-                    return ListTile(
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(category.name, style: AppTextStyles.body),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed:
-                                _busy ? null : () => _renameCategory(category),
-                            icon: const Icon(Icons.edit_outlined, size: 18),
-                            tooltip: 'Rename',
-                            color: AppColors.textSecondary,
-                            visualDensity: VisualDensity.compact,
-                          ),
-                          IconButton(
-                            onPressed:
-                                _busy ? null : () => _deleteCategory(category),
-                            icon: const Icon(Icons.delete_outline, size: 18),
-                            tooltip: 'Delete',
-                            color: AppColors.error,
-                            visualDensity: VisualDensity.compact,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+            CategoriesList(
+              categories: _categories,
+              isBusy: _busy,
+              onRename: _renameCategory,
+              onDelete: _deleteCategory,
+            ),
           ],
         ),
       ),

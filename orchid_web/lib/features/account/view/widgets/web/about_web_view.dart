@@ -6,6 +6,7 @@ import '../../../../../core/constants/app_fonts.dart';
 import '../../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../../shared/widgets/slider_direction.dart';
 import 'web_account_widgets.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first "about app" page (>= 768px). Same colors, copy and content
 /// as the mobile screen — only the layout differs.
@@ -40,16 +41,15 @@ class AboutWebView extends StatelessWidget {
           const SizedBox(height: 12),
           _slide(
             2,
-            const Text(
-              'a special flower shop app made with\nlove for flower lovers.',
+            const CustomText(
+              text:
+                  'a special flower shop app made with\nlove for flower lovers.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: AppFonts.goudyOldStyle,
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                height: 1.5,
-                color: AppColors.darkGreen,
-              ),
+              fontFamily: AppFonts.goudyOldStyle,
+              fontSize: 16,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+              textColor: AppColors.darkGreen,
             ),
           ),
           const SizedBox(height: 28),

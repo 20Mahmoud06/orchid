@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Icon + title + body card (Privacy and Terms pages).
 class WebPrivacyInfoCard extends StatelessWidget {
@@ -35,25 +36,21 @@ class WebPrivacyInfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.sideBarIcons,
-                  ),
+                CustomText(
+                  text: title,
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  textColor: AppColors.sideBarIcons,
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  body,
-                  style: const TextStyle(
-                    fontFamily: AppFonts.goudyOldStyle,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    height: 1.5,
-                    color: AppColors.textPrimary,
-                  ),
+                CustomText(
+                  text: body,
+                  fontFamily: AppFonts.goudyOldStyle,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  height: 1.5,
+                  textColor: AppColors.textPrimary,
                 ),
               ],
             ),

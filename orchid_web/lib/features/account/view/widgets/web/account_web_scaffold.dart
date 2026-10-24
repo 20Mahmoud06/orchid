@@ -4,6 +4,7 @@ import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
 import '../../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../../shared/widgets/slider_direction.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Centered, scrollable shell for a static content page: a page title followed
 /// by the [child] inside a comfortable, desktop-friendly reading column.
@@ -30,15 +31,13 @@ class AccountWebScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget titleWidget = Text(
-      title,
+    Widget titleWidget = CustomText(
+      text: title,
       textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontFamily: AppFonts.goudyOldStyle,
-        fontSize: 34,
-        height: 1.1,
-        color: AppColors.darkGreen,
-      ),
+      fontFamily: AppFonts.goudyOldStyle,
+      fontSize: 34,
+      height: 1.1,
+      textColor: AppColors.darkGreen,
     );
 
     if (titleAnimation != null) {

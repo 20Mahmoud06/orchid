@@ -13,6 +13,7 @@ import '../../../favorites/cubit/favorites_state.dart';
 import '../../models/bouquet_item.dart';
 import 'bouquet_grid_card.dart';
 import 'web/web_choose_bouquets_widgets.dart';
+import '../../../../shared/widgets/custom_text.dart';
 
 /// Loading / error / empty / bouquet grid, shared by the mobile and web
 /// layouts of the choose bouquets screen. The web layout uses the fixed-pixel
@@ -87,13 +88,11 @@ class BouquetCatalogBody extends StatelessWidget {
               return web
                   ? WebFlowerCatalogMessage(message: message)
                   : Center(
-                      child: Text(
-                        message,
+                      child: CustomText(
+                        text: message,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: AppColors.black,
-                        ),
+                        fontSize: 14.sp,
+                        textColor: AppColors.black,
                       ),
                     );
             }

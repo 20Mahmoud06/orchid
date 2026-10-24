@@ -46,7 +46,7 @@ class CartItemCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12.r),
             child: SkeletonImage(
-              path: item.imagePath,
+              path: item.displayImagePath,
               width: 100.r,
               height: 100.r,
               fit: BoxFit.cover,
@@ -67,7 +67,7 @@ class CartItemCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: CustomText(
-                        text: item.name,
+                        text: item.displayName,
                         fontFamily: AppFonts.goudyOldStyle,
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,
@@ -106,7 +106,8 @@ class CartItemCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   textColor: AppColors.black,
                 ),
-                if (item.message != null && item.message!.trim().isNotEmpty) ...[
+                if (item.message != null &&
+                    item.message!.trim().isNotEmpty) ...[
                   SizedBox(height: 4.h),
                   CustomText(
                     text: item.message!,

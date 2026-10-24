@@ -18,7 +18,19 @@ class CartCubit extends Cubit<CartState> {
   /// Restores the cart saved on this device. Call once from `main`.
   Future<void> init() async {
     final raw = await AppPrefs.instance.getString(AppPrefKeys.cartItems);
-    emit(CartState(items: _decodeItems(raw)));
+    emit(
+      CartState(
+        items: _decodeItems(raw).map(_withSingleFlowerIdentity).toList(),
+      ),
+    );
+  }
+
+  static CartItem _withSingleFlowerIdentity(CartItem item) {
+    if (!item.isSingleFlowerBouquet) return item;
+    return item.copyWith(
+      name: item.displayName,
+      imagePath: item.displayImagePath,
+    );
   }
 
   static List<CartItem> _decodeItems(String? raw) {
@@ -37,8 +49,7 @@ class CartCubit extends Cubit<CartState> {
   }
 
   void _persist(List<CartItem> items) {
-    AppPrefs.instance
-        .saveString(AppPrefKeys.cartItems, jsonEncode(items));
+    AppPrefs.instance.saveString(AppPrefKeys.cartItems, jsonEncode(items));
   }
 
   void _emit(List<CartItem> items) {
@@ -60,7 +71,8 @@ class CartCubit extends Cubit<CartState> {
   /// ready bouquet added twice) has its quantities merged.
   void addItems(List<CartItem> newItems) {
     final items = List<CartItem>.of(state.items);
-    for (final item in newItems) {
+    for (final newItem in newItems) {
+      final item = _withSingleFlowerIdentity(newItem);
       if (item.id.isEmpty || item.quantity <= 0) continue;
       final index = items.indexWhere((existing) => existing.id == item.id);
       if (index == -1) {
@@ -68,6 +80,7 @@ class CartCubit extends Cubit<CartState> {
       } else {
         final existing = items[index];
         items[index] = existing.copyWith(
+          name: item.name,
           quantity: existing.quantity + item.quantity,
           // Refresh price/image/composition from the latest add.
           price: item.price,

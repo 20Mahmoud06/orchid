@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
 import '../auth_web_ui.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Professional website sign-in panel used on wide (>= 768px) viewports.
 class LoginWebView extends StatelessWidget {
@@ -97,13 +98,11 @@ class LoginWebView extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Remember me',
-                        style: TextStyle(
-                          fontFamily: AppFonts.inriaSerif,
-                          fontSize: 14,
-                          color: AppColors.ink,
-                        ),
+                      const CustomText(
+                        text: 'Remember me',
+                        fontFamily: AppFonts.inriaSerif,
+                        fontSize: 14,
+                        textColor: AppColors.ink,
                       ),
                     ],
                   ),

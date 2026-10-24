@@ -1,7 +1,13 @@
+import 'dart:typed_data';
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../core/supabase/supabase.dart';
 import '../../domain/models/inspiration_model.dart';
 
 class InspirationRepository {
+  static const String _bucket = 'product-images';
+
   /// How many featured bouquets the mobile tab displays.
   static const int maxFeatured = 5;
 
@@ -32,8 +38,7 @@ class InspirationRepository {
     for (final order in orders) {
       final items = order['order_items'];
       if (items is! List) continue;
-      final createdAt =
-          DateTime.tryParse(order['created_at'] as String? ?? '');
+      final createdAt = DateTime.tryParse(order['created_at'] as String? ?? '');
       final profile = profiles[order['user_id'] as String?];
       final customerName = profile?['username'] as String?;
       final profileImage = profile?['profile_image'] as String?;
@@ -59,10 +64,13 @@ class InspirationRepository {
             profileImage: profileImage,
             ingredients: rawFlowers is List
                 ? rawFlowers
-                    .whereType<Map>()
-                    .map((e) =>
-                        InspirationIngredient.fromJson(Map<String, dynamic>.from(e)))
-                    .toList()
+                      .whereType<Map>()
+                      .map(
+                        (e) => InspirationIngredient.fromJson(
+                          Map<String, dynamic>.from(e),
+                        ),
+                      )
+                      .toList()
                 : <InspirationIngredient>[],
           ),
         );
@@ -89,9 +97,72 @@ class InspirationRepository {
     });
   }
 
+  /// Adds a bouquet curated directly from the dashboard (no source order).
+  Future<void> createManual({
+    required String? displayName,
+    required String imagePath,
+    required List<InspirationIngredient> ingredients,
+    String? profileImage,
+  }) async {
+    await supabase.from('inspiration_items').insert({
+      'display_name': displayName,
+      'image_snapshot': imagePath,
+      'ingredients': [
+        for (final ingredient in ingredients) ingredient.toJson(),
+      ],
+      'source_order_item_id': null,
+      if (profileImage != null && profileImage.isNotEmpty)
+        'profile_image': profileImage,
+    });
+  }
+
+  /// Uploads an inspiration image and returns the stored path.
+  Future<String> uploadImage({
+    required Uint8List bytes,
+    required String filename,
+    String folder = 'inspiration',
+  }) async {
+    final extension = _extensionOf(filename);
+    final path = '$folder/${DateTime.now().microsecondsSinceEpoch}.$extension';
+    await supabase.storage
+        .from(_bucket)
+        .uploadBinary(
+          path,
+          bytes,
+          fileOptions: FileOptions(
+            contentType: _mimeTypeOf(extension),
+            upsert: false,
+          ),
+        );
+    return path;
+  }
+
+  /// Public URL for an uploaded image (used for creator photos, which are
+  /// stored as a full URL snapshot).
+  String publicImageUrl(String path) =>
+      supabase.storage.from(_bucket).getPublicUrl(path);
+
   Future<void> remove(String id) async {
     await supabase.from('inspiration_items').delete().eq('id', id);
   }
+
+  static String _extensionOf(String filename) {
+    final dot = filename.lastIndexOf('.');
+    final extension = dot == -1
+        ? ''
+        : filename.substring(dot + 1).toLowerCase();
+    return switch (extension) {
+      'jpg' || 'jpeg' || 'png' || 'webp' || 'gif' => extension,
+      _ => 'jpg',
+    };
+  }
+
+  static String _mimeTypeOf(String extension) => switch (extension) {
+    'png' => 'image/png',
+    'webp' => 'image/webp',
+    'gif' => 'image/gif',
+    _ => 'image/jpeg',
+  };
 
   Future<Map<String, Map<String, dynamic>>> _fetchProfiles(
     List<Map<String, dynamic>> orders,

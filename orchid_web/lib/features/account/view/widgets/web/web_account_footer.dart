@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/app_assets.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/constants/app_fonts.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Closing message card (Privacy and Terms pages): a flower, a titled divider
 /// row and a heart.
@@ -59,8 +60,8 @@ class WebAccountFooter extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      title,
+                    CustomText(
+                      text: title,
                       textAlign: TextAlign.center,
                       style: titleStyle.copyWith(
                         color: AppColors.thanksYouText,
@@ -79,14 +80,12 @@ class WebAccountFooter extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Text(
-                            description,
-                            style: const TextStyle(
-                              fontFamily: AppFonts.goudyOldStyle,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.black,
-                            ),
+                          CustomText(
+                            text: description,
+                            fontFamily: AppFonts.goudyOldStyle,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            textColor: AppColors.black,
                           ),
                           const SizedBox(width: 8),
                           const Expanded(

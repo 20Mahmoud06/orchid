@@ -4,6 +4,7 @@ import 'package:ORCHID/core/constants/app_assets.dart';
 import 'package:ORCHID/core/constants/app_colors.dart';
 import 'package:ORCHID/core/constants/app_fonts.dart';
 import 'package:ORCHID/shared/widgets/skeleton_image.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Popular product item card matching the 4-card grid in the reference image.
 class WebPopularProductCard extends StatefulWidget {
@@ -131,26 +132,22 @@ class _WebPopularProductCardState extends State<WebPopularProductCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.title,
+                      CustomText(
+                        text: widget.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontFamily: AppFonts.goudyOldStyle,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.storeDeepGreen,
-                        ),
+                        fontFamily: AppFonts.goudyOldStyle,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        textColor: AppColors.storeDeepGreen,
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        widget.price,
-                        style: const TextStyle(
-                          fontFamily: AppFonts.inriaSerif,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.storeDeepGreen,
-                        ),
+                      CustomText(
+                        text: widget.price,
+                        fontFamily: AppFonts.inriaSerif,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        textColor: AppColors.storeDeepGreen,
                       ),
                     ],
                   ),

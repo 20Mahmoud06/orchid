@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_fonts.dart';
+import 'custom_text.dart';
 
 /// Desktop navigation text link with hover underline and selected state.
 class WebTopNavTextLink extends StatefulWidget {
@@ -42,16 +43,14 @@ class _WebTopNavTextLinkState extends State<WebTopNavTextLink> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontFamily: AppFonts.inriaSerif,
-                  fontSize: 15,
-                  fontWeight: widget.isSelected
-                      ? FontWeight.w600
-                      : FontWeight.w400,
-                  color: textColor,
-                ),
+              CustomText(
+                text: widget.label,
+                fontFamily: AppFonts.inriaSerif,
+                fontSize: 15,
+                fontWeight: widget.isSelected
+                    ? FontWeight.w600
+                    : FontWeight.w400,
+                textColor: textColor,
               ),
               const SizedBox(height: 4),
               AnimatedContainer(

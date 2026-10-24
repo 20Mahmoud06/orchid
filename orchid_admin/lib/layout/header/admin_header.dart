@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/responsive/breakpoints.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/custom_text.dart';
 import '../../features/auth/data/auth_service.dart';
 
 class AdminHeader extends StatelessWidget {
@@ -10,7 +11,8 @@ class AdminHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final showMenuButton = MediaQuery.sizeOf(context).width < Breakpoints.tablet;
+    final showMenuButton =
+        MediaQuery.sizeOf(context).width < Breakpoints.tablet;
     final adminName = AuthService.adminName;
     final adminInitials = AuthService.adminInitials;
 
@@ -35,8 +37,8 @@ class AdminHeader extends StatelessWidget {
               CircleAvatar(
                 radius: 18,
                 backgroundColor: AppColors.softLime,
-                child: Text(
-                  adminInitials,
+                child: CustomText(
+                  text: adminInitials,
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
@@ -50,8 +52,8 @@ class AdminHeader extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      adminName,
+                    CustomText(
+                      text: adminName,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -60,13 +62,16 @@ class AdminHeader extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.softLime,
                         borderRadius: BorderRadius.circular(999),
                       ),
-                      child: const Text(
-                        AppConstants.currentAdminRole,
+                      child: const CustomText(
+                        text: AppConstants.currentAdminRole,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,

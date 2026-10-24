@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/router/app_nav.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/widgets/custom_text.dart';
 import '../../data/repositories/orders_repository.dart';
 import '../../domain/models/order_model.dart';
 import '../widgets/order_details_panel.dart';
@@ -100,8 +101,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           children: [
             TextButton.icon(
               onPressed: () => AppNav.pop(context),
-              icon: const Icon(Icons.arrow_back,
-                  size: 18, color: AppColors.textSecondary),
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 18,
+                color: AppColors.textSecondary,
+              ),
               label: const Text('Back to Orders'),
             ),
             const SizedBox(height: 8),
@@ -118,12 +122,17 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   padding: const EdgeInsets.all(48),
                   child: Column(
                     children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 48,
+                        color: AppColors.error,
+                      ),
                       const SizedBox(height: 16),
-                      Text(_errorMessage!,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.bodySecondary),
+                      CustomText(
+                        text: _errorMessage!,
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.bodySecondary,
+                      ),
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: _loadOrder,
@@ -134,10 +143,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 ),
               )
             else if (_order != null)
-              OrderDetailsPanel(
-                order: _order!,
-                onStatusChanged: _changeStatus,
-              ),
+              OrderDetailsPanel(order: _order!, onStatusChanged: _changeStatus),
           ],
         ),
       ),

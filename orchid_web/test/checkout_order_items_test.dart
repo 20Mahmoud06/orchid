@@ -99,7 +99,7 @@ void main() {
       final items = CheckoutCubit.instance.buildItems();
 
       expect(items, hasLength(2));
-      expect(items[0]['name_snapshot'], 'Custom Bouquet');
+      expect(items[0]['name_snapshot'], 'Rose');
       expect(items[0]['image_snapshot'], '');
       expect(items[1]['name_snapshot'], 'Sunset');
       expect(items[1]['image_snapshot'], '');

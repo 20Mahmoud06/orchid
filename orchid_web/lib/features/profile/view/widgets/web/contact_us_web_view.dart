@@ -7,6 +7,7 @@ import '../../../../../core/constants/app_fonts.dart';
 import '../../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../../shared/widgets/slider_direction.dart';
 import 'web_contact_widgets.dart';
+import '../../../../../shared/widgets/custom_text.dart';
 
 /// Desktop-first "contact us" page (>= 768px): brand and follow section on
 /// the left, contact options on the right.
@@ -38,49 +39,41 @@ class ContactUsWebView extends StatelessWidget {
       children: [
         const WebContactBrand(),
         const SizedBox(height: 20),
-        const Text(
-          'HOW CAN WE HELP YOU ?',
+        const CustomText(
+          text: 'HOW CAN WE HELP YOU ?',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 24,
-            fontWeight: FontWeight.w600,
-            color: AppColors.selectedCategory,
-          ),
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          textColor: AppColors.selectedCategory,
         ),
         const SizedBox(height: 8),
-        const Text(
-          'our team is here to make your\nflower shopping easier.',
+        const CustomText(
+          text: 'our team is here to make your\nflower shopping easier.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 17,
-            fontWeight: FontWeight.w400,
-            height: 1.4,
-            color: AppColors.black,
-          ),
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 17,
+          fontWeight: FontWeight.w400,
+          height: 1.4,
+          textColor: AppColors.black,
         ),
         const SizedBox(height: 28),
-        const Text(
-          'Follow Us',
+        const CustomText(
+          text: 'Follow Us',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-            color: AppColors.selectedCategory,
-          ),
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 24,
+          fontWeight: FontWeight.w500,
+          textColor: AppColors.selectedCategory,
         ),
         const SizedBox(height: 6),
-        const Text(
-          'stay in bloom with ORCHID',
+        const CustomText(
+          text: 'stay in bloom with ORCHID',
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: AppFonts.goudyOldStyle,
-            fontSize: 17,
-            fontWeight: FontWeight.w400,
-            color: AppColors.black,
-          ),
+          fontFamily: AppFonts.goudyOldStyle,
+          fontSize: 17,
+          fontWeight: FontWeight.w400,
+          textColor: AppColors.black,
         ),
         const SizedBox(height: 20),
         const Row(
@@ -149,15 +142,13 @@ class ContactUsWebView extends StatelessWidget {
                 children: [
                   _webSlide(
                     0,
-                    const Text(
-                      'contact us',
+                    const CustomText(
+                      text: 'contact us',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: AppFonts.goudyOldStyle,
-                        fontSize: 30,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.black,
-                      ),
+                      fontFamily: AppFonts.goudyOldStyle,
+                      fontSize: 30,
+                      fontWeight: FontWeight.w400,
+                      textColor: AppColors.black,
                     ),
                   ),
                   const SizedBox(height: 28),
