@@ -21,7 +21,7 @@
 ## 📥 Download APK
 
 Try the application on your Android device right now:
-**[📱 Download Orchid Mobile APK (Google Drive)](https://drive.google.com/file/d/1p48LvfCj1bXnZePLnrSDGn4q_n0Y5Tkg/view?usp=drive_link)**
+**[📱 Download Orchid Mobile APK (Google Drive)](https://drive.google.com/file/d/18oQVjDh4PF-8R3luDURUnirh9xcar-LT/view?usp=drive_link)**
 
 ---
 
