@@ -39,7 +39,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
         await _showCashConfirmationDialog(context);
         break;
       case 'card':
-        Navigator.pushNamed(context, AppRoutes.myCard);
+        // Paymob Unified Checkout collects the card data on Paymob's page.
+        // The app never handles or stores raw card details.
+        await submitCheckoutAndConfirm(context, paymentMethod: 'card');
         break;
       case 'wallet':
         Navigator.pushNamed(context, AppRoutes.myWallet);

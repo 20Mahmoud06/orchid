@@ -16,6 +16,7 @@ class CheckoutState extends Equatable {
     this.source = CheckoutSource.bouquet,
     this.paymentMethod = 'cash',
     this.lastOrderCode,
+    this.lastOrderId,
   });
 
   final bool hasMessage;
@@ -32,6 +33,10 @@ class CheckoutState extends Equatable {
   /// prefix. Kept so the confirm screen can show the real code.
   final String? lastOrderCode;
 
+  /// The database id of the most recently submitted order. Card payments use
+  /// it to create/reuse the Paymob attempt without creating a duplicate order.
+  final String? lastOrderId;
+
   CheckoutState copyWith({
     bool? hasMessage,
     String? messageText,
@@ -43,6 +48,7 @@ class CheckoutState extends Equatable {
     CheckoutSource? source,
     String? paymentMethod,
     String? lastOrderCode,
+    String? lastOrderId,
   }) {
     return CheckoutState(
       hasMessage: hasMessage ?? this.hasMessage,
@@ -55,6 +61,7 @@ class CheckoutState extends Equatable {
       source: source ?? this.source,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       lastOrderCode: lastOrderCode ?? this.lastOrderCode,
+      lastOrderId: lastOrderId ?? this.lastOrderId,
     );
   }
 
@@ -70,5 +77,6 @@ class CheckoutState extends Equatable {
         source,
         paymentMethod,
         lastOrderCode,
+        lastOrderId,
       ];
 }

@@ -11,6 +11,8 @@ import '../../../../shared/widgets/custom_text.dart';
 import '../../../../shared/widgets/fade_slide_in.dart';
 import '../../../../shared/widgets/flower_category_tabs.dart';
 import '../../../../shared/widgets/slider_direction.dart';
+import '../../../payment/cubit/paymob_payment_cubit.dart';
+import '../../../payment/view/screens/payment_pending_screen.dart';
 import '../../cubit/orders_cubit.dart';
 import '../../cubit/orders_state.dart';
 import '../../models/customer_order.dart';
@@ -103,6 +105,23 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     Navigator.pushNamed(context, AppRoutes.orderDetails, arguments: order);
   }
 
+  /// Reopens the card-payment screen for an order that is still payable.
+  ///
+  /// The screen checks the authoritative payment status first, so an order
+  /// whose previous Paymob request is quarantined is shown safely without
+  /// starting another chargeable intention.
+  void _resumePayment(CustomerOrder order) {
+    PaymobPaymentCubit.instance.reset();
+    Navigator.pushNamed(
+      context,
+      AppRoutes.paymentPending,
+      arguments: PaymentPendingArgs(
+        orderId: order.id,
+        orderCode: order.orderCode,
+      ),
+    );
+  }
+
   Future<void> _confirmCancelAll() async {
     final confirmed = await showCancelAllOrdersDialog(context);
 
@@ -183,6 +202,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                   selectedTabIndex: _selectedTabIndex,
                   onOpenDetails: _openDetails,
                   onRemove: _confirmCancelOrder,
+                  onResumePayment: _resumePayment,
                 ),
               ),
             ),

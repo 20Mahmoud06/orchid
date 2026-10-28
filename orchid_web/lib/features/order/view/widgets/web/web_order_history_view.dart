@@ -19,6 +19,7 @@ class OrderHistoryWebView extends StatelessWidget {
   final VoidCallback onCancelAll;
   final ValueChanged<CustomerOrder> onOpenDetails;
   final ValueChanged<CustomerOrder> onCancelOrder;
+  final ValueChanged<CustomerOrder> onResumePayment;
 
   const OrderHistoryWebView({
     super.key,
@@ -27,6 +28,7 @@ class OrderHistoryWebView extends StatelessWidget {
     required this.onCancelAll,
     required this.onOpenDetails,
     required this.onCancelOrder,
+    required this.onResumePayment,
   });
 
   static const _tabs = <String>['All', 'Preparing', 'Completed', 'Canceled'];
@@ -74,6 +76,7 @@ class OrderHistoryWebView extends StatelessWidget {
                                 selectedTabIndex: selectedTabIndex,
                                 onOpenDetails: onOpenDetails,
                                 onCancelOrder: onCancelOrder,
+                                onResumePayment: onResumePayment,
                               ),
                             ),
                           ],

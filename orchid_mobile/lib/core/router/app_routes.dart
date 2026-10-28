@@ -21,6 +21,7 @@ abstract class AppRoutes {
   static const String inspiration = '/inspiration';
   static const String viewBouquet = '/view-bouquet';
   static const String payment = '/payment';
+  static const String paymentPending = '/payment-pending';
   static const String confirm = '/confirm';
   static const String myWallet = '/my-wallet';
   static const String myCard = '/myCard';

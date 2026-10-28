@@ -17,11 +17,13 @@ class OrderHistoryList extends StatelessWidget {
     required this.selectedTabIndex,
     required this.onOpenDetails,
     required this.onRemove,
+    required this.onResumePayment,
   });
 
   final int selectedTabIndex;
   final ValueChanged<CustomerOrder> onOpenDetails;
   final ValueChanged<CustomerOrder> onRemove;
+  final ValueChanged<CustomerOrder> onResumePayment;
 
   List<CustomerOrder> _filterOrders(List<CustomerOrder> orders) {
     switch (selectedTabIndex) {
@@ -86,6 +88,9 @@ class OrderHistoryList extends StatelessWidget {
                 image: order.coverImageUrl ?? AppAssets.bouquetTest,
                 onTap: () => onOpenDetails(order),
                 onRemove: () => onRemove(order),
+                onResumePayment: order.canResumePayment
+                    ? () => onResumePayment(order)
+                    : null,
               );
             },
           ),

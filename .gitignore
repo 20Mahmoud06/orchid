@@ -5,3 +5,8 @@
 /orchid_admin/build/
 /orchid_web/.dart_tool/
 /orchid_web/build/
+
+# Local Paymob documentation
+orchid_mobile/supabase/PAYMOB.md
+orchid_mobile/supabase/PAYMOB_CORRECTNESS.md
+orchid_mobile/supabase/PAYMOB_IMPLEMENTATION.md

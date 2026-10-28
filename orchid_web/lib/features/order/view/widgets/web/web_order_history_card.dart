@@ -19,6 +19,7 @@ class WebOrderHistoryCard extends StatelessWidget {
   final String image;
   final VoidCallback? onTap;
   final VoidCallback? onRemove;
+  final VoidCallback? onResumePayment;
 
   const WebOrderHistoryCard({
     super.key,
@@ -30,6 +31,7 @@ class WebOrderHistoryCard extends StatelessWidget {
     this.image = AppAssets.bouquetTest,
     this.onTap,
     this.onRemove,
+    this.onResumePayment,
   });
 
   @override
@@ -141,8 +143,32 @@ class WebOrderHistoryCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      if (onResumePayment != null)
+                        InkWell(
+                          onTap: onResumePayment,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.textFieldPink,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const CustomText(
+                              text: 'PAY NOW',
+                              fontFamily: AppFonts.goudyOldStyle,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              textColor: AppColors.primary,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,

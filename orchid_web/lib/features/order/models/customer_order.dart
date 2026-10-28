@@ -59,6 +59,8 @@ class CustomerOrder {
     this.deliveryAddress = '',
     this.message,
     this.notes,
+    this.paymentMethod = '',
+    this.paymentStatus = '',
   });
 
   final String id;
@@ -75,7 +77,24 @@ class CustomerOrder {
   final String? message;
   final String? notes;
 
+  /// `orders.payment_method`: cash / card.
+  final String paymentMethod;
+
+  /// Server-written `orders.payment_status`: unpaid / pending / paid / failed /
+  /// refund_pending / refunded.
+  final String paymentStatus;
+
   String get displayCode => '#$orderCode';
+
+  /// A card order that is still active but has no confirmed payment can safely
+  /// go back through the backend. The backend reuses an open Paymob session or
+  /// refuses with a clear message when an outcome is quarantined.
+  bool get canResumePayment =>
+      status == 'PENDING' &&
+      paymentMethod == 'card' &&
+      (paymentStatus == 'unpaid' ||
+          paymentStatus == 'pending' ||
+          paymentStatus == 'failed');
 
   String get title {
     if (items.isEmpty) return 'order';
@@ -92,7 +111,7 @@ class CustomerOrder {
     return null;
   }
 
-  CustomerOrder copyWith({String? status}) {
+  CustomerOrder copyWith({String? status, String? paymentStatus}) {
     return CustomerOrder(
       id: id,
       orderCode: orderCode,
@@ -103,6 +122,8 @@ class CustomerOrder {
       deliveryAddress: deliveryAddress,
       message: message,
       notes: notes,
+      paymentMethod: paymentMethod,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
     );
   }
 
@@ -121,6 +142,8 @@ class CustomerOrder {
       deliveryAddress: row['delivery_address'] as String? ?? '',
       message: row['message'] as String?,
       notes: row['additional_notes'] as String?,
+      paymentMethod: row['payment_method'] as String? ?? '',
+      paymentStatus: row['payment_status'] as String? ?? '',
       items: items,
     );
   }

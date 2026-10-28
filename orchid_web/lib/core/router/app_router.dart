@@ -1,10 +1,12 @@
 import 'package:ORCHID/features/my_bank_cart/view/screens/my_bank_cart_screen.dart';
 import 'package:ORCHID/features/my_wallet/view/screens/my_wallet_screen.dart';
+import 'package:ORCHID/features/payment/view/widgets/payment_pending/payment_pending_args.dart';
 import 'package:flutter/material.dart';
 import '../../features/auth/view/screens/forgot_password_screen.dart';
 import '../../features/auth/view/screens/login_screen.dart';
 import '../../features/auth/view/screens/sign_up_screen.dart';
 import '../../features/auth/view/screens/web_startup_gate.dart';
+import '../../features/payment/view/screens/payment_pending_screen.dart';
 import '../../features/payment/view/screens/payment_screen.dart';
 import '../../features/profile/view/screens/complete_profile_screen.dart';
 import '../../features/profile/view/screens/contact_us_screen.dart';
@@ -224,6 +226,20 @@ abstract class AppRouter {
         );
 
       case AppRoutes.payment:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) =>
+              PaymentScreen(onBackPressed: () => Navigator.maybePop(context)),
+        );
+
+      case AppRoutes.paymentPending:
+        final paymentArgs = settings.arguments;
+        if (paymentArgs is PaymentPendingArgs) {
+          return MaterialPageRoute(
+            settings: settings,
+            builder: (_) => PaymentPendingScreen(args: paymentArgs),
+          );
+        }
         return MaterialPageRoute(
           settings: settings,
           builder: (context) =>

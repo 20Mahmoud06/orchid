@@ -22,6 +22,7 @@ class OrderHistoryMobileView extends StatefulWidget {
   final VoidCallback onCancelAll;
   final ValueChanged<CustomerOrder> onOpenDetails;
   final ValueChanged<CustomerOrder> onCancelOrder;
+  final ValueChanged<CustomerOrder> onResumePayment;
 
   const OrderHistoryMobileView({
     super.key,
@@ -31,6 +32,7 @@ class OrderHistoryMobileView extends StatefulWidget {
     required this.onCancelAll,
     required this.onOpenDetails,
     required this.onCancelOrder,
+    required this.onResumePayment,
   });
 
   @override
@@ -126,6 +128,7 @@ class _OrderHistoryMobileViewState extends State<OrderHistoryMobileView>
                   selectedTabIndex: widget.selectedTabIndex,
                   onOpenDetails: widget.onOpenDetails,
                   onCancelOrder: widget.onCancelOrder,
+                  onResumePayment: widget.onResumePayment,
                 ),
               ),
             ),

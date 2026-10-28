@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:orchid_admin/features/inspiration/domain/models/inspiration_model.dart';
+import 'package:orchid_admin/features/inspiration/presentation/models/inspiration_form_data.dart';
+import 'package:orchid_admin/features/inspiration/presentation/widgets/build_search_results.dart';
+import 'package:orchid_admin/features/inspiration/presentation/widgets/inspiration_form/info_panel.dart';
+import 'package:orchid_admin/features/inspiration/presentation/widgets/inspiration_form/section_hint.dart';
+import 'package:orchid_admin/features/inspiration/presentation/widgets/inspiration_form/selected_flower.dart';
+import 'package:orchid_admin/features/inspiration/presentation/widgets/inspiration_form/selected_flower_tile.dart';
+import 'package:orchid_admin/features/products/domain/models/product_model.dart';
+import 'package:orchid_admin/features/products/presentation/widgets/product_form_section_title.dart';
+import 'package:orchid_admin/features/products/presentation/widgets/product_form_text_field.dart';
+import 'package:orchid_admin/features/products/presentation/widgets/product_image_uploader.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/app_button.dart';
+import '../../../../../core/widgets/custom_text.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/widgets/app_button.dart';
-import '../../../../core/widgets/custom_text.dart';
-import '../../../products/domain/models/product_model.dart';
-import '../../../products/presentation/widgets/product_form_section_title.dart';
-import '../../../products/presentation/widgets/product_form_text_field.dart';
-import '../../../products/presentation/widgets/product_image_uploader.dart';
-import '../../domain/models/inspiration_model.dart';
-import '../models/inspiration_form_data.dart';
+export 'inspiration_form/selected_flower.dart';
 
 class InspirationForm extends StatefulWidget {
   const InspirationForm({
@@ -33,7 +39,7 @@ class _InspirationFormState extends State<InspirationForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _searchController = TextEditingController();
-  final List<_SelectedFlower> _selectedFlowers = [];
+  final List<SelectedFlower> _selectedFlowers = [];
 
   String _searchQuery = '';
   Uint8List? _imageBytes;
@@ -54,9 +60,8 @@ class _InspirationFormState extends State<InspirationForm> {
 
   List<Product> get _searchResults {
     final query = _searchQuery.trim().toLowerCase();
-    final selectedIds = _selectedFlowers
-        .map((flower) => flower.product.id)
-        .toSet();
+    final selectedIds =
+        _selectedFlowers.map((flower) => flower.product.id).toSet();
     return widget.products
         .where((product) => !selectedIds.contains(product.id))
         .where(
@@ -68,9 +73,9 @@ class _InspirationFormState extends State<InspirationForm> {
   }
 
   int get _totalQuantity => _selectedFlowers.fold(
-    0,
-    (sum, flower) => sum + (int.tryParse(flower.quantity.text) ?? 0),
-  );
+        0,
+        (sum, flower) => sum + (int.tryParse(flower.quantity.text) ?? 0),
+      );
 
   void _addFlower(Product product) {
     if (_selectedFlowers.length >= _maxFlowerKinds) {
@@ -89,20 +94,20 @@ class _InspirationFormState extends State<InspirationForm> {
     }
 
     setState(() {
-      _selectedFlowers.add(_SelectedFlower(product));
+      _selectedFlowers.add(SelectedFlower(product));
       _searchController.clear();
       _searchQuery = '';
     });
   }
 
-  void _removeFlower(_SelectedFlower flower) {
+  void _removeFlower(SelectedFlower flower) {
     setState(() {
       _selectedFlowers.remove(flower);
       flower.dispose();
     });
   }
 
-  void _handleQuantityChanged(_SelectedFlower flower, String value) {
+  void _handleQuantityChanged(SelectedFlower flower, String value) {
     final parsed = int.tryParse(value.trim());
     if (parsed != null) {
       final otherQuantity = _totalQuantity - parsed;
@@ -239,14 +244,22 @@ class _InspirationFormState extends State<InspirationForm> {
           ),
           const SizedBox(height: 12),
           if (_selectedFlowers.isEmpty)
-            const _InfoPanel(
+            const InfoPanel(
               icon: Icons.local_florist_outlined,
               text:
                   'No flowers selected yet. Search above and tap a flower '
                   'to add it.',
             )
           else
-            for (final flower in _selectedFlowers) _buildSelectedFlower(flower),
+            for (final flower in _selectedFlowers)
+              SelectedFlowerTile(
+                flower: flower,
+                onRemove: () => _removeFlower(flower),
+                onQuantityChanged: (value) =>
+                    _handleQuantityChanged(flower, value),
+                quantityValidator: _quantityValidator,
+                maxFlowers: _maxFlowers,
+              ),
           const SizedBox(height: 12),
           const ProductFormSectionTitle(
             title: 'Bouquet Photo',
@@ -272,7 +285,7 @@ class _InspirationFormState extends State<InspirationForm> {
             },
           ),
           const SizedBox(height: 12),
-          const _SectionHint(
+          const SectionHint(
             text: 'This photo is shown on the web and mobile Inspiration tabs.',
           ),
           const SizedBox(height: 32),
@@ -312,150 +325,15 @@ class _InspirationFormState extends State<InspirationForm> {
   }
 
   Widget _buildSearchResults() {
-    if (widget.products.isEmpty) {
-      return const _InfoPanel(
-        icon: Icons.search_off,
-        text:
-            'No active flowers found. Add flower products from the Products '
-            'page first.',
-      );
-    }
-
-    if (_selectedFlowers.length >= _maxFlowerKinds) {
-      return _InfoPanel(
-        icon: Icons.info_outline,
-        text: 'You can add up to $_maxFlowerKinds different kinds of flowers.',
-      );
-    }
-
-    if (_totalQuantity >= _maxFlowers) {
-      return _InfoPanel(
-        icon: Icons.info_outline,
-        text: 'Your bouquet can contain up to $_maxFlowers flowers.',
-      );
-    }
-
-    final results = _searchResults;
-    if (results.isEmpty) {
-      final query = _searchQuery.trim();
-      return _InfoPanel(
-        icon: Icons.search_off,
-        text: query.isEmpty
-            ? 'All available flowers are already selected.'
-            : 'No flowers match "$query".',
-      );
-    }
-
-    return Column(
-      children: [
-        for (var index = 0; index < results.length; index++) ...[
-          if (index > 0) const Divider(height: 1),
-          _buildSearchResult(results[index]),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildSearchResult(Product product) {
-    return InkWell(
-      onTap: () => _addFlower(product),
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Row(
-          children: [
-            _FlowerThumbnail(product: product),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(text: product.name, style: AppTextStyles.body),
-                  if (product.categoryName != null &&
-                      product.categoryName!.isNotEmpty)
-                    CustomText(
-                      text: product.categoryName!,
-                      style: AppTextStyles.caption,
-                    ),
-                ],
-              ),
-            ),
-            CustomText(
-              text: 'EGP ${product.price.round()}',
-              style: AppTextStyles.label,
-            ),
-            const SizedBox(width: 8),
-            const Icon(
-              Icons.add_circle_outline,
-              size: 20,
-              color: AppColors.primary,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSelectedFlower(_SelectedFlower flower) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          _FlowerThumbnail(product: flower.product),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomText(
-                  text: flower.product.name,
-                  style: AppTextStyles.label,
-                ),
-                const SizedBox(height: 2),
-                CustomText(
-                  text: 'EGP ${flower.product.price.round()}',
-                  style: AppTextStyles.caption,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 68,
-            child: TextFormField(
-              controller: flower.quantity,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              textAlign: TextAlign.center,
-              onChanged: (value) => _handleQuantityChanged(flower, value),
-              validator: _quantityValidator,
-              decoration: InputDecoration(
-                labelText: 'Qty',
-                isDense: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () => _removeFlower(flower),
-            icon: const Icon(Icons.delete_outline),
-            color: AppColors.error,
-            tooltip: 'Remove flower',
-          ),
-        ],
-      ),
+    return SearchResultsBuilder(
+      products: widget.products,
+      selectedCount: _selectedFlowers.length,
+      totalQuantity: _totalQuantity,
+      maxFlowerKinds: _maxFlowerKinds,
+      maxFlowers: _maxFlowers,
+      searchQuery: _searchQuery,
+      searchResults: _searchResults,
+      onAddFlower: _addFlower,
     );
   }
 
@@ -467,101 +345,3 @@ class _InspirationFormState extends State<InspirationForm> {
   }
 }
 
-class _SelectedFlower {
-  _SelectedFlower(this.product) : quantity = TextEditingController(text: '1');
-
-  final Product product;
-  final TextEditingController quantity;
-
-  void dispose() => quantity.dispose();
-}
-
-class _FlowerThumbnail extends StatelessWidget {
-  const _FlowerThumbnail({required this.product});
-
-  final Product product;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        width: 40,
-        height: 40,
-        child: product.imagePath.isEmpty
-            ? const ColoredBox(
-                color: AppColors.border,
-                child: Icon(
-                  Icons.local_florist_outlined,
-                  size: 18,
-                  color: AppColors.textSecondary,
-                ),
-              )
-            : Image.network(
-                product.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const ColoredBox(
-                  color: AppColors.border,
-                  child: Icon(
-                    Icons.local_florist_outlined,
-                    size: 18,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ),
-      ),
-    );
-  }
-}
-
-class _InfoPanel extends StatelessWidget {
-  const _InfoPanel({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceMuted,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: AppColors.textSecondary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: CustomText(text: text, style: AppTextStyles.caption),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionHint extends StatelessWidget {
-  const _SectionHint({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(
-          Icons.info_outline,
-          size: 14,
-          color: AppColors.textSecondary,
-        ),
-        const SizedBox(width: 6),
-        Expanded(
-          child: CustomText(text: text, style: AppTextStyles.caption),
-        ),
-      ],
-    );
-  }
-}

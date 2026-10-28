@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import '../../bouquet/cubit/bouquet_cubit.dart';
 import '../../bouquet/utils/bouquet_naming.dart';
 import '../../cart/cubit/cart_cubit.dart';
@@ -219,14 +217,6 @@ class CheckoutOrderBuilder {
     }
 
     return items;
-  }
-
-  static String generateOrderCode() {
-    // Ambiguous letters (I, O, 0, 1...) are left out so codes are easy to
-    // read out loud and retype.
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final random = Random.secure();
-    return List.generate(8, (_) => chars[random.nextInt(chars.length)]).join();
   }
 
   static String _cartItemDescription(CartItem item) {

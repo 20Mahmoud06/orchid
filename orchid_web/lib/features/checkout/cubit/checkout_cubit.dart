@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../../features/cart/cubit/cart_cubit.dart';
 import '../../../features/cart/models/cart_item.dart';
 import '../../../features/catalog/cubit/catalog_cubit.dart';
@@ -118,6 +115,8 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   CheckoutSource get source => state.source;
 
   String? get lastOrderCode => state.lastOrderCode;
+
+  String? get lastOrderId => state.lastOrderId;
 
   /// Next-day delivery slot; the same value is stored on the order row so
   /// the admin can display it.
@@ -329,7 +328,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   /// (bouquet selection and, for cart checkout, the cart).
   ///
   /// Throws [CheckoutException] with a user-readable message on failure.
-  Future<void> submitOrder() async {
+  Future<PlacedOrder> submitOrder() async {
     final client = Supabase.instance.client;
     final user = client.auth.currentUser;
     if (user == null) {
@@ -345,64 +344,92 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       );
     }
 
-    final subtotal = items.fold<int>(
-      0,
-      (sum, item) =>
-          sum +
-          ((item['price_snapshot'] as num) * (item['quantity'] as num)).round(),
-    );
-    final total = subtotal + deliveryFee + serviceFee;
-    final now = DateTime.now().toUtc();
     final slot = deliverySlot.toUtc();
-    final code = _generateOrderCode();
     final source = state.source;
 
-    String? orderId;
     try {
-      final orderRow = await client
-          .from('orders')
-          .insert({
-            'order_code': code,
-            'status': 'PENDING',
-            'user_id': user.id,
-            'message': state.hasMessage && state.messageText.isNotEmpty
-                ? state.messageText
-                : null,
-            'additional_notes': state.notes.isEmpty ? null : state.notes,
-            'delivery_address': state.location,
-            'delivery_date': slot.toIso8601String(),
-            'order_time': slot.toIso8601String(),
-            'delivery_fee': deliveryFee,
-            'service_fee': serviceFee,
-            'total': total,
-            'payment_method': state.paymentMethod,
-            'created_at': now.toIso8601String(),
-            'updated_at': now.toIso8601String(),
-          })
-          .select('id')
-          .single();
-      orderId = orderRow['id'] as String?;
+      // The database reprices every line from the trusted product table,
+      // validates custom-bouquet components, generates the order code and
+      // returns the authoritative total. The client cannot choose any of them.
+      final raw = await client.rpc(
+        'create_order',
+        params: {
+          'p_message': state.hasMessage && state.messageText.isNotEmpty
+              ? state.messageText
+              : null,
+          'p_notes': state.notes.isEmpty ? null : state.notes,
+          'p_delivery_address': state.location,
+          'p_delivery_date': slot.toIso8601String(),
+          'p_order_time': slot.toIso8601String(),
+          'p_payment_method': state.paymentMethod,
+          'p_items': items,
+        },
+      );
 
-      await client.from('order_items').insert([
-        for (final item in items) {...item, 'order_id': orderId},
-      ]);
-    } catch (error) {
-      // A half-written order (row created, items failed) must not linger in
-      // the admin dashboard, so remove it before reporting the failure.
-      if (orderId != null) {
-        try {
-          await client.from('orders').delete().eq('id', orderId);
-        } catch (_) {
-          // Cleanup is best-effort; the checkout error below is what matters.
-        }
+      if (raw is! Map) {
+        throw CheckoutException(
+          'Could not place your order. Please try again.',
+        );
       }
+
+      final data = Map<String, dynamic>.from(raw);
+      final orderId = data['order_id'] as String?;
+      final code = data['order_code'] as String?;
+      final total = ((data['total'] as num?) ?? 0).round();
+      if (orderId == null ||
+          orderId.isEmpty ||
+          code == null ||
+          code.isEmpty ||
+          total <= 0) {
+        throw CheckoutException(
+          'Could not place your order. Please try again.',
+        );
+      }
+
+      final placed = PlacedOrder(
+        id: orderId,
+        code: code,
+        total: total,
+        paymentMethod: state.paymentMethod,
+      );
+      _resetDraft(
+        lastOrderId: orderId,
+        lastOrderCode: code,
+        clearCart: source == CheckoutSource.cart,
+      );
+      return placed;
+    } on CheckoutException {
+      rethrow;
+    } on PostgrestException catch (error) {
+      throw CheckoutException(_checkoutMessage(error.message));
+    } catch (_) {
       throw CheckoutException(
-        'Could not place your order. Check your connection and try again. '
-        '($error)',
+        'Could not place your order. Check your connection and try again.',
       );
     }
+  }
 
-    _resetDraft(lastOrderCode: code, clearCart: source == CheckoutSource.cart);
+  String _checkoutMessage(String rawMessage) {
+    final message = rawMessage.toLowerCase();
+    if (message.contains('price changed')) {
+      return 'Prices changed while you were shopping. Please review your '
+          'cart and place the order again.';
+    }
+    if (message.contains('no longer available')) {
+      return 'One of the items is no longer available. Please review your '
+          'cart and try again.';
+    }
+    if (message.contains('custom bouquet')) {
+      return 'Your custom bouquet could not be validated. Please rebuild it '
+          'and try again.';
+    }
+    if (message.contains('delivery')) {
+      return 'Please check your delivery details and try again.';
+    }
+    if (message.contains('authentication') || message.contains('jwt')) {
+      return 'Please sign in to place an order';
+    }
+    return 'Could not place your order. Check your connection and try again.';
   }
 
   /// Builds the `order_items` rows for the current draft. Exposed for tests;
@@ -424,14 +451,6 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         'custom_components': item.customComponents,
       },
   ];
-
-  String _generateOrderCode() {
-    // Ambiguous letters (I, O, 0, 1...) are left out so codes are easy to
-    // read out loud and retype.
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    final random = Random.secure();
-    return List.generate(8, (_) => chars[random.nextInt(chars.length)]).join();
-  }
 
   /// Cart item ids only become `order_items.product_id` when they really
   /// are a product UUID — custom bouquet entries use local ids.
@@ -455,11 +474,31 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     return isBouquet ? _bouquetType : _flowerType;
   }
 
-  void _resetDraft({required String lastOrderCode, required bool clearCart}) {
+  void _resetDraft({
+    required String lastOrderId,
+    required String lastOrderCode,
+    required bool clearCart,
+  }) {
     BouquetCubit.instance.clear();
     if (clearCart) {
       CartCubit.instance.clearCart();
     }
-    emit(CheckoutState(lastOrderCode: lastOrderCode));
+    emit(CheckoutState(lastOrderId: lastOrderId, lastOrderCode: lastOrderCode));
   }
+}
+
+/// A just-created order, returned so card checkout can create its Paymob
+/// attempt without rebuilding the draft (which is cleared after insertion).
+class PlacedOrder {
+  const PlacedOrder({
+    required this.id,
+    required this.code,
+    required this.total,
+    required this.paymentMethod,
+  });
+
+  final String id;
+  final String code;
+  final int total;
+  final String paymentMethod;
 }

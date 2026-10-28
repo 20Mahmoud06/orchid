@@ -18,6 +18,7 @@ class OrderHistoryCard extends StatelessWidget {
   final String image;
   final VoidCallback? onTap;
   final VoidCallback? onRemove;
+  final VoidCallback? onResumePayment;
 
   const OrderHistoryCard({
     super.key,
@@ -29,6 +30,7 @@ class OrderHistoryCard extends StatelessWidget {
     this.image = AppAssets.bouquetTest,
     this.onTap,
     this.onRemove,
+    this.onResumePayment,
   });
 
   Color get _statusBackgroundColor => orderStatusBackgroundColor(status);
@@ -151,8 +153,32 @@ class OrderHistoryCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      if (onResumePayment != null)
+                        InkWell(
+                          onTap: onResumePayment,
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 10.w,
+                              vertical: 4.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.textFieldPink,
+                              borderRadius: BorderRadius.circular(10.r),
+                            ),
+                            child: CustomText(
+                              text: 'PAY NOW',
+                              fontFamily: AppFonts.goudyOldStyle,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w700,
+                              textColor: AppColors.primary,
+                            ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 10.w,

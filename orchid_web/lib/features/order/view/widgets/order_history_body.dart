@@ -21,6 +21,7 @@ class OrderHistoryBody extends StatelessWidget {
   final int selectedTabIndex;
   final ValueChanged<CustomerOrder> onOpenDetails;
   final ValueChanged<CustomerOrder> onCancelOrder;
+  final ValueChanged<CustomerOrder> onResumePayment;
 
   const OrderHistoryBody({
     super.key,
@@ -28,6 +29,7 @@ class OrderHistoryBody extends StatelessWidget {
     required this.selectedTabIndex,
     required this.onOpenDetails,
     required this.onCancelOrder,
+    required this.onResumePayment,
   });
 
   static const _months = [
@@ -124,6 +126,9 @@ class OrderHistoryBody extends StatelessWidget {
                   image: image,
                   onTap: () => onOpenDetails(order),
                   onRemove: () => onCancelOrder(order),
+                  onResumePayment: order.canResumePayment
+                      ? () => onResumePayment(order)
+                      : null,
                 );
               }
               return OrderHistoryCard(
@@ -135,6 +140,9 @@ class OrderHistoryBody extends StatelessWidget {
                 image: image,
                 onTap: () => onOpenDetails(order),
                 onRemove: () => onCancelOrder(order),
+                onResumePayment: order.canResumePayment
+                    ? () => onResumePayment(order)
+                    : null,
               );
             },
           ),
